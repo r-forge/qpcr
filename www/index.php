@@ -34,7 +34,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 <!-- own website starts here, the following may be changed as you like -->
 
 <?php if ($handle=fopen('http://'.$domain.'/export/projtitl.php?group_name='.$group_name,'r')){
-$contents = '';
+$contents = 'algo';
 while (!feof($handle)) {
 	$contents .= fread($handle, 8192);
 }
