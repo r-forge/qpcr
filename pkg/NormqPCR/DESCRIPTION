@@ -1,0 +1,11 @@
+Package: NormqPCR
+Type: Package
+Title: Functions for normalisation of RT-qPCR data
+Version: 1.0.0
+Date: 2008-10-20
+Author: Matthias Kohl, James Perkins
+Maintainer: Matthias Kohl <Matthias.Kohl@stamats.de>
+Description: Functions for normalisation of real-time quantitative PCR data
+Depends: R(>= 2.4.0), stats, RColorBrewer
+biocViews: Statistics
+License: GPL (>= 2)
