@@ -15,8 +15,7 @@ Date: \tab 2008-10-16\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
-%~~ An overview of how to use the package, including the most important ~~
-%~~ functions ~~
+library(ReadqPCR)
 }
 \author{
 James Perkins <jperkins@biochem.ucl.ac.uk>\cr
