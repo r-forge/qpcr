@@ -1,0 +1,9 @@
+citHeader("To cite package ReadqPCR in publications use:")
+
+citEntry(entry="Manual",
+         title = "ReadqPCR: Read qPCR data",
+         author = personList(as.person("J. Perkins"), as.person("M. Kohl")),
+         language = "English",
+         year = 2008,
+         type = "R package",
+textVersion = paste("Perkins, J. and Kohl, M., (2008).", "ReadqPCR: Read qPCR data.", "R package."))

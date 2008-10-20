@@ -1,0 +1,9 @@
+citHeader("To cite package QCqPCR in publications use:")
+
+citEntry(entry="Manual",
+         title = "QCqPCR: Functions for quality control of RT-qPCR data",
+         author = personList(as.person("J. Perkins"), as.person("M. Kohl")),
+         language = "English",
+         year = 2008,
+         type = "R package",
+textVersion = paste("Perkins, J. and Kohl, M., (2008).", "QCqPCR: Functions for quality control of RT-qPCR data.", "R package."))
