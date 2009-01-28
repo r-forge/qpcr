@@ -5,7 +5,7 @@ Title: Functions for quality control of RT-qPCR data
 Description: Functions for quality control of real-time quantitative PCR data
 Author: James Perkins, Matthias Kohl
 Maintainer: James Perkins <jperkins@biochem.ucl.ac.uk>
-Depends: R(>= 2.7.0)
+Depends: R(>= 2.7.0), Biobase, affy
 License: GPL (>= 2)
 LazyLoad: yes
 URL: http://qpcr.r-forge.r-project.org/
