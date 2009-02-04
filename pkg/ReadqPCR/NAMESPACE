@@ -1,1 +1,1 @@
-export(ReadTaq, taq2eset)
+export(read.taqmanbatch, read_TaqBatch, checkValidTaqmanFilenames)
