@@ -7,7 +7,6 @@ read.taqmanbatch <- function(..., filenames = character(0), phenoData = new("Ann
     exprs <- read_TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
 	n = 1
     n <- length(colnames(exprs))
-	cat("ENNNNNNNNNNNNNNNNNNNYA")
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
         samplenames <- sub("^/?([^/]*/)*", "", colnames(exprs), extended = TRUE)
