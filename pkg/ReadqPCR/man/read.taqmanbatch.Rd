@@ -1,4 +1,4 @@
-name{read.taqmanbatch}
+\name{read.taqmanbatch}
 \alias{read.taqmanbatch}
 \alias{read_TaqBatch}
 \alias{checkValidTaqmanFilenames}
