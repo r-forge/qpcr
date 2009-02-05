@@ -1,5 +1,5 @@
-\name{read.taqmanbatch}
-\alias{read.taqmanbatch}
+\name{read.taqman}
+\alias{read.taqman}
 \alias{read_TaqBatch}
 \alias{checkValidTaqmanFilenames}
 \title{ Read Taqman qPCR data into ExpressionSet }
@@ -8,11 +8,11 @@
   \code{"ExpressionSet"}.
 }
 \usage{
-read.taqmanbatch(\dots,
-                 filenames = character(0),
-                 phenoData = new("AnnotatedDataFrame"),
-                 notes = "", 
-                 verbose = FALSE)
+read.taqman(\dots,
+           filenames = character(0),
+           phenoData = new("AnnotatedDataFrame"),
+           notes = "", 
+           verbose = FALSE)
 }
 \arguments{
   \item{\dots}{file names separated by comma.}
@@ -33,4 +33,3 @@ read.taqmanbatch(\dots,
 %\examples{
 %}
 \keyword{classes}
-
