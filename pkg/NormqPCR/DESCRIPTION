@@ -5,7 +5,7 @@ Title: Functions for normalisation of RT-qPCR data
 Description: Functions for normalisation of real-time quantitative PCR data
 Author: Matthias Kohl, James Perkins
 Maintainer: Matthias Kohl <Matthias.Kohl@stamats.de>
-Depends: R(>= 2.7.0), stats, RColorBrewer
+Depends: R(>= 2.7.0), stats, RColorBrewer, Biobase, methods
 License: GPL (>= 2)
 LazyLoad: yes
 URL: http://qpcr.r-forge.r-project.org/
