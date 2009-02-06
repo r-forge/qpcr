@@ -21,13 +21,16 @@ read_TaqBatch <- function(filenames, verbose)
 {
     for (filename in filenames) {
 	if (verbose) cat("Filename[ ",filename," ]")
-        raw <- read.delim(filename)
+        raw <- read.delim(filename, skip = 12) # read in file, ignoring the gubbins on the first 12 lines
+        if (!(EndOfData <- grep("Summary", raw[,1]))) stop("Problems with Taqman file, Summary info not found")
+        raw <- raw[1:EndOfData-1, ]  # get rid of from where data finishes until the end of the file
+        raw$Sample = factor(raw$Sample) # clean up additional levels brought in by extra info in the raw file before chopping
+        raw$Detector = factor(raw$Detector)
         levels(raw$Sample) <- gsub(" ", "_", levels(raw$Sample)) # replace spaces with _ for sample names
         levels(raw$Detector) <- gsub(" ", "_", levels(raw$Detector)) # replace spaces with _ for detectors
-
         samples <- levels(raw$Sample)
         detectors <- levels(raw$Detector)
-        exprs <- data.frame(detectors, row.names=1)
+        exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
         for (sample in samples) { # for each sample
             if (verbose) cat("Now reading for sample:", sample, "\n")
             # work out if there are technical replicates
@@ -43,6 +46,7 @@ read_TaqBatch <- function(filenames, verbose)
                 warning_text = "More than 1 technical replicate detected"
                 stop(warning_text)
             }
+            raw$Ct[as.character(raw$Ct)[raw$Sample == sample] %in% "Undetermined"] = NA # change Undertermined values to NA to stop warning messages appearing when Ct vector coerced into numeric vector
             Cts <- data.frame(raw$Detector[raw$Sample == sample], # put Cts values in a matrix
                          as.numeric(as.character(raw$Ct[raw$Sample == sample])),
                          row.names=1)
