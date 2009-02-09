@@ -1,1 +1,1 @@
-export(plotPairs.R, pairsqPCR.R, corMatrixqPCR.R)
+export(pairsqPCR, corMatrixqPCR)

@@ -22,7 +22,8 @@ read_TaqBatch <- function(filenames, verbose)
     for (filename in filenames) {
 	if (verbose) cat("Filename[ ",filename," ]")
         raw <- read.delim(filename, skip = 12) # read in file, ignoring the gubbins on the first 12 lines
-        if (!(EndOfData <- grep("Summary", raw[,1]))) stop("Problems with Taqman file, Summary info not found")
+        if (! 1 %in% regexpr("Summary", as.character(raw[,1]))) stop("Problems with Taqman file, Summary info not found") # this could be made safer..ie if a sample was named Summary also its hard to understand...any better ideas anyone?
+        EndOfData <- grep("Summary", raw[,1])
         raw <- raw[1:EndOfData-1, ]  # get rid of from where data finishes until the end of the file
         raw$Sample = factor(raw$Sample) # clean up additional levels brought in by extra info in the raw file before chopping
         raw$Detector = factor(raw$Detector)
