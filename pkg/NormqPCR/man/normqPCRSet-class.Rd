@@ -16,15 +16,15 @@
   \code{new("normqPCRSet")}
 
 }
-\section{Slots}{
-}
-\section{Methods}{
-}
+%\section{Slots}{
+%}
+%\section{Methods}{
+%}
 
 \author{James Perkins}
 
-\examples{
-}
+%\examples{
+%}
 
 \keyword{classes}
 

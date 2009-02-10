@@ -21,12 +21,12 @@ normaliseByHKG(eset,hkgs,design,verbose = FALSE)
   Takes expression set of qPCR values and normalises them using different housekeeping genes. Returns seperate sets of values for each housekeeping  gene given.
 }
 \value{
-  Object of class \code{"NormedqPCRSet"}.}
+  Object of class \code{"NormedqPCRSet"}
 }
 %\references{ }
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
-\note{}
+%\note{}
 %\seealso{}
-\examples{
-}
+%\examples{
+%}
 \keyword{data}
