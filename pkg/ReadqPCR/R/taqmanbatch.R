@@ -1,11 +1,23 @@
+setClass("normqPCRSet", contains = "ExpressionSet", 
+    representation = representation(
+        nSet = "data.frame",
+        well.order = "list",
+        hkgs = "character" 
+    )
+)
+
 read.taqman <- function(..., filenames = character(0), phenoData = new("AnnotatedDataFrame"), notes = "", verbose = FALSE)
 {
     auxnames <- unlist(list(...))
     filenames <- c(filenames, auxnames)
     checkValidTaqmanFilenames(filenames)
     pdata <- pData(phenoData) # number of filesi
-    exprs <- read_TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
-#	print(exprs)
+    taqInfo <- read_TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
+    exprs <- taqInfo$exprs
+    original_order <- taqInfo$origOrder
+	cat("YISHHH")
+	print(original_order) #
+	cat("YESSH")
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
@@ -15,14 +27,13 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
             varMetadata = data.frame(labelDescription = "arbitrary numbering",
                 row.names = "sample"))
     }
-    return(new("ExpressionSet", exprs = exprs, phenoData = phenoData))
+    return(new("normqPCRSet", exprs = exprs, phenoData = phenoData, well.order = original_order))
 }
 
 read_TaqBatch <- function(filenames, verbose)
 {
-    total_exprs <- matrix
     for (filename in filenames) {
-	if (verbose) cat("Filename[ ",filename," ]\n")
+        if (verbose) cat("Filename[ ",filename," ]")
         raw <- read.delim(filename, skip = 12) # read in file, ignoring the gubbins on the first 12 lines
         if (! 1 %in% regexpr("Summary", as.character(raw[,1]))) stop("Problems with Taqman file, Summary info not found") # this could be made safer..ie if a sample was named Summary also its hard to understand...any better ideas anyone?
         EndOfData <- grep("Summary", raw[,1])
@@ -33,6 +44,7 @@ read_TaqBatch <- function(filenames, verbose)
         levels(raw$Detector) <- gsub(" ", "_", levels(raw$Detector)) # replace spaces with _ for detectors
         samples <- levels(raw$Sample)
         detectors <- levels(raw$Detector)
+        original_order <- list() # initialise the list
         exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
         for (sample in samples) { # for each sample
             if (verbose) cat("Now reading for sample:", sample, "\n")
@@ -50,35 +62,25 @@ read_TaqBatch <- function(filenames, verbose)
                 stop(warning_text)
             }
             raw$Ct[as.character(raw$Ct)[raw$Sample == sample] %in% "Undetermined"] = NA # change Undertermined values to NA to stop warning messages appearing when Ct vector coerced into numeric vector
+            original_order = c(original_order,list(cbind(as.character(raw$Detector[raw$Sample == sample]),
+                as.character(raw$Ct[raw$Sample == sample])))) # This bit to add the information about pipetting and order
+
             Cts <- data.frame(raw$Detector[raw$Sample == sample], # put Cts values in a matrix
                          as.numeric(as.character(raw$Ct[raw$Sample == sample])),
                          row.names=1)
             exprs <- data.frame(merge(exprs, Cts, by="row.names"), row.names=1)
             if (verbose) cat("sample ", sample, "read\n")
         }
+        names(original_order) <- samples
         names(exprs) <- samples
         exprs <- as.matrix(exprs)
-        if (length(filenames) > 1) # If we have more than 1 sample, we have to combine them 
-        {
-            if (exists("old_exprs")) {
-                if (identical(colnames(exprs), colnames(old_exprs))
-                    && identical(rownames(exprs), rownames(old_exprs))) 
-                      stop("sample and detector names are identical in more than 1 file")
-                if (identical(colnames(exprs), colnames(old_exprs))) {
-                    if (verbose) cat("Combining files by sample name")
-                    exprs <- rbind(old_exprs, exprs)
-                }
-                else if (identical(rownames(exprs), rownames(old_exprs))) {
-                    if (verbose) cat("Combining files by detector name")
-                    exprs <- cbind(old_exprs, exprs)
-                }
-		else stop("No concordance of detector or sample name in file:",filename,"\n")
-            }
-            old_exprs <- exprs
-	}
     }
-    total_exprs <- cbind(total_exprs, exprs)
-    return(exprs)
+
+    taqInfo <- list()
+
+    taqInfo$exprs <- exprs
+    taqInfo$origOrder <- original_order
+    return(taqInfo)
 }
 checkValidTaqmanFilenames <- function (filenames)
 {

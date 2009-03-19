@@ -1,7 +1,7 @@
-setClass("normqPCRSet", # tSet is a matrix of all the detectors x different values for each hkg, with a vector of hkgs
-         representation = representation(
-           nSet = "data.frame", 
-           hkgs = "character"))
+#setClass("normqPCRSet", # tSet is a matrix of all the detectors x different values for each hkg, with a vector of hkgs
+#         representation = representation(
+#           nSet = "data.frame", 
+#           hkgs = "character"))
 
 ###################################
 #    normalise eset with 1 HKG    #
