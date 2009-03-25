@@ -1,8 +1,8 @@
-\name{normqPCRSet}
+\name{qPCRSet}
 \docType{class}
-\alias{class:normqPCRSet}
-\alias{normqPCRSet}
-\alias{normqPCRSet}
+\alias{class:qPCRSet}
+\alias{qPCRSet}
+\alias{qSet}
 
 \title{
   Class to Contain and Describe normalise qPCR Data
@@ -13,7 +13,7 @@
 }
 \section{Creating Objects}{
 
-  \code{new("normqPCRSet")}
+  \code{new("qPCRSet")}
 
 }
 %\section{Slots}{

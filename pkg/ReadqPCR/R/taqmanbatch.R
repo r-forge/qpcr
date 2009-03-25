@@ -1,4 +1,4 @@
-setClass("normqPCRSet", contains = "ExpressionSet", 
+setClass("qPCRSet", contains = "ExpressionSet", 
     representation = representation(
         nSet = "data.frame",
         well.order = "list",
@@ -15,9 +15,6 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
     taqInfo <- read_TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
     exprs <- taqInfo$exprs
     original_order <- taqInfo$origOrder
-	cat("YISHHH")
-	print(original_order) #
-	cat("YESSH")
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
@@ -27,7 +24,7 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
             varMetadata = data.frame(labelDescription = "arbitrary numbering",
                 row.names = "sample"))
     }
-    return(new("normqPCRSet", exprs = exprs, phenoData = phenoData, well.order = original_order))
+    return(new("qPCRSet", exprs = exprs, phenoData = phenoData, well.order = original_order))
 }
 
 read_TaqBatch <- function(filenames, verbose)
@@ -46,6 +43,9 @@ read_TaqBatch <- function(filenames, verbose)
         detectors <- levels(raw$Detector)
         original_order <- list() # initialise the list
         exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
+
+	raw$Ct[as.character(raw$Ct) %in% "Undetermined"] <- NA
+
         for (sample in samples) { # for each sample
             if (verbose) cat("Now reading for sample:", sample, "\n")
             # work out if there are technical replicates
@@ -61,7 +61,7 @@ read_TaqBatch <- function(filenames, verbose)
                 warning_text = "More than 1 technical replicate detected"
                 stop(warning_text)
             }
-            raw$Ct[as.character(raw$Ct)[raw$Sample == sample] %in% "Undetermined"] = NA # change Undertermined values to NA to stop warning messages appearing when Ct vector coerced into numeric vector
+#            raw$Ct[as.character(raw$Ct)[raw$Sample == sample] %in% "Undetermined"] = NA # change Undertermined values to NA to stop warning messages appearing when Ct vector coerced into numeric vector
             original_order = c(original_order,list(cbind(as.character(raw$Detector[raw$Sample == sample]),
                 as.character(raw$Ct[raw$Sample == sample])))) # This bit to add the information about pipetting and order
 
