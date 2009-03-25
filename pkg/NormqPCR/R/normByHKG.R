@@ -1,5 +1,3 @@
-#setClass("normqPCRSet", # tSet is a matrix of all the detectors x different values for each hkg, with a vector of hkgs
-#         representation = representation(
 #           nSet = "data.frame", 
 #           hkgs = "character"))
 
@@ -117,5 +115,6 @@ normaliseByHKG <- function(qSet, hkgs, design, verbose = FALSE){ # takes express
     normSetColNames <- c(sampleNames(qSet),laterColNames) # make column names
     names(normSet) <- normSetColNames
     qSet@nSet <- normSet
+    qSet@hkgs <- hkgs
     return(qSet)
 }

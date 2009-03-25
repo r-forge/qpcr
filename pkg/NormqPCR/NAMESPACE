@@ -1,1 +1,2 @@
 export(geomMean,normaliseByHKG)
+importClasses(qPCRSet)

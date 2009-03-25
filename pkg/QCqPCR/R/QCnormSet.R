@@ -4,6 +4,7 @@ plotVsHkg = function(nqSet,saveToFile=FALSE)
     hkgs <- nqSet@hkgs # these are the housekeeping genes the data has been normalised to
     plotFrame <- row.names(nset)
     for (hkg in hkgs) {
+        hkg <- gsub("-.+$","",hkg) # cut off the stuff from the detector's name after the -	
         hkg2ddct <- paste(hkg, "_2^DDCt", sep = "")
         ddct <- nset[, hkg2ddct]
         plotFrame <- data.frame(plotFrame, ddct)
