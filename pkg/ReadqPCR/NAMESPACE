@@ -1,2 +1,11 @@
 export(read.taqman, read_TaqBatch, checkValidTaqmanFilenames)
 exportClasses(qPCRSet)
+importClassesFrom(Biobase,
+                  AnnotatedDataFrame,
+                  AssayData,
+                  MIAME,
+                  Versioned,
+                  VersionedBiobase,
+                  Versions,
+                  eSet,
+                  ExpressionSet)

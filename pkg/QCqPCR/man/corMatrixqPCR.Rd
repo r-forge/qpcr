@@ -2,13 +2,13 @@
 \alias{corMatrixqPCR}
 \title{ Make pairwise matrix of correlation values between samples in qPCR eset }
 \description{
-  Takes eset of qPCR data and makes matrix of correlation values using pearson's coefficient
+  Takes set of qPCR data and makes matrix of correlation values using pearson's coefficient
 }
 \usage{
-  corMatrixqPCR(eset)
+  corMatrixqPCR(qPCRSet)
 }
 \arguments{
-    \item{eset}{ Expression set containing qPCR data.}
+    \item{qPCRSet}{ Expression set containing qPCR data.}
 }
 \details{
   reads in qPCR data and returns  matrix of correlation values using Pearon's

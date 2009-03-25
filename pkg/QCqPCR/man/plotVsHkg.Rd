@@ -5,10 +5,10 @@
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
 }
 \usage{
-plotVsHkg(nqSet, saveToFile = FALSE)
+plotVsHkg(qPCRSet, saveToFile = FALSE)
 }
 \arguments{
-    \item{nqSet} { data set containing data on different Ct values normed to the different HKGs }
+    \item{qPCRSet} { data set containing data on different Ct values normed to the different HKGs }
     \item{saveToFile} { Option to save to file }
 }
 \details{

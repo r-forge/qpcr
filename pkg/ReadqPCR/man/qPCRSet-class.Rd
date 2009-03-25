@@ -1,5 +1,6 @@
-\name{qPCRSet}
+\name{qPCRSet-class}
 \docType{class}
+\alias{qPCRSet-class}
 \alias{class:qPCRSet}
 \alias{qPCRSet}
 \alias{qSet}
