@@ -4,10 +4,10 @@
 #           hkgs = "character"))
 
 ###################################
-#    normalise eset with 1 HKG    #
+#    normalise qSet with 1 HKG    #
 ###################################
 
-normaliseByHKG <- function(eset, hkgs, design, verbose = FALSE){ # takes expression set, vector of housekeeping genes and a design matrix (like in limma)
+normaliseByHKG <- function(qSet, hkgs, design, verbose = FALSE){ # takes expression set, vector of housekeeping genes and a design matrix (like in limma)
 
     ##########
     # Use design 'matrix' to work out which is case and which is control
@@ -20,34 +20,34 @@ normaliseByHKG <- function(eset, hkgs, design, verbose = FALSE){ # takes express
 
     ##########
 
-    normSet <- data.frame(as.data.frame(exprs(eset))) # turn exprs component into a data frame
+    normSet <- data.frame(as.data.frame(exprs(qSet))) # turn exprs component into a data frame
     tabFormat <- vector()
     laterColNames <- vector()
 
     for(hkg in hkgs) { # For each nominal housekeeping gene
         ##########
         # first see if it's suitable
-        hkgCts <- as.numeric(exprs(eset[hkg,])) # get the Ct values for given hkg
+        hkgCts <- as.numeric(exprs(qSet[hkg,])) # get the Ct values for given hkg
         hkgCtsCase <- hkgCts[logicase] # seperate for case and control
         hkgCtsControl <- hkgCts[logicontrol]
         # if unsuitable, stop the loop
         if(sum(is.na(hkgCtsCase)) > maxNAinCase) stop (hkg, " is unsuitable as a housekeeping gene because a value was only obtained for it once or less")
         if(sum(is.na(hkgCtsControl)) > maxNAinControl) stop (hkg, " is unsuitable as a housekeeping gene because a value was only obtained for it once or less")
 
-        if(hkg %in% featureNames(eset) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
+        if(hkg %in% featureNames(qSet) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
         hkg <- gsub("-.+$","",hkg) # regexp to remove any rubbish from end of control gene spec
 	laterColNames <- c(laterColNames, paste(hkg, "Control_mean", sep = "_"), paste(hkg, "Control_Sds", sep = "_"), paste(hkg, "Case_mean", sep = "_"), paste(hkg, "Case_Sds", sep = "_"), paste(hkg, "ddCt", sep = "_"), paste(hkg, "2^DDCt", sep = "_"), paste(hkg, "2^DDCt min", sep = "_"), paste(hkg, "2^DDCt max", sep = "_")) # get the column names for the tSet matrix
     }
 
     for(hkg in hkgs) { # for each housekeeping gene
         if(verbose) cat("For HKG: ", hkg, "\n")
-        if(hkg %in% featureNames(eset) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
-        hkgCts <- as.numeric(exprs(eset[hkg, ]))
+        if(hkg %in% featureNames(qSet) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
+        hkgCts <- as.numeric(exprs(qSet[hkg, ]))
         hkgCtsCase <- hkgCts[logicase]
         hkgCtsControl <- hkgCts[logicontrol]
         ##########
         # first see if it's suitable
-        hkgCts <- as.numeric(exprs(eset[hkg, ])) # get the Ct values for given hkg
+        hkgCts <- as.numeric(exprs(qSet[hkg, ])) # get the Ct values for given hkg
         hkgCtsCase <- hkgCts[logicase] # seperate for case and control
         hkgCtsControl <- hkgCts[logicontrol]
         # if unsuitable, stop the loop
@@ -64,8 +64,8 @@ normaliseByHKG <- function(eset, hkgs, design, verbose = FALSE){ # takes express
         minBound <- vector()
         maxBound <- vector()
         ##########
-        for (detector in featureNames(eset)) {
-            Cts <- as.numeric(exprs(eset[detector,])) # the raw values for the detector
+        for (detector in featureNames(qSet)) {
+            Cts <- as.numeric(exprs(qSet[detector,])) # the raw values for the detector
             Cts[Cts>38] <- NA
             CtsControl <- Cts[logicontrol]
             CtsCase <- Cts[logicase]
@@ -114,8 +114,8 @@ normaliseByHKG <- function(eset, hkgs, design, verbose = FALSE){ # takes express
         }
 	normSet <- data.frame(normSet,deltaCtsMeanControl,deltaCtsSdControl,deltaCtsMeanCase,deltaCtsSdCase,deltadeltaCt,twoDDCt,minBound,maxBound) # add the vectors together
     }
-    normSetColNames <- c(sampleNames(eset),laterColNames) # make column names
+    normSetColNames <- c(sampleNames(qSet),laterColNames) # make column names
     names(normSet) <- normSetColNames
-    tSet <- new("normqPCRSet",nSet=normSet,hkgs = gsub("-.+$","",hkgs))
-    return(tSet)
+    qSet@nSet <- normSet
+    return(qSet)
 }
