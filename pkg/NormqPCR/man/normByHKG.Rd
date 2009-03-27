@@ -6,7 +6,7 @@
   Normalise qPCR eset using housekeeping genes as control.
 }
 \usage{
-normaliseByHKG(qPCRSet,hkgs,design,verbose = FALSE)
+normaliseByHKG(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE)
 }
 \arguments{
   \item{qPCRSet}{ Expression set containing qPCR data. 
@@ -14,6 +14,8 @@ normaliseByHKG(qPCRSet,hkgs,design,verbose = FALSE)
   \item{hkgs}{ Character vector of housekeeping genes which will be used to normalise the rest of the genes, assuming there are at least 2 vectors.
 }
   \item{design}{ Currently vector specifying which of the columns of the exprs represent case and which represent control. 
+}
+  \item{cutoff} { gives a cutoff of cycles after which it can be assumed that there is nothing present 
 }
   \item{verbose}{ Verbosity flag.}
 }

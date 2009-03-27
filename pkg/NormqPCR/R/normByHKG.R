@@ -5,7 +5,7 @@
 #    normalise qPCRSet with 1 HKG    #
 ###################################
 
-normaliseByHKG <- function(qPCRSet, hkgs, design, verbose = FALSE){ # takes qPCRSet, vector of housekeeping genes and a design matrix (like in limma)
+normaliseByHKG <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){ # takes qPCRSet, vector of housekeeping genes and a design matrix (like in limma)
 
     ##########
     # Use design 'matrix' to work out which is case and which is control
@@ -13,12 +13,16 @@ normaliseByHKG <- function(qPCRSet, hkgs, design, verbose = FALSE){ # takes qPCR
     logicontrol <- design == "control"
     lenCase <- sum(logicase==TRUE)
     lenControl <- sum(logicontrol==TRUE)
-    maxNAinCase <- lenCase - 2 # max number of NA values allowed for case
-    maxNAinControl <- lenControl - 2 # max number of NA values allowed for control
-
+    maxNAinCase <- ceiling(lenCase/2) # max number of NA values allowed for case
+    maxNAinControl <- ceiling(lenControl/2) # max number of NA values allowed for control
+cat("LENGTH OF CASE IS:", lenCase, ":\n")
+cat("LENGTH OF CONTROL IS:", lenControl, ":\n")
+cat("MAX NA IS :", maxNAinCase, ":\n")
+cat("MAX NA IS :", maxNAinControl, ":\n")
     ##########
 
     normSet <- data.frame(as.data.frame(exprs(qPCRSet))) # turn exprs component into a data frame
+    normSet[normSet > 38] <- NA
     tabFormat <- vector()
     laterColNames <- vector()
 
@@ -63,26 +67,33 @@ normaliseByHKG <- function(qPCRSet, hkgs, design, verbose = FALSE){ # takes qPCR
         maxBound <- vector()
         ##########
         for (detector in featureNames(qPCRSet)) {
+	cat("DetectorName :", detector, ":\n",file = "dbg.txt", append=T)
             Cts <- as.numeric(exprs(qPCRSet[detector,])) # the raw values for the detector
-            Cts[Cts>38] <- NA
+            Cts[Cts > cutoff] <- NA
             CtsControl <- Cts[logicontrol]
             CtsCase <- Cts[logicase]
+	cat("number of NAs is :", sum(is.na(CtsControl)), ":\n", file="dbg.txt", append=T)
             if(sum(is.na(CtsControl)) > maxNAinControl) { # if we have under 2 values
                 normControl <- NA
                 v_dCtsMeanControl <- NA
                 v_dCtsSdsControl <- NA
             }
             else {
+                CtsControl[CtsControl == NA] <- 38
+                hkgCtsControl[hkgCtsControl == NA] <- 38	
                 normControl <- mean(CtsControl - hkgCtsControl,na.rm=T) # otherwise work out stats
                 v_dCtsMeanControl <- mean(CtsControl - hkgCtsControl,na.rm=T)
                 v_dCtsSdsControl <- sd(CtsControl - hkgCtsControl,na.rm=T)
             }
+	cat("number of NAs is :", sum(is.na(CtsCase)), ":\n", file="dbg.txt", append=T)
             if(sum(is.na(CtsCase)) > maxNAinCase) { # if we have under 2 values
                 normCase <- NA
                 v_dCtsMeanCase <- NA
                 v_dCtsSdsCase <- NA
             }
             else {
+                CtsCase[CtsControl == NA] <- 38
+                hkgCtsCase[hkgCtsControl == NA] <- 38
                 normCase <- mean(CtsCase - hkgCtsCase,na.rm=T) # otherwise work out stats
                 v_dCtsMeanCase <- mean(CtsCase - hkgCtsCase,na.rm=T)
                 v_dCtsSdsCase <- sd(CtsCase - hkgCtsCase,na.rm=T)
@@ -92,9 +103,9 @@ normaliseByHKG <- function(qPCRSet, hkgs, design, verbose = FALSE){ # takes qPCR
             deltaCtsMeanControl <- c(deltaCtsMeanControl,v_dCtsMeanControl)
             deltaCtsSdControl <- c(deltaCtsSdControl,v_dCtsSdsControl)
 
-            if (is.na(normControl) & is.na(normCase)) {} else
-            if (is.na(normControl)) {normControl = 38 - min(hkgCts)} else # will fall over if NAs in HKG
-            if (is.na(normCase)) {normCase = 38 - min(hkgCts)}
+ #           if (is.na(normControl) & is.na(normCase)) {} else
+ #           if (is.na(normControl)) {normControl = 38 - min(hkgCts)} else # will fall over if NAs in HKG
+ #           if (is.na(normCase)) {normCase = 38 - min(hkgCts)}
 
             ddct <- normCase - normControl # log ratio
 
