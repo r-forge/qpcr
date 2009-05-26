@@ -9,7 +9,7 @@ pairsqPCR(qPCRSet, saveToFile = FALSE)
 }
 \arguments{
     \item{qPCRSet}{ Expression set containing qPCR data.}
-    \item{saveToFile} { Option to save to file}
+    \item{saveToFile}{ Option to save to file}
 }
 \details{
   reads in qPCR data and pairwise graphs, optionally saving them to file
