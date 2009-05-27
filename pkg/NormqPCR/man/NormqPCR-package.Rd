@@ -13,8 +13,8 @@ Functions for normalisation of real-time quantitative PCR data.
 Package: \tab NormqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2009-05-26\cr
-Depends: \tab R(>= 2.7.0), stats, RColorBrewer\cr
+Date: \tab 2009-05-27\cr
+Depends: \tab R(>= 2.7.0), stats, RColorBrewer, Biobase, methods, ReadqPCR\cr
 License: \tab GPL (>=2)\cr
 }
 require(NormqPCR)

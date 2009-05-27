@@ -6,6 +6,7 @@ stabMeasureRho <- function(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE
     if(!is.data.frame(x) & !is.matrix(x))
         stop("'x' has to of class matrix or data.frame")
 
+    if(is.data.frame(x)) x <- data.matrix(x)
     k <- ncol(x) # number of variables
     n <- nrow(x) # number of samples
     if(k == 1) 
