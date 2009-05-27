@@ -13,7 +13,7 @@ Functions for normalisation of real-time quantitative PCR data.
 Package: \tab NormqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2008-10-20\cr
+Date: \tab 2009-05-26\cr
 Depends: \tab R(>= 2.7.0), stats, RColorBrewer\cr
 License: \tab GPL (>=2)\cr
 }
@@ -28,6 +28,13 @@ Maintainer: Matthias Kohl  \email{Matthias.Kohl@stamats.de}}
   of multiple internal control genes. 
   Genome Biology 2002. 3(7):research0034.1-0034.11.
   \url{http://genomebiology.com/2002/3/7/research/0034/}
+  
+  Claus Lindbjerg Andersen, Jens Ledet Jensen and Torben Falck Orntoft (2004).
+  Normalization of Real-Time Quantitative Reverse Transcription-PCR Data: 
+  A Model-Based Variance Estimation Approach to Identify Genes Suited for
+  Normalization, Applied to Bladder and Colon Cancer Data Sets. 
+  CANCER RESEARCH 64, 5245-5250, August 1, 2004.
+  \url{http://cancerres.aacrjournals.org/cgi/content/full/64/15/5245}
 }
 %\seealso{
 %~~ Optional links to other man pages, e.g. ~~

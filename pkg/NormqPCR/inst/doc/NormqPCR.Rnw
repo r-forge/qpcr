@@ -1,0 +1,183 @@
+%\VignetteIndexEntry{NormqPCR}
+%\VignetteDepends{stats,RColorBrewer,Biobase,methods,ReadqPCR}
+%\VignetteKeywords{real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder}
+%\VignettePackage{NormqPCR}
+%
+\documentclass[11pt]{article}
+\usepackage{geometry}\usepackage{color}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.75}
+\usepackage[%
+baseurl={http://qpcr.r-forge.r-project.org/},%
+pdftitle={NormqPCR: Functions for normalisation of RT-qPCR data},%
+pdfauthor={Matthias Kohl and },%
+pdfsubject={NormqPCR},%
+pdfkeywords={real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder},%
+pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
+pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
+%
+\markboth{\sl Package ``{\tt NormqPCR}''}{\sl Package ``{\tt NormqPCR}''}
+%
+% -------------------------------------------------------------------------------
+\newcommand{\code}[1]{{\tt #1}}
+\newcommand{\pkg}[1]{{\tt "#1"}}
+\newcommand{\myinfig}[2]{%
+%  \begin{figure}[htbp]
+    \begin{center}
+      \includegraphics[width = #1\textwidth]{#2}
+%      \caption{\label{#1}#3}
+    \end{center}
+%  \end{figure}
+}
+% -------------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------------
+\begin{document}
+\SweaveOpts{keep.source = TRUE, eval = TRUE, include = FALSE}
+%-------------------------------------------------------------------------------
+\title{NormqPCR: Functions for normalisation of RT-qPCR data}
+%-------------------------------------------------------------------------------
+\author{Matthias Kohl\\ 
+University of Bayreuth (Germany)\medskip\\
+}
+\maketitle
+\tableofcontents
+%-------------------------------------------------------------------------------
+\section{Introduction}
+%-------------------------------------------------------------------------------
+The package \pkg{NormqPCR} aims at providing methods for the normalization of 
+real-time quantitative RT-PCR data. In this short vignette we describe and 
+demonstrate the available functions.
+%-------------------------------------------------------------------------------
+\section{Selection of most stable reference/housekeeping genes} 
+%-------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
+\subsection{geNorm} 
+%-------------------------------------------------------------------------------
+We describe the selection of the best (most stable) reference/housekeeping genes 
+using the method of Vandesompele et al (2002)~\cite{geNorm} (in the sequel: Vand02)
+which is called {\it geNorm}. We first load the package and the data
+<<NormqPCR>>=
+options(width = 68)
+library(NormqPCR)
+data(geNorm)
+str(geNorm)
+@
+We start by ranking the selected reference/housekeeping genes. The geNorm
+algorithm implemented in function \code{selectHKs} proceeds stepwise; confer 
+Section ``Materials and methods'' in Vand02. That is, the gene stability 
+measure~M of all candidate genes is computed and the gene with the highest 
+M~value is excluded. Then, the gene stability measure~M for the remaining gene 
+is calculated and so on. This procedure is repeated until two respectively, 
+\code{minNrHK} genes remain.
+<<geNorm>>=
+tissue <- as.factor(c(rep("BM", 9), rep("POOL", 9), rep("FIB", 20), 
+                      rep("LEU", 13), rep("NB", 34)))
+res.BM <- selectHKs(geNorm[tissue == "BM",], method = "geNorm", 
+                    Symbols = names(geNorm), minNrHK = 2, log = FALSE)
+res.POOL <- selectHKs(geNorm[tissue == "POOL",], method = "geNorm", 
+                      Symbols = names(geNorm), minNrHK = 2, 
+                      trace = FALSE, log = FALSE)
+res.FIB <- selectHKs(geNorm[tissue == "FIB",], method = "geNorm", 
+                     Symbols = names(geNorm), minNrHK = 2, 
+                     trace = FALSE, log = FALSE)
+res.LEU <- selectHKs(geNorm[tissue == "LEU",], method = "geNorm", 
+                     Symbols = names(geNorm), minNrHK = 2, 
+                     trace = FALSE, log = FALSE)
+res.NB <- selectHKs(geNorm[tissue == "NB",], method = "geNorm", 
+                    Symbols = names(geNorm), minNrHK = 2, 
+                    trace = FALSE, log = FALSE)
+@
+We obtain the following ranking of genes (cf. Table~3 in Vand02)
+<<table3, eval = TRUE>>=
+ranks <- data.frame(c(1, 1:9), res.BM$ranking, res.POOL$ranking, 
+                    res.FIB$ranking, res.LEU$ranking, 
+                    res.NB$ranking)
+names(ranks) <- c("rank", "BM", "POOL", "FIB", "LEU", "NB")
+ranks
+@
+{\bf Remark 1:}\\
+Since the computation is based on gene ratios, the two most stable
+control genes in each cell type cannot be ranked.
+%\begin{enumerate}
+%\item[(a)] Since the computation is based on gene ratios, the two most stable
+%control genes in each cell type cannot be ranked.
+%\item[(b)] In praxis the selection of reference/housekeeping genes may 
+%require an additional step which is the computation of relative quantities 
+%via \code{relQuant}; e.g.
+%<<relQuant, eval = TRUE>>=
+%exa1 <- apply(geNorm[tissue == "BM",], 2, relQuant, E = 2)
+%@
+%\end{enumerate}
+We plot the average expression stability M for each cell type 
+(cf. Figure~2 in Vand02).
+<<fig2, fig = TRUE>>=
+library(RColorBrewer)
+mypalette <- brewer.pal(5, "Set1")
+matplot(cbind(res.BM$meanM, res.POOL$meanM, res.FIB$meanM, 
+              res.LEU$meanM, res.NB$meanM), type = "b", 
+        ylab = "Average expression stability M", 
+        xlab = "Number of remaining control genes", 
+        axes = FALSE, pch = 19, col = mypalette, 
+        ylim = c(0.2, 1.22), lty = 1, lwd = 2, 
+        main = "Figure 2 in Vandesompele et al. (2002)")
+axis(1, at = 1:9, labels = as.character(10:2))
+axis(2, at = seq(0.2, 1.2, by = 0.2), labels = seq(0.2, 1.2, by = 0.2))
+box()
+abline(h = seq(0.2, 1.2, by = 0.2), lty = 2, lwd = 1, col = "grey")
+legend("topright", legend = c("BM", "POOL", "FIB", "LEU", "NB"), 
+       fill = mypalette)
+@
+\myinfig{1}{NormqPCR-fig2.pdf}
+\par
+Second, we plot the pairwise variation for each cell type (cf. Figure~3~(a) in Vand02)
+<<fig3a, fig = TRUE>>=
+mypalette <- brewer.pal(8, "YlGnBu")
+barplot(cbind(res.POOL$variation, res.LEU$variation, res.NB$variation, 
+              res.FIB$variation, res.BM$variation), beside = TRUE, 
+        col = mypalette, space = c(0, 2), 
+        names.arg = c("BM", "POOL", "FIB", "LEU", "NB"),
+        ylab = "Pairwise variation V",
+        main = "Figure 3(a) in Vandesompele et al. (2002)")
+legend("topright", legend = c("V9/10", "V8/9", "V7/8", "V6/7", 
+                              "V5/6", "V4/5", "V3/4", "V2/3"), 
+       fill = mypalette, ncol = 2)
+abline(h = seq(0.05, 0.25, by = 0.05), lty = 2, col = "grey")
+abline(h = 0.15, lty = 1, col = "black")
+@
+\myinfig{1}{NormqPCR-fig3a.pdf}
+\par\noindent
+{\bf Remark 2:}\\
+Vand02 recommend a cut-off value of 0.15 for the pairwise variation. Below this
+bound the inclusion of an additional housekeeping gene is not required. 
+%-------------------------------------------------------------------------------
+\subsection{NormFinder} 
+%-------------------------------------------------------------------------------
+The second method for selection reference/housekeeping genes implemented in 
+package is the method derived by \cite{NormFinder} called {\it NormFinder}.
+%-------------------------------------------------------------------------------
+\section{Normalization by means of reference/housekeeping genes} 
+%-------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
+\begin{thebibliography}{1}
+
+\bibitem{NormFinder}
+Claus Lindbjerg Andersen, Jens Ledet Jensen and Torben Falck Orntoft (2004).
+\newblock Normalization of Real-Time Quantitative Reverse Transcription-PCR Data: 
+A Model-Based Variance Estimation Approach to Identify Genes Suited for
+Normalization, Applied to Bladder and Colon Cancer Data Sets
+\newblock CANCER RESEARCH 64, 5245–5250, August 1, 2004
+\newblock \url{http://cancerres.aacrjournals.org/cgi/content/full/64/15/5245}
+
+\bibitem{geNorm}
+Jo Vandesompele, Katleen De Preter, Filip Pattyn, Bruce Poppe, Nadine Van Roy, 
+Anne De Paepe and Frank Speleman (2002).
+\newblock Accurate normalization of real-time quantitative RT-PCR data by geometric
+averiging of multiple internal control genes.
+\newblock Genome Biology 2002, 3(7):research0034.1-0034.11
+\newblock \url{http://genomebiology.com/2002/3/7/research/0034/}
+
+\end{thebibliography}
+%-------------------------------------------------------------------------------
+\end{document}
+
+

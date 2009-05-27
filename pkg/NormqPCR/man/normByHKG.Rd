@@ -15,7 +15,7 @@ normaliseByHKG(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE)
 }
   \item{design}{ Currently vector specifying which of the columns of the exprs represent case and which represent control. 
 }
-  \item{cutoff} { gives a cutoff of cycles after which it can be assumed that there is nothing present 
+  \item{cutoff}{ gives a cutoff of cycles after which it can be assumed that there is nothing present 
 }
   \item{verbose}{ Verbosity flag.}
 }

@@ -6,9 +6,9 @@ geomMean <- function(x, na.rm = TRUE){
     warning("argument is not numeric or logical: returning NA")
     return(as.numeric(NA))
   }
+  if(na.rm) x <- x[!is.na(x)]
   if(length(x) == 0)
     stop("x is a vector of length 0")
-  if(na.rm) x <- x[!is.na(x)]
   if(any(x < 0)) 
     stop("'x' contains negative value(s)")
 
