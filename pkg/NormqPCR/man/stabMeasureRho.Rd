@@ -50,7 +50,7 @@ res.Colon <- stabMeasureRho(Colon[,3:15], group = Colon$Classification,
                             log = FALSE)
 sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
 data(Bladder)
-res.Bladder <- stabMeasureRho(Bladder[,3:16], group = Colon$Grade, 
+res.Bladder <- stabMeasureRho(Bladder[,3:16], group = Bladder$Grade, 
                             log = FALSE)
 sort(res.Bladder) # cf. Table 3 in Andersen et al (2004)
 }
