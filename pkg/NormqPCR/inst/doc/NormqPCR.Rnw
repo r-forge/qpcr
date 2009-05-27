@@ -153,7 +153,41 @@ bound the inclusion of an additional housekeeping gene is not required.
 \subsection{NormFinder} 
 %-------------------------------------------------------------------------------
 The second method for selection reference/housekeeping genes implemented in 
-package is the method derived by \cite{NormFinder} called {\it NormFinder}.
+package is the method derived by \cite{NormFinder} (in the sequel: And04) called 
+{\it NormFinder}.\\
+The ranking contained in Table~3 of And04 can be obtained via
+<<NormFinder>>=
+data(Colon)
+res.Colon <- stabMeasureRho(Colon[,3:15], group = Colon$Classification, 
+                            log = FALSE)
+sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
+data(Bladder)
+res.Bladder <- stabMeasureRho(Bladder[,3:16], group = Bladder$Grade, 
+                              log = FALSE)
+sort(res.Bladder)
+@
+Of course, we can also reproduce the geNorm ranking also included in Table~3
+of And04.
+<<NormFinder1>>=
+selectHKs(Colon[,3:15], log = FALSE, trace = FALSE, 
+          Symbols = names(Colon)[3:15])$ranking
+selectHKs(Bladder[,3:16], log = FALSE, trace = FALSE, 
+          Symbols = names(Bladder)[3:16])$ranking
+@
+As we are often interested in more than one reference/housekeeping gene we also
+implemented a step-wise procedure of the NormFinder algorithm explained in Section
+``Average control gene'' in the supplementary information of And04. This procedure
+is available via function \code{selectHKs}.
+<<NormFinder2>>=
+selectHKs(Colon[,3:15], group = Colon$Classification, 
+          log = FALSE, trace = TRUE, 
+          Symbols = names(Colon)[3:15], minNrHKs = 12,
+          method = "NormFinder")$ranking
+selectHKs(Bladder[,3:16], group = Bladder$Grade, 
+          log = FALSE, trace = FALSE, 
+          Symbols = names(Bladder)[3:16], minNrHKs = 13,
+          method = "NormFinder")$ranking
+@
 %-------------------------------------------------------------------------------
 \section{Normalization by means of reference/housekeeping genes} 
 %-------------------------------------------------------------------------------

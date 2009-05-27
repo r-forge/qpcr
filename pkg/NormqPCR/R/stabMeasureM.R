@@ -8,6 +8,8 @@ stabMeasureM <- function(x, log = TRUE, na.rm = TRUE){
     if(!is.data.frame(x) & !is.matrix(x))
         stop("'x' has to of class matrix or data.frame")
 
+    if(is.data.frame(x)) x <- data.matrix(x)
+    
     n <- ncol(x)
     if(n == 1) 
         stop("you need at least two variables (i.e., columns) for this computation")

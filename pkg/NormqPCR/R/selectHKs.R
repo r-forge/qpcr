@@ -12,6 +12,7 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
                       log = TRUE, Symbols, trace = TRUE, na.rm = TRUE){
     if(!is.matrix(x) & !is.data.frame(x))
         stop("'x' needs to be of class matrix or data.frame")
+    if(is.data.frame(x)) x <- data.matrix(x)
     n <- ncol(x)
     if(n < 3)
         stop("you need data from at least 3 variables/columns")
@@ -21,6 +22,8 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
         warning("'minNrHKs' < 2 => 'minNrHKs' is set to 2")
         minNrHKs <- 2
     }
+    if(missing(Symbols))
+        stop("'Symbols' has to be specified")
     if(length(Symbols) != n)
         stop("'Symbols' has wrong length")
 
