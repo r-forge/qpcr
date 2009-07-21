@@ -13,16 +13,21 @@ normaliseByHKG <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){
     logicontrol <- design == "control"
     lenCase <- sum(logicase==TRUE)
     lenControl <- sum(logicontrol==TRUE)
-    maxNAinCase <- ceiling(lenCase/2) # max number of NA values allowed for case
-    maxNAinControl <- ceiling(lenControl/2) # max number of NA values allowed for control
+    maxNAinCaseHkg <- ceiling(lenCase/2) # max number of NA values allowed for case
+    maxNAinControlHkg <- ceiling(lenControl/2) # max number of NA values allowed for control
+    DiscardNAs_case <- ceiling(lenCase/4) # less or equal to this number of NAs we discard
+    DiscardNAs_control <- ceiling(lenControl/4) # max number of NA values allowed for control
+    DiscardValues_case <- ceiling(3 * (lenControl/4))
+    DiscardValues_control <- ceiling(3 * (lenControl/4))
+
 cat("LENGTH OF CASE IS:", lenCase, ":\n")
 cat("LENGTH OF CONTROL IS:", lenControl, ":\n")
-cat("MAX NA IS :", maxNAinCase, ":\n")
-cat("MAX NA IS :", maxNAinControl, ":\n")
+cat("MAX NA IS :", maxNAinCaseHkg, ":\n")
+cat("MAX NA IS :", maxNAinControlHkg, ":\n")
     ##########
 
     normSet <- data.frame(as.data.frame(exprs(qPCRSet))) # turn exprs component into a data frame
-    normSet[normSet > 38] <- NA
+    normSet[normSet > cutoff] <- NA
     tabFormat <- vector()
     laterColNames <- vector()
 
@@ -33,8 +38,8 @@ cat("MAX NA IS :", maxNAinControl, ":\n")
         hkgCtsCase <- hkgCts[logicase] # seperate for case and control
         hkgCtsControl <- hkgCts[logicontrol]
         # if unsuitable, stop the loop
-        if(sum(is.na(hkgCtsCase)) > maxNAinCase) stop (hkg, " is unsuitable as a housekeeping gene because a value was only obtained for it once or less")
-        if(sum(is.na(hkgCtsControl)) > maxNAinControl) stop (hkg, " is unsuitable as a housekeeping gene because a value was only obtained for it once or less")
+        if(sum(is.na(hkgCtsCase)) > maxNAinCaseHkg) stop (hkg, " is unsuitable as a housekeeping gene because a value was obtained for it less than", maxNAinCaseHkg, "times out of", lenControl, ".")
+        if(sum(is.na(hkgCtsControl)) > maxNAinControlHkg) stop (hkg, " is unsuitable as a housekeeping gene because a value was obtained for it less than", maxNAinControlHkg, "times out of ", lenControl, ".")
 
         if(hkg %in% featureNames(qPCRSet) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
         hkg <- gsub("-.+$","",hkg) # regexp to remove any rubbish from end of control gene spec
@@ -73,31 +78,33 @@ cat("MAX NA IS :", maxNAinControl, ":\n")
             CtsControl <- Cts[logicontrol]
             CtsCase <- Cts[logicase]
 	cat("number of NAs is :", sum(is.na(CtsControl)), ":\n", file="dbg.txt", append=T)
-            if(sum(is.na(CtsControl)) > maxNAinControl) { # if we have under 2 values
-                normControl <- NA
-                v_dCtsMeanControl <- NA
-                v_dCtsSdsControl <- NA
+            if(sum(is.na(CtsControl)) > DiscardValues_Control) 
+            if(sum(is.na(CtsControl)) <= DiscardNAs_Control) { # if up to a quarter NAs
+                normControl <- mean(CtsControl - hkgCtsControl, na.rm=T) # work out stats using existing values
+                v_dCtsMeanControl <- mean(CtsControl - hkgCtsControl, na.rm=T)
+                v_dCtsSdsControl <- sd(CtsControl - hkgCtsControl, na.rm=T)
             }
-            else {
-                CtsControl[CtsControl == NA] <- 38
-                hkgCtsControl[hkgCtsControl == NA] <- 38	
-                normControl <- mean(CtsControl - hkgCtsControl,na.rm=T) # otherwise work out stats
-                v_dCtsMeanControl <- mean(CtsControl - hkgCtsControl,na.rm=T)
-                v_dCtsSdsControl <- sd(CtsControl - hkgCtsControl,na.rm=T)
+            else { # otherwise make all the NAs cutoff value and continue
+                CtsControl[CtsControl == NA] <- cutoff
+                hkgCtsControl[hkgCtsControl == NA] <- cutoff	
+                normControl <- mean(CtsControl - hkgCtsControl)
+                v_dCtsMeanControl <- mean(CtsControl - hkgCtsControl)
+                v_dCtsSdsControl <- sd(CtsControl - hkgCtsControl)
             }
 	cat("number of NAs is :", sum(is.na(CtsCase)), ":\n", file="dbg.txt", append=T)
-            if(sum(is.na(CtsCase)) > maxNAinCase) { # if we have under 2 values
-                normCase <- NA
-                v_dCtsMeanCase <- NA
-                v_dCtsSdsCase <- NA
-            }
-            else {
-                CtsCase[CtsControl == NA] <- 38
-                hkgCtsCase[hkgCtsControl == NA] <- 38
-                normCase <- mean(CtsCase - hkgCtsCase,na.rm=T) # otherwise work out stats
+            if(sum(is.na(CtsCase)) <= DiscardNAs_Case) { # if up to a quarter NAs
+                normCase <- mean(CtsCase - hkgCtsCase,na.rm=T) # work out stats using existing values
                 v_dCtsMeanCase <- mean(CtsCase - hkgCtsCase,na.rm=T)
                 v_dCtsSdsCase <- sd(CtsCase - hkgCtsCase,na.rm=T)
             }
+            else {
+                CtsCase[CtsControl == NA] <- cutoff
+                hkgCtsCase[hkgCtsControl == NA] <- cutoff
+                normCase <- mean(CtsCase - hkgCtsCase)
+                v_dCtsMeanCase <- mean(CtsCase - hkgCtsCase)
+                v_dCtsSdsCase <- sd(CtsCase - hkgCtsCase)
+            }
+            ######## Now add these values to the vectors
             deltaCtsMeanCase <- c(deltaCtsMeanCase,v_dCtsMeanCase)
             deltaCtsSdCase <- c(deltaCtsSdCase,v_dCtsSdsCase)
             deltaCtsMeanControl <- c(deltaCtsMeanControl,v_dCtsMeanControl)
@@ -119,7 +126,7 @@ cat("MAX NA IS :", maxNAinControl, ":\n")
                 minBound <- c(minBound,NA)
                 maxBound <- c(maxBound,NA)
             }
-            deltadeltaCt <- c(deltadeltaCt,ddct)
+            deltadeltaCt <- c(deltadeltaCt,ddct) # add to vector
         }
 	normSet <- data.frame(normSet,deltaCtsMeanControl,deltaCtsSdControl,deltaCtsMeanCase,deltaCtsSdCase,deltadeltaCt,twoDDCt,minBound,maxBound) # add the vectors together
     }
