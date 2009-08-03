@@ -15,9 +15,9 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
     filenames <- c(filenames, auxnames)
     checkValidTaqmanFilenames(filenames)
     pdata <- pData(phenoData) # number of filesi
-    taqInfo <- read_TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
+    taqInfo <- .read.TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
     exprs <- taqInfo$exprs
-    original_order <- taqInfo$origOrder
+    original.order <- taqInfo$origOrder
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
@@ -27,10 +27,10 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
             varMetadata = data.frame(labelDescription = "arbitrary numbering",
                 row.names = "sample"))
     }
-    return(new("qPCRSet", exprs = exprs, phenoData = phenoData, well.order = original_order))
+    return(new("qPCRSet", exprs = exprs, phenoData = phenoData, well.order = original.order))
 }
 
-read_TaqBatch <- function(filenames, verbose)
+.read.TaqBatch <- function(filenames, verbose)
 {
     for (filename in filenames) {
         if (verbose) cat("Filename[ ",filename," ]")
@@ -40,11 +40,13 @@ read_TaqBatch <- function(filenames, verbose)
         raw <- raw[1:EndOfData-1, ]  # get rid of from where data finishes until the end of the file
         raw$Sample = factor(raw$Sample) # clean up additional levels brought in by extra info in the raw file before chopping
         raw$Detector = factor(raw$Detector)
-        levels(raw$Sample) <- gsub(" ", "_", levels(raw$Sample)) # replace spaces with _ for sample names
-        levels(raw$Detector) <- gsub(" ", "_", levels(raw$Detector)) # replace spaces with _ for detectors
+#        levels(raw$Sample) <- gsub(" ", "_", levels(raw$Sample)) # replace spaces with _ for sample names USE MAKENAMES
+#        levels(raw$Detector) <- gsub(" ", "_", levels(raw$Detector)) # replace spaces with _ for detectors USE MAKENAME
+        levels(raw$Detector) <- make.names(levels(raw$Sample))
+        levels(raw$Detector <- make.names(levels(raw$Detector))
         samples <- levels(raw$Sample)
         detectors <- levels(raw$Detector)
-        original_order <- list() # initialise the list
+        original.order <- list() # initialise the list
         exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
 
 	raw$Ct[as.character(raw$Ct) %in% "Undetermined"] <- NA
@@ -52,20 +54,20 @@ read_TaqBatch <- function(filenames, verbose)
         for (sample in samples) { # for each sample
             if (verbose) cat("Now reading for sample:", sample, "\n")
             # work out if there are technical replicates
-            total_detectors <- length(raw$Detector[raw$Sample == sample])
-            individual_detectors <- length(levels(raw$Detector[raw$Sample == sample]))
-            tech_reps <- total_detectors/individual_detectors
-            if ((tech_reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
-                warning_text = paste("Corrupt taqman file: total number of readings for sample ", 
+            total.detectors <- length(raw$Detector[raw$Sample == sample])
+            individual.detectors <- length(levels(raw$Detector[raw$Sample == sample]))
+            tec.reps <- total.detectors/individual.detectors
+            if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
+                warning.text = paste("Corrupt taqman file: total number of readings for sample ", 
                        sample, " not a multiple of number of individual number of detectors")
-                stop(warning_text)
+                stop(warning.text)
             }
-            if (tech_reps > 1) { # Currently can't cope with technical replicates
-                warning_text = "More than 1 technical replicate detected"
-                stop(warning_text)
+            if (tech.reps > 1) { # Currently can't cope with technical replicates
+                warning.text = "More than 1 technical replicate detected"
+                stop(warning.text)
             }
 #            raw$Ct[as.character(raw$Ct)[raw$Sample == sample] %in% "Undetermined"] = NA # change Undertermined values to NA to stop warning messages appearing when Ct vector coerced into numeric vector
-            original_order = c(original_order,list(cbind(as.character(raw$Detector[raw$Sample == sample]),
+            original.order = c(original.order,list(cbind(as.character(raw$Detector[raw$Sample == sample]),
                 as.character(raw$Ct[raw$Sample == sample])))) # This bit to add the information about pipetting and order
 
             Cts <- data.frame(raw$Detector[raw$Sample == sample], # put Cts values in a matrix
@@ -74,7 +76,7 @@ read_TaqBatch <- function(filenames, verbose)
             exprs <- data.frame(merge(exprs, Cts, by="row.names"), row.names=1)
             if (verbose) cat("sample ", sample, "read\n")
         }
-        names(original_order) <- samples
+        names(original.order) <- samples
         names(exprs) <- samples
         exprs <- as.matrix(exprs)
     }
@@ -82,7 +84,7 @@ read_TaqBatch <- function(filenames, verbose)
     taqInfo <- list()
 
     taqInfo$exprs <- exprs
-    taqInfo$origOrder <- original_order
+    taqInfo$origOrder <- original.order
     return(taqInfo)
 }
 checkValidTaqmanFilenames <- function (filenames)
