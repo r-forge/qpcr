@@ -43,7 +43,7 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
 #        levels(raw$Sample) <- gsub(" ", "_", levels(raw$Sample)) # replace spaces with _ for sample names USE MAKENAMES
 #        levels(raw$Detector) <- gsub(" ", "_", levels(raw$Detector)) # replace spaces with _ for detectors USE MAKENAME
         levels(raw$Detector) <- make.names(levels(raw$Sample))
-        levels(raw$Detector <- make.names(levels(raw$Detector))
+        levels(raw$Detector) <- make.names(levels(raw$Detector))
         samples <- levels(raw$Sample)
         detectors <- levels(raw$Detector)
         original.order <- list() # initialise the list
