@@ -1,9 +1,12 @@
-setClass("qPCRSet", contains = "ExpressionSet", 
-    representation = representation(
-        nSet = "data.frame",
-        well.order = "list",
-        hkgs = "character" 
-    )
+setClass("qPCRSet", contains = "eSet")
+
+## accessor methods
+setMethod("exprs", signature = "qPCRSet", definition = 
+    function (object) assayDataElement(object, "exprs")
+)
+
+setReplaceMethod("exprs", signature = "qPCRSet", definition = 
+    function (object, value) assayDataElementReplace(object, "exprs", value)
 )
 
 read.taqman <- function(..., filenames = character(0), phenoData = new("AnnotatedDataFrame"), notes = "", verbose = FALSE)
