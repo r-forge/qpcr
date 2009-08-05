@@ -9,10 +9,10 @@ setReplaceMethod("exprs", signature = "qPCRSet", definition =
     function (object, value) assayDataElementReplace(object, "exprs", value)
 )
 
+setGeneric("exprs.well.order")
 
-
-#setMethod("well.order", signature = "qPCRSet", definition = 
-#    function (object) assayDataElement(object, "well.order")
+#setMethod("exprs.well.order", signature = "qPCRSet", definition = 
+#    function (object) assayDataElement(object, "exprs.well.order")
 #)
 
 #setReplaceMethod("well.order", signature = "qPCRSet", definition = 
@@ -27,8 +27,11 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
     pdata <- pData(phenoData) # number of filesi
     taqInfo <- .read.TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
     exprs <- taqInfo$exprs
-    original.order <- taqInfo$origOrder
-#    original.order <- assayDataNew("environment", )
+    well.order <- taqInfo$well.order
+#cat("now\n")
+#print(well.order)
+#cat("done\n")
+    exprs.well.order <- assayDataNew("environment", exprs.well.order = well.order)
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
@@ -60,17 +63,17 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
         detectors <- levels(raw.data$Detector)
         original.order <- list() # initialise the list
         exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
-
+        well.order <- data.frame(detectors, row.names=1)
 	raw.data$Ct[as.character(raw.data$Ct) %in% "Undetermined"] <- NA
-cat("here")
-        wells.per.sample <- length(as.character(raw.data$Detector))/length(samples)
-cat("ncol is:", length(samples), "\n")
-cat("nrow is:", wells.per.sample, "\n")
-        well.order <- matrix(ncol= length(samples), nrow= wells.per.sample)
-        row.names(well.order) <- 1:wells.per.sample
-cat("and here")
+#cat("here")
+#        wells.per.sample <- length(as.character(raw.data$Detector))/length(samples)
+#cat("ncol is:", length(samples), "\n")
+#cat("nrow is:", wells.per.sample, "\n")
+#        well.order <- matrix(ncol= length(samples), nrow= wells.per.sample)
+#        row.names(well.order) <- 1:wells.per.sample
+#cat("and here")
 
-############ If we have plate IDs (ie we have no empty PlateID cells) then we name the columns these 
+## If we have plate IDs (ie we have no empty PlateID cells) then we name the columns these 
 # if (! "" %in% as.character(raw.data$PlateID))  colnames(well.order) <- as.character(unique(raw.data$PlateID))
 #k <- 1
 #for (i in 1:length(samples)) {
@@ -79,29 +82,33 @@ cat("and here")
 #    k <- k+1
 #  }
 #}
-print(well.order)
+#print(well.order)
 #well.order <- matrix(ncol= length(samples), nrow= wells.per.sample)
 
 
-## Add Plate ID information
-if ("" %in% as.character(raw.data$PlateID)) {
-  wells.per.plate <- max(as.numeric(as.character(raw.data$Well)))
-  number.of.plates <- length(as.character(raw.data$Well)) / wells.per.plate
-  well.names <- vector(length = length(as.character(raw.data$Well))
-  plate.well = 1
-  for (plate.number in number.of.plates) {
-    for (well.number in wells.per.plate) {
-      well.names[plate.well] <- paste(plate.number, well.number, sep= "-")
-      plate.well = plate.well + 1
-    }
-  }
-}
-#if ("" %in% as.character(raw.data$PlateID)) { # so if we find that we have empty plate IDs
-
-}
-else {
-
-}
+## Add Plate ID information IF there were none to being with
+        if ("" %in% as.character(raw.data$PlateID)) {
+          wells.per.plate <- max(as.numeric(as.character(raw.data$Well)))
+          number.of.plates <- length(as.character(raw.data$Well)) / wells.per.plate
+          well.names <- vector(length = length(as.character(raw.data$Well)))
+#cat("NUMBER.OF.PLATES", number.of.plates, "\n")
+#cat("wells.per.plate", wells.per.plate, "\n")
+          plate.well <- 1
+          for (plate.number in 1:number.of.plates) {
+            for (well.number in 1:wells.per.plate) {
+#cat("PLATE.WELL", plate.well, "\n")
+               well.names[plate.well] <- paste(plate.number, well.number, sep= "-")
+               plate.well <- plate.well + 1
+            }
+          }
+#cat("pid", length(raw.data$PlateID), "\n"
+#cat("well names", length(well.names), "\n")
+          raw.data$PlateID <- well.names
+        }
+        else { ## otherwise we just paste the well number onto the Plate ID value
+          raw.data$PlateID <- paste(raw.data$PlateID, as.character(raw.data$Well), sep= "_")
+        }
+#print(raw.data$PlateID)
 
         for (sample in samples) { # for each sample
             if (verbose) cat("Now reading for sample:", sample, "\n")
@@ -122,20 +129,29 @@ else {
             original.order = c(original.order,list(cbind(as.character(raw.data$Detector[raw.data$Sample == sample]),
                 as.character(raw.data$Ct[raw.data$Sample == sample])))) # This bit to add the information about pipetting and order
 
+            well.info <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
+                         raw.data$PlateID[raw.data$Sample == sample],
+                         row.names=1)
+#print(head(well.order))
             Cts <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
                          as.numeric(as.character(raw.data$Ct[raw.data$Sample == sample])),
                          row.names=1)
+#print(Cts)
             exprs <- data.frame(merge(exprs, Cts, by="row.names"), row.names=1)
+            well.order <- data.frame(merge(well.order, well.info, by="row.names"), row.names=1)
             if (verbose) cat("sample ", sample, "read\n")
         }
-        names(original.order) <- samples
+#        names(original.order) <- samples
+        names(well.order) <- samples
         names(exprs) <- samples
         exprs <- as.matrix(exprs)
+        well.order <- as.matrix(well.order)
     }
 
     taqInfo <- list()
 
     taqInfo$exprs <- exprs
+    taqInfo$well.order <- well.order
 #    taqInfo$origOrder <- original.order
     return(taqInfo)
 }
