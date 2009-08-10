@@ -9,15 +9,23 @@ setReplaceMethod("exprs", signature = "qPCRSet", definition =
     function (object, value) assayDataElementReplace(object, "exprs", value)
 )
 
-setGeneric("exprs.well.order")
+setGeneric("exprs.well.order",
+    function(object)
+    standardGeneric("exprs.well.order")
+)
 
-#setMethod("exprs.well.order", signature = "qPCRSet", definition = 
-#    function (object) assayDataElement(object, "exprs.well.order")
-#)
+setGeneric("exprs.well.order<-",
+    function(object, ..., value)
+    standardGeneric("exprs.well.order<-")
+)
 
-#setReplaceMethod("well.order", signature = "qPCRSet", definition = 
-#    function (object, value) assayDataElementReplace(object, "well.order", value)
-#)
+setMethod("exprs.well.order", signature = "qPCRSet", definition = 
+    function (object) assayDataElement(object, "exprs.well.order")
+)
+
+setReplaceMethod("exprs.well.order", signature = "qPCRSet", definition = 
+    function (object, value) assayDataElementReplace(object, "well.order", value)
+)
 
 read.taqman <- function(..., filenames = character(0), phenoData = new("AnnotatedDataFrame"), notes = "", verbose = FALSE)
 {

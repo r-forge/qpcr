@@ -9,3 +9,5 @@ importClassesFrom(Biobase,
                   Versions,
                   eSet,
                   ExpressionSet)
+importFrom("Biobase", "exprs")
+importFrom("Biobase", "exprs<-")
