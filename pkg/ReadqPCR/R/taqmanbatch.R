@@ -37,7 +37,7 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
     exprs <- taqInfo$exprs
     well.order <- taqInfo$well.order
 #cat("now\n")
-#print(well.order)
+print(well.order)
 #cat("done\n")
     exprs.well.order <- assayDataNew("environment", exprs.well.order = well.order)
     n <- length(colnames(exprs))
@@ -50,7 +50,7 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
                 row.names = "sample"))
     }
 #    return(new("qPCRSet", exprs = exprs, phenoData = phenoData, well.order = original.order))
-     return(new("qPCRSet", exprs = exprs, phenoData = phenoData))
+     return(new("qPCRSet", exprs = exprs, phenoData = phenoData, exprs.well.order = well.order))
 }
 
 .read.TaqBatch <- function(filenames, verbose)
