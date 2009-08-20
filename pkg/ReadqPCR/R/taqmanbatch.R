@@ -27,17 +27,27 @@ setReplaceMethod("exprs.well.order", signature = "qPCRSet", definition =
     function (object, value) assayDataElementReplace(object, "well.order", value)
 )
 
+#setGeneric("fook", 
+#    function(object)
+#    standardGeneric("fook")
+#)
+
+#setMethod("fook", signature = "qPCRSet", definition =
+#    function (object) print("testing123")
+#)
+
+
 read.taqman <- function(..., filenames = character(0), phenoData = new("AnnotatedDataFrame"), notes = "", verbose = FALSE)
 {
     auxnames <- unlist(list(...))
     filenames <- c(filenames, auxnames)
     checkValidTaqmanFilenames(filenames)
-    pdata <- pData(phenoData) # number of filesi
+    pdata <- pData(phenoData) # number of files
     taqInfo <- .read.TaqBatch(filenames, verbose) # need to make this work for tech reps and multiple files
     exprs <- taqInfo$exprs
     well.order <- taqInfo$well.order
 #cat("now\n")
-print(well.order)
+#print(well.order)
 #cat("done\n")
     exprs.well.order <- assayDataNew("environment", exprs.well.order = well.order)
     n <- length(colnames(exprs))
