@@ -1,1 +1,1 @@
-export(pairsqPCR, corMatrixqPCR, plotVsHkg, pseudoPlot)
+export(pairsqPCR, corMatrixqPCR, plotVsHkg, PseudoPlot)

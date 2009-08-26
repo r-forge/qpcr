@@ -24,7 +24,7 @@ setMethod("exprs.well.order", signature = "qPCRSet", definition =
 )
 
 setReplaceMethod("exprs.well.order", signature = "qPCRSet", definition = 
-    function (object, value) assayDataElementReplace(object, "well.order", value)
+    function (object, value) assayDataElementReplace(object, "exprs.well.order", value)
 )
 
 #setGeneric("fook", 
