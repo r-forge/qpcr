@@ -1,0 +1,30 @@
+\name{PseudoPlot}
+\alias{PseudoPlot}
+\alias{PseudoPlot,qPCRSet-method}
+\title{ Plot Ct Values when normalised against different housekeeping genes }
+\description{
+  Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
+}
+\usage{
+PseudoPlot(qPCRSet, plotType)
+}
+\arguments{
+    \item{qPCRSet}{ data set containing data on different Ct values normed to the different HKGs }
+    \item{plotType}{}
+}
+\details{
+  Takes normalised qPCR data and plot the different Ct values from the different house keeping genes.
+  Plots HKGs against each other on the same graph, ordered by a single HKG
+}
+\section{Methods}{
+  \describe{
+    \item{PseudoPlot}{(qPCRSet): ... }
+  }
+}
+
+\value{produces graph and optionally writes to png if called.}
+%\references{ ~put references to the literature/web site here ~ }
+\author{ James Perkins \email{jperkins@biochem.ucl.ac.uk} }
+%\examples{
+%}
+\keyword{classes}
