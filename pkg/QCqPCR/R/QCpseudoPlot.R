@@ -12,13 +12,13 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
     wellVec <- as.numeric(gsub(".*-", "", orderMat))
 
     if (plotType == "Cts.Values") {
-      minVal <- round(min(ctsMat, na.rm=T), 2)
-      maxVal <- round(max(ctsMat, na.rm=T), 2)
+      minVal <- round(min(ctsMat, na.rm=TRUE), 2)
+      maxVal <- round(max(ctsMat, na.rm=TRUE), 2)
 
       for (plate in unique(plateVec)) { # for each plate
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
-        plotMat <- matrix(orderedVals, nrow=16, byrow=T)
+        plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
         .plotCard(plotMat, plotTitle, minVal, maxVal)
         .wait()
       }
@@ -27,22 +27,22 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
       for (plate in unique(plateVec)) {
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
-        meanSubbedVals <- abs(orderedVals - mean(orderedVals, na.rm=T))
-        plotMat <- matrix(meanSubbedVals, nrow=16, byrow=T)
+        meanSubbedVals <- abs(orderedVals - mean(orderedVals, na.rm=TRUE))
+        plotMat <- matrix(meanSubbedVals, nrow=16, byrow=TRUE)
         minVal <- 0
-        maxVal <- round(max(plotMat, na.rm=T), 2)
+        maxVal <- round(max(plotMat, na.rm=TRUE), 2)
         .plotCard(plotMat, plotTitle, minVal, maxVal)
         .wait()
       }
     }
     else if (plotType == "Detector.Residuals") {
-      valMat <- abs(ctsMat - apply(ctsMat, 1, mean, na.rm=T)) # take the avg values from the Cts vals
+      valMat <- abs(ctsMat - rowMeans(ctsMat, na.rm=TRUE)) # take the avg values from the Cts vals
       minVal <- 0
-      maxVal <- round(max(valMat, na.rm=T), 2)
+      maxVal <- round(max(valMat, na.rm=TRUE), 2)
       for (plate in unique(plateVec)) {
         title <- paste(plotType, "for plate:", plate)
         orderedVals <- valMat[plateVec == plate][order(wellVec[plateVec == plate])]
-        plotMat <- matrix(orderedVals, nrow=16, byrow=T)
+        plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
         .plotCard(plotMat, title, minVal, maxVal)
         .wait()
       }
@@ -51,15 +51,15 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
       averageWell <- vector(length = max(wellVec)) # Initialise a vector of the average Ct value
       for (well in 1:max(wellVec)) { # generate average well amounts
         wellChar <- as.character(well)
-        averageWell[well] <- mean(ctsMat[wellVec == wellChar], na.rm=T) # add the mean value for a given well
+        averageWell[well] <- mean(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the mean value for a given well
       }
       for (plate in unique(plateVec)) { # for each plate
         title <- paste(plotType, "for plate:", plate)
         orderedCts <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         wellMeanSubbedCts <- abs(orderedCts - averageWell)
-        plotMat <- matrix(wellMeanSubbedCts, nrow=16, byrow=T)
-        minVal <- round(min(plotMat, na.rm=T), 2)
-        maxVal <- round(max(plotMat, na.rm=T), 2)
+        plotMat <- matrix(wellMeanSubbedCts, nrow=16, byrow=TRUE)
+        minVal <- round(min(plotMat, na.rm=TRUE), 2)
+        maxVal <- round(max(plotMat, na.rm=TRUE), 2)
         .plotCard(plotMat, title, minVal, maxVal)
         .wait()
       }
@@ -106,5 +106,5 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
 }
 
 .wait <- function() {
-  par(ask=T)
+  par(ask=TRUE)
 }
