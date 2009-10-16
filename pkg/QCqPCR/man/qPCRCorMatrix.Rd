@@ -1,11 +1,12 @@
-\name{corMatrixqPCR}
-\alias{corMatrixqPCR}
+\name{qPCRCorMatrix}
+\alias{qPCRCorMatrix}
+\alias{qPCRCorMatrix,qPCRSet-method}
 \title{ Make pairwise matrix of correlation values between samples in qPCR eset }
 \description{
   Takes set of qPCR data and makes matrix of correlation values using pearson's coefficient
 }
 \usage{
-  corMatrixqPCR(qPCRSet)
+  qPCRCorMatrix(qPCRSet)
 }
 \arguments{
     \item{qPCRSet}{ Expression set containing qPCR data.}
@@ -13,6 +14,11 @@
 \details{
   reads in qPCR data and returns  matrix of correlation values using Pearon's
   coefficient, 
+}
+\section{Methods}{
+  \describe{
+    \item{qPCRCorMatrix}{(qPCRSet): ... }
+  }
 }
 \value{produces nxn matrix of correlation values.}
 %\references{ ~put references to the literature/web site here ~ }
