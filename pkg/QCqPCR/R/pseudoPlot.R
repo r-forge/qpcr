@@ -2,6 +2,7 @@ setGeneric("PseudoPlot",
   function(qPCRSet, plotType="Cts.Values", writeToFile=FALSE, cutOff=40)
     standardGeneric("PseudoPlot")
 )
+library(RColorBrewer)
 setMethod("PseudoPlot", signature = "qPCRSet", definition =
   function(qPCRSet, plotType, writeToFile, cutOff) {
     ctsMat <- exprs(qPCRSet)
@@ -16,30 +17,30 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
       for (plate in unique(plateVec)) { # for each plate
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
-
+cat("Cts");print(orderedVals)
         plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
-        .plotCard(plotMat, plotTitle, minVal, maxVal)
+        .plotCardRaw(plotMat, plotTitle, minVal, cutOff, writeToFile)
       }
     }
     else if (plotType == "Plate.Residuals") {
       for (plate in unique(plateVec)) {
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
-        dispersion <- sd(orderedVals)
         dispersion <- sd(as.vector(orderedVals))
         meanSubbedVals <-  orderedVals - mean(orderedVals)
         plotMat <- matrix(meanSubbedVals, nrow=16, byrow=TRUE)
-        .plotCard(plotMat, plotTitle, dispersion, writeToFile)
+        .plotCardStats(plotMat, plotTitle, dispersion, writeToFile)
       }
     }
     else if (plotType == "Detector.Residuals") {
-      valMat <- abs(ctsMat - apply(ctsMat, 1, mean, na.rm=TRUE)) # take the avg values from the Cts vals
+      valMat <- abs(ctsMat - rowMeans(ctsMat, na.rm=TRUE)) # take the avg values from the Cts vals
+#      valMat <- abs(ctsMat - apply(ctsMat, 1, mean, na.rm=TRUE)) # take the avg values from the Cts vals
       maxVal <- round(max(valMat, na.rm=TRUE), 2)
       for (plate in unique(plateVec)) {
-        title <- paste(plotType, "for plate:", plate)
+        plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- valMat[plateVec == plate][order(wellVec[plateVec == plate])]
         plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
-        .plotCard(plotMat, title, minVal, maxVal)
+        .plotCardStats(plotMat, plotTitle, dispersion, maxVal)
       }
     }
     else if (plotType == "Well.Residuals") {
@@ -49,18 +50,63 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
         averageWell[well] <- mean(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the mean value for a given well
       }
       for (plate in unique(plateVec)) { # for each plate
-        title <- paste(plotType, "for plate:", plate)
+        plotTitle <- paste(plotType, "for plate:", plate)
         orderedCts <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         wellMeanSubbedCts <- abs(orderedCts - averageWell)
         plotMat <- matrix(wellMeanSubbedCts, nrow=16, byrow=TRUE)
         maxVal <- round(max(plotMat, na.rm=TRUE), 2)
-        .plotCard(plotMat, title, minVal, writeToFile)
+        .plotCardStats(plotMat, plotTitle, dispersion, writeToFile)
       }
     }
   }
 )
 
-.plotCard = function(plotMat, plotTitle, dispersion, writeToFile) 
+.plotCardRaw = function(plotMat, plotTitle, minVal, maxVal, writeToFile)
+{
+  if(writeToFile == TRUE) {
+    jpegTitle <- paste(plotTitle,".jpg",sep="")
+    jpeg(jpegTitle)
+  }
+  myPal <- brewer.pal(5, "RdYlGn")
+  myCol1 <- colorRampPalette(myPal[5:1])(128)
+  background <- "black"
+  n <- nrow(plotMat)
+  m <- ncol(plotMat)
+  rname <- 1:n
+  cname <- 1:m
+  rname <- as.character(rname)
+  cname <- as.character(cname)
+
+  layout(matrix(c(1, 2), 2, 1), heights = c(4,1))
+  op <- par(mar = c(0, 4, 4, 4))
+
+  plot.new()
+  plot.window(c(0, m), c(0, n), asp = 1)
+  xlabwidth <- max(strwidth(rname, cex = 1))
+  ylabwidth <- max(strwidth(cname, cex = 1))
+  plot.window(c(-xlabwidth + 0.5, m + 0.5), c(0, n + 1 + ylabwidth), asp = 1, xlab="", ylab="")
+  rect(0.5, 0.5, m + 0.5, n + 0.5, col = background)      ##background color
+  title(plotTitle)
+  segments(rep(0.5, n + 1), 0.5 + 0:n, rep(m + 0.5, n + 1), 0.5 + 0:n, col = "gray")
+  segments(0.5 + 0:m, rep(0.5, m + 1), 0.5 + 0:m, rep(n + 0.5, m), col = "gray")
+  bg <- myCol1[plotMat * (128/maxVal)]
+  symbols(rep(1:m, each = n), rep(n:1, m), add = TRUE, inches = F, circles = rep(0.4, (m*n)), bg = as.vector(bg))
+  
+  x.bar <- seq(from = minVal, to = maxVal, length = 128)
+  par(mar = c(5.1, 4.1, 1, 2))
+  image(x.bar, 1, matrix(x.bar, length(x.bar), 1), axes = FALSE, xlab = "", ylab = "", col = myCol1)
+  Labels <- c("Min", "Max")
+  axis(1, at = c(0,40), labels = Labels, las = 1)
+
+  if(writeToFile == TRUE) {
+    dev.off()
+  }
+  else {
+    .wait()
+  }
+}
+
+.plotCardStats = function(plotMat, plotTitle, dispersion, writeToFile) 
 {
   if (writeToFile == TRUE) {
     jpegTitle <- paste(plotTitle,".jpg",sep="")
@@ -88,8 +134,8 @@ cat("hereo")
   cols <- .computeColors(plotMat, dispersion)
 
   bg <- myCol1[cols]
-print(cols)
-print(bg)
+#print(cols)
+#print(bg)
   symbols(rep(1:m, each = n), rep(n:1, m), add = TRUE, inches = F, circles = rep(0.4, (m*n)), bg = as.vector(bg))
 x.bar <- seq(from = -3*dispersion, to = 3*dispersion, length = length(myCol1))
 par(mar = c(5.1, 4.1, 1, 2))
@@ -108,8 +154,8 @@ cat("cols:\n")
 }
 
 library(RColorBrewer)
-myPal <- brewer.pal(5, "RdYlGn")
-myCol1 <- colorRampPalette(myPal[c(1:5,4:1)])(128)
+#myPal <- brewer.pal(5, "RdYlGn")
+#myCol1 <- colorRampPalette(myPal[c(1:5,4:1)])(128)
 
 .computeColors <- function(z, dispersion){
     bound <- dispersion*3
