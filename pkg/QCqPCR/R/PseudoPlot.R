@@ -1,9 +1,17 @@
 setGeneric("PseudoPlot",
-  function(qPCRSet, plotType="Cts.Values", writeToFile=FALSE, cutOff=40 )
+  function(qPCRSet, plotType="Cts.Values", writeToFile=FALSE, cutOff=40, statType="parametric" )
     standardGeneric("PseudoPlot")
 )
 setMethod("PseudoPlot", signature = "qPCRSet", definition =
-  function(qPCRSet, plotType, writeToFile, cutOff) {
+  function(qPCRSet, plotType, writeToFile, cutOff, statType) {
+# CHECKING - IS THERE A CLEVERER WAY TO DO THIS?
+ 
+if (statType == "parametric"
+    || statType == "non-parametric") {
+}
+else {
+  stop("Invalid statType argument, please use \"parametric\" or \"non-parametric\"")
+}
     ctsMat <- exprs(qPCRSet)
     ctsMat[is.na(ctsMat)] <- cutOff # Cutoff point..Could change for different platforms
     ctsMat[ctsMat > cutOff] <- cutOff
@@ -25,24 +33,35 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
       for (plate in unique(plateVec)) {
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
-        plateResidual <- sd(as.vector(orderedVals), na.rm = TRUE)
-        plateTotalDispersion <-  orderedVals - mean(orderedVals, na.rm = TRUE)
+        if (statType == "parametric") {
+          plateResidual <- sd(as.vector(orderedVals), na.rm = TRUE)
+          plateTotalDispersion <-  orderedVals - mean(orderedVals, na.rm = TRUE)
+        }
+        else {
+          plateResidual <- mad(as.vector(orderedVals), na.rm = TRUE)
+          plateTotalDispersion <-  orderedVals - median(orderedVals, na.rm = TRUE)
+        }
         plateResidualsMat = plateTotalDispersion / plateResidual
         plotMat <- matrix(plateResidualsMat, nrow=16, byrow=TRUE)
-        .plotCardStats(plotMat, plotTitle, writeToFile)
+        .plotCardStats(plotMat, plotTitle, writeToFile, statType)
       }
     }
     else if (plotType == "Detector.Residuals") {
-      totalMat <- ctsMat - rowMeans(ctsMat, na.rm=TRUE) # take the avg values from the Cts vals
-      residVec <- apply(ctsMat, 1, sd, na.rm=TRUE) # take the sds for each row
-      cat(residVec)
+      if (statType == "parametric") {  
+         totalMat <- ctsMat - rowMeans(ctsMat, na.rm=TRUE) # take the avg values from the Cts vals
+         residVec <- apply(ctsMat, 1, sd, na.rm=TRUE) # take the sds for each row
+      }
+      else {
+         totalMat <- ctsMat - rowMedians(ctsMat, na.rm=TRUE) # take the avg values from the Cts vals
+         residVec <- apply(ctsMat, 1, mad, na.rm=TRUE) # take the mads for each row
+      }
       valMat <-  totalMat /  residVec # now divide to get the results in terms of SDs/MADs from mean
       valMat[is.na(valMat)] <- 0 # bit cludgey - deals with when we have a 0 / 0 calculations
       for (plate in unique(plateVec)) { # now we must order and plot the new values by plate
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- valMat[plateVec == plate][order(wellVec[plateVec == plate])]
         plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
-        .plotCardStats(plotMat, plotTitle, writeToFile)
+        .plotCardStats(plotMat, plotTitle, writeToFile, statType)
       }
     }
     else if (plotType == "Well.Residuals") { # By well we mean position of the well on the card
@@ -50,8 +69,14 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
       residWell <- vector(length = max(wellVec))
       for (well in 1:max(wellVec)) { # generate average well amounts and resids as a background - stops having to generate on the fly
         wellChar <- as.character(well)
-        averageWell[well] <- mean(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the mean value for a given well
-        residWell[well] <- sd(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the SD value for a given well
+        if (statType == "parametric") {
+          averageWell[well] <- mean(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the mean value for a given well
+          residWell[well] <- sd(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the SD value for a given well
+        }
+        else if (statType == "non-parametric") {
+          averageWell[well] <- median(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the mean value for a given well
+          residWell[well] <- mad(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the SD value for a given well
+        }
       }
       for (plate in unique(plateVec)) { # for each plate
         plotTitle <- paste(plotType, "for plate:", plate)
@@ -60,8 +85,11 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
         valMat <- totalVec / residWell
         valMat[is.na(valMat)] <- 0 # bit cludgey - deals with when we have a 0 / 0 calculations
         plotMat <- matrix(valMat, nrow=16, byrow=TRUE)
-        .plotCardStats(plotMat, plotTitle, writeToFile)
+        .plotCardStats(plotMat, plotTitle, writeToFile, statType)
       }
+    }
+    else {
+      stop("Invalid Plot Type")
     }
   }
 )
@@ -111,7 +139,7 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
   }
 }
 
-.plotCardStats = function(plotMat, plotTitle,  writeToFile) 
+.plotCardStats = function(plotMat, plotTitle,  writeToFile, statType) 
 {
   if (writeToFile == TRUE) {
     jpegTitle <- paste(plotTitle,".jpg",sep="")
@@ -146,7 +174,8 @@ setMethod("PseudoPlot", signature = "qPCRSet", definition =
   par(mar = c(5.1, 4.1, 1, 2))
   image(x.bar, 1, matrix(x.bar, length(x.bar), 1), axes = FALSE, xlab = "", ylab = "", col = myCol)
   x.small <- c(-3, -1.5, 0, 1.5, 3)
-  Labels <- c("<=-3*SD", "SD", "mean", "SD", ">=3*SD")
+  if(statType == "parametric") Labels <- c("<=-3*SD", "1.5*SD", "mean", "1.5*SD", ">=3*SD")
+  else  Labels <- c("<=-3*MAD", "1.5*MAD", "median", "1.5*MAD", ">=3*MAD")
   axis(1, at = x.small, labels = Labels, las = 1)
 
   if (writeToFile == TRUE) {
