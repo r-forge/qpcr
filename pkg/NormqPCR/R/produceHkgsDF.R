@@ -5,7 +5,7 @@
 #    normalise qPCRSet with 1 HKG    #
 ###################################
 
-produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){ # takes qPCRSet, vector of housekeeping genes and a design vector to say what comparisons to make
+produceHkgsDF <- function(qPCRSet, hkgs, design, cutoff = 40, verbose = FALSE){ # takes qPCRSet, vector of housekeeping genes and a design vector to say what comparisons to make
     hkgs <- make.names(hkgs)
     ##########
     # Use design 'matrix' to work out which is case and which is control
@@ -19,13 +19,13 @@ produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){
     DiscardNAControl <- floor(lenControl/4) # max number of NA values allowed for control
     ##########
 
-    normSet <- data.frame(as.data.frame(exprs(qPCRSet))) # turn exprs component into a data frame
+    normSet <- data.frame(row.names = featureNames(qPCRSet)) # turn exprs component into a data frame
     normSet[normSet > cutoff] <- NA
     tabFormat <- vector()
     laterColNames <- vector()
 
     for(hkg in hkgs) { # For each nominal housekeeping gene
-        ##########
+        if(hkg %in% featureNames(qPCRSet) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
         # first see if it's suitable
         hkgCts <- as.numeric(exprs(qPCRSet[hkg,])) # get the Ct values for given hkg
         hkgCtsCase <- hkgCts[logicase] # seperate for case and control
@@ -34,7 +34,7 @@ produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){
         if(sum(is.na(hkgCtsCase)) > maxNAinCaseHkg) stop (hkg, " is unsuitable as a housekeeping gene because a value was obtained for it less than", maxNAinCaseHkg, "times out of", lenControl, ".")
         if(sum(is.na(hkgCtsControl)) > maxNAinControlHkg) stop (hkg, " is unsuitable as a housekeeping gene because a value was obtained for it less than", maxNAinControlHkg, "times out of ", lenControl, ".")
 
-        if(hkg %in% featureNames(qPCRSet) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
+        
         hkg <- gsub("-.+$","",hkg) # regexp to remove any rubbish from end of control gene spec
 	laterColNames <- c(laterColNames, paste(hkg, "Control_mean", sep = "_"), paste(hkg, "Control_Sds", sep = "_"), paste(hkg, "Case_mean", sep = "_"), paste(hkg, "Case_Sds", sep = "_"), paste(hkg, "ddCt", sep = "_"), paste(hkg, "2^DDCt", sep = "_"), paste(hkg, "2^DDCt min", sep = "_"), paste(hkg, "2^DDCt max", sep = "_")) # get the column names for the tSet matrix
     }
@@ -55,16 +55,18 @@ produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){
         if(sum(is.na(hkgCtsControl)) > maxNAinControlHkg) stop (hkg, " is unsuitable as a housekeeping gene because a value was only obtained for it once or less")
         ##########
         # initialise vectors for different stats for the different detectors for this hkg and either case/control
-        deltaCtsMeanCase <- vector()
-        deltaCtsSdCase <- vector()
-        deltaCtsMeanControl <- vector()
-        deltaCtsSdControl <- vector()
-        deltadeltaCt <- vector()
-        twoDDCt <- vector()
-        minBound <- vector()
-        maxBound <- vector()
+        noOfFeatures <- length(featureNames(qPCRSet))
+        deltaCtsMeanCase <- vector(length=noOfFeatures)
+        deltaCtsSdCase <- vector(length=noOfFeatures)
+        deltaCtsMeanControl <- vector(length=noOfFeatures)
+        deltaCtsSdControl <- vector(length=noOfFeatures)
+        deltadeltaCt <- vector(length=noOfFeatures)
+        twoDDCt <- vector(length=noOfFeatures)
+        minBound <- vector(length=noOfFeatures)
+        maxBound <- vector(length=noOfFeatures)
         ##########
         for (detector in featureNames(qPCRSet)) {
+            i_detector <- 1
             Cts <- as.numeric(exprs(qPCRSet[detector,])) # the raw values for the detector
             Cts[Cts > cutoff] <- NA
             CtsControl <- Cts[logicontrol]
@@ -94,23 +96,24 @@ produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){
                 v_dCtsSdsCase <- sd(CtsCase - hkgCtsCase)
             }
             ######## Now add these values to the vectors
-            deltaCtsMeanCase <- c(deltaCtsMeanCase,v_dCtsMeanCase)
-            deltaCtsSdCase <- c(deltaCtsSdCase,v_dCtsSdsCase)
-            deltaCtsMeanControl <- c(deltaCtsMeanControl,v_dCtsMeanControl)
-            deltaCtsSdControl <- c(deltaCtsSdControl,v_dCtsSdsControl)
+            deltaCtsMeanCase[i_detector] <- v_dCtsMeanCase
+            deltaCtsSdCase[i_detector] <- v_dCtsSdsCase
+            deltaCtsMeanControl[i_detector] <- v_dCtsMeanControl
+            deltaCtsSdControl[i_detector] <- v_dCtsSdsControl
 
             ddct <- normCase - normControl # log ratio
-            twoDDCt <- c(twoDDCt,2^-ddct) # fold change
+            twoDDCt[i_detector] <- 2^-ddct # fold change
 
             if(typeof(v_dCtsSdsControl) == "double") {
-                maxBound <- c(maxBound,2^-(ddct - v_dCtsSdsControl))
-                minBound <- c(minBound,2^-(ddct + v_dCtsSdsControl))
+                maxBound[i_detector] <- 2^-(ddct - v_dCtsSdsControl)
+                minBound[i_detector] <- 2^-(ddct + v_dCtsSdsControl)
             }
             else {
-                minBound <- c(minBound,NA)
-                maxBound <- c(maxBound,NA)
+                minBound[i_detector] <- NA
+                maxBound[i_detector] <- NA
             }
-            deltadeltaCt <- c(deltadeltaCt,ddct) # add to vector
+            deltadeltaCt[i_detector] <- ddct # add to vector
+        i_detector <- i_detector + 1
         }
 	normSet <- data.frame(normSet,deltaCtsMeanControl,deltaCtsSdControl,deltaCtsMeanCase,deltaCtsSdCase,deltadeltaCt,twoDDCt,minBound,maxBound) # add the vectors together
     }
