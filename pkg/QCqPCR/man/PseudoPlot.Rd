@@ -6,13 +6,14 @@
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
 }
 \usage{
-PseudoPlot(qPCRSet, plotType, writeToFile, cutOff)
+PseudoPlot(qPCRSet, plotType, writeToFile, cutOff, statType)
 }
 \arguments{
     \item{qPCRSet}{ data set containing data on different Ct values normed to the different HKGs }
     \item{plotType}{}
     \item{writeToFile}{}
     \item{cutOff}{}
+    \item{statType}{}
 }
 \details{
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes.
