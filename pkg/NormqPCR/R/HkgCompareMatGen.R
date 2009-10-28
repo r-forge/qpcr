@@ -5,7 +5,7 @@
 #    normalise qPCRSet with 1 HKG    #
 ###################################
 
-produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){ # takes qPCRSet, vector of housekeeping genes and a design matrix (like in limma)
+produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){ # takes qPCRSet, vector of housekeeping genes and a design vector to say what comparisons to make
     hkgs <- make.names(hkgs)
     ##########
     # Use design 'matrix' to work out which is case and which is control
@@ -17,15 +17,6 @@ produceHKGSMat <- function(qPCRSet, hkgs, design, cutoff = 38, verbose = FALSE){
     maxNAinControlHkg <- ceiling(lenControl/2) # max number of NA values allowed for control
     DiscardNACase <- floor(lenCase/4) # less or equal to this number of NAs we discard
     DiscardNAControl <- floor(lenControl/4) # max number of NA values allowed for control
-#    DiscardValuesCase <- ceiling(3 * (lenControl/4))
-#    DiscardValuesControl <- ceiling(3 * (lenControl/4))
-
-cat("LENGTH OF CASE IS:", lenCase, ":\n")
-cat("LENGTH OF CONTROL IS:", lenControl, ":\n")
-cat("MAX NA HKG IS :", maxNAinCaseHkg, ":\n")
-cat("MAX NA HKG IS :", maxNAinControlHkg, ":\n")
-cat("MAX NA IS :", DiscardNACase, ":\n")
-cat("MAX NA IS :", DiscardNAControl, ":\n")
     ##########
 
     normSet <- data.frame(as.data.frame(exprs(qPCRSet))) # turn exprs component into a data frame
@@ -74,15 +65,11 @@ cat("MAX NA IS :", DiscardNAControl, ":\n")
         maxBound <- vector()
         ##########
         for (detector in featureNames(qPCRSet)) {
-	cat("DetectorName :", detector, ":\n",file = "dbg.txt", append=T)
             Cts <- as.numeric(exprs(qPCRSet[detector,])) # the raw values for the detector
             Cts[Cts > cutoff] <- NA
             CtsControl <- Cts[logicontrol]
-            CtsCase <- Cts[logicase]
-	cat("number of NAs is :", sum(is.na(CtsControl)), ":\n", file="dbg.txt", append=T)
-#            if(sum(is.na(CtsControl)) > DiscardValuesControl) 
+            CtsCase <- Cts[logicase] 
             if(sum(is.na(CtsControl)) > DiscardNAControl) { # if up to a quarter NAs
-cat("So we DISCARD\n",file = "dbg.txt", append =T)
                 normControl <- mean(CtsControl - hkgCtsControl, na.rm=T) # work out stats using existing values
                 v_dCtsMeanControl <- mean(CtsControl - hkgCtsControl, na.rm=T)
                 v_dCtsSdsControl <- sd(CtsControl - hkgCtsControl, na.rm=T)
@@ -94,9 +81,7 @@ cat("So we DISCARD\n",file = "dbg.txt", append =T)
                 v_dCtsMeanControl <- mean(CtsControl - hkgCtsControl)
                 v_dCtsSdsControl <- sd(CtsControl - hkgCtsControl)
             }
-	cat("number of NAs is :", sum(is.na(CtsCase)), ":\n", file="dbg.txt", append=T)
             if(sum(is.na(CtsCase)) > DiscardNACase) { # if up to a quarter NAs
-cat("So we DISCARD\n",file = "dbg.txt", append =T)
                 normCase <- mean(CtsCase - hkgCtsCase,na.rm=T) # work out stats using existing values
                 v_dCtsMeanCase <- mean(CtsCase - hkgCtsCase,na.rm=T)
                 v_dCtsSdsCase <- sd(CtsCase - hkgCtsCase,na.rm=T)
@@ -114,12 +99,7 @@ cat("So we DISCARD\n",file = "dbg.txt", append =T)
             deltaCtsMeanControl <- c(deltaCtsMeanControl,v_dCtsMeanControl)
             deltaCtsSdControl <- c(deltaCtsSdControl,v_dCtsSdsControl)
 
- #           if (is.na(normControl) & is.na(normCase)) {} else
- #           if (is.na(normControl)) {normControl = 38 - min(hkgCts)} else # will fall over if NAs in HKG
- #           if (is.na(normCase)) {normCase = 38 - min(hkgCts)}
-
             ddct <- normCase - normControl # log ratio
-
             twoDDCt <- c(twoDDCt,2^-ddct) # fold change
 
             if(typeof(v_dCtsSdsControl) == "double") {
@@ -136,7 +116,5 @@ cat("So we DISCARD\n",file = "dbg.txt", append =T)
     }
     normSetColNames <- c(sampleNames(qPCRSet),laterColNames) # make column names
     names(normSet) <- normSetColNames
-#    qPCRSet@nSet <- normSet
-#    qPCRSet@hkgs <- hkgs
     return(normSet)
 }
