@@ -1,4 +1,4 @@
-normaliseByHKG <- function(qPCRSet, hkg, verbose = FALSE){ # takes qPCRSet and HKG
+normByHKG <- function(qPCRSet, hkg, verbose = FALSE){ # takes qPCRSet and HKG
   hkg <- make.names(hkg)
   if(hkg %in% featureNames(qPCRSet) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")  
   hkgCts <- as.numeric(exprs(qPCRSet[hkg,]))

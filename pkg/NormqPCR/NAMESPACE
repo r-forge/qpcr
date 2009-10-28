@@ -1,2 +1,2 @@
 importClasses(qPCRSet)
-export(geomMean,stabMeasureM,stabMeasureRho,selectHKs,normaliseByHKG)
+export(geomMean,stabMeasureM,stabMeasureRho,selectHKs,norByHKG)
