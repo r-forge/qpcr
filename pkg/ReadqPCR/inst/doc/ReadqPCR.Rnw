@@ -1,0 +1,74 @@
+%\VignetteIndexEntry{ReadPCR}                                       
+%\VignetteDepends{stats,Biobase,methods}                            
+%\VignetteKeywords{real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder}
+%\VignettePackage{ReadPCR}
+%
+\documentclass[11pt]{article}
+\usepackage{geometry}\usepackage{color}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.75}
+\usepackage[%
+baseurl={http://qpcr.r-forge.r-project.org/},%
+pdftitle={ReadqPCR: Functions to load RT-qPCR data into R},%
+pdfauthor={Matthias Kohl and James Perkins},%
+pdfsubject={ReadqPCR},%
+pdfkeywords={real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder},%
+pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
+pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
+%
+\markboth{\sl Package ``{\tt ReadqPCR}''}{\sl Package ``{\tt ReadPCR}''}
+%
+% -------------------------------------------------------------------------------
+\newcommand{\code}[1]{{\tt #1}}
+\newcommand{\pkg}[1]{{\tt "#1"}}
+\newcommand{\myinfig}[2]{%
+%  \begin{figure}[htbp]
+    \begin{center}
+      \includegraphics[width = #1\textwidth]{#2}
+%      \caption{\label{#1}#3}
+    \end{center}
+%  \end{figure}
+}
+% -------------------------------------------------------------------------------
+%
+% -------------------------------------------------------------------------------
+\begin{document}
+\SweaveOpts{keep.source = TRUE, eval = TRUE, include = FALSE}
+%-------------------------------------------------------------------------------
+\title{ReadqPCR: Functions to load RT-qPCR data into R}
+%-------------------------------------------------------------------------------
+\author{James Perkins\\
+University College London\medskip\\
+}
+\maketitle
+\tableofcontents
+%-------------------------------------------------------------------------------
+\section{Introduction}
+The package \pkg{ReadqPCR} contains different functions for reading the different
+data formats that are output by the different proprietary software used for
+RT-qPCR systems. It also allows the useR to read in their own dat and analyse
+it. As well as the functions to read in the data, \pkg{ReadqPCR} gives
+
+.
+%-------------------------------------------------------------------------------
+\section{qPCRSet}
+qPCRSet is an S4 class, designed to store information on the Cts raw values
+which  represent the expression measures for a given sample, as well as
+phenotypic information on the different samples to aid the user when making
+comparisons between different tissue types or cell lines. This is achieved by
+making qPCRSet an an extension of eSet, and so recycling exprs and pData
+respectively for this data.
+In addition there is a new slot, which extends the assayData slot used for
+exprs(). It has the same dimensions as exprs (as every instance of assayData
+must), which are m rows of genes and n rows of samples. The cells contain
+further details on the position on the arrays where the different meaurements
+were taken. These can be used in order to identify certain problematic arrays,
+housekeeper gene expression levels, or gene expression levels, perhaps due to
+problems with the microfluidics technology that these arrays use (see
+\pkg{QCqPCR} for more details). This is conceptually similar to the cdf file
+information being stored in the AffyBatch class, except it allows for different
+arrays within the same experiment to have different layouts to each other. This
+information can be viewed using the exprs.well.order() function:
+<<ReadqPCR>>=
+library(ReadqPCR) # load the ReadqPCR library
+@
+\end{document}
