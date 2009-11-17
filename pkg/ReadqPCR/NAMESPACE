@@ -1,4 +1,4 @@
-export(read.taqman, checkValidTaqmanFilenames, exprs.well.order, "exprs.well.order<-")
+export(read.taqman, read.qPCR, checkValidTaqmanFilenames, checkValidqPCRFilename, exprs.well.order, "exprs.well.order<-")
 exportClasses(qPCRSet)
 importClassesFrom(Biobase,
                   AnnotatedDataFrame,
