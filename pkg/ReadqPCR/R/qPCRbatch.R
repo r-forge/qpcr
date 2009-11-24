@@ -72,8 +72,9 @@ cat("No Well and/or Plate info found, skipping this part\n")
             stop(warning.text)
         }
         if (tech.reps > 1) { # Currently can't cope with technical replicates
-            warning.text = "More than 1 technical replicate detected"
-            stop(warning.text)
+
+#            warning.text = "More than 1 technical replicate detected"
+#            stop(warning.text)
         }
             original.order = c(original.order,list(cbind(as.character(raw.data$Detector[raw.data$Sample == sample]), as.character(raw.data$Ct[raw.data$Sample == sample])))) # This bit to add the information about pipetting and order
 
