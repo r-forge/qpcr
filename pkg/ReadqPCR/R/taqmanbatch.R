@@ -46,7 +46,9 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
             varMetadata = data.frame(labelDescription = "arbitrary numbering",
                 row.names = "sample"))
     }
-    print(str(well.order))
+    #print(str(well.order))
+#print(exprs)
+cat("nearly\n")
     return(new("qPCRSet", exprs = exprs, phenoData = phenoData, exprs.well.order = well.order))
 }
 
@@ -107,7 +109,7 @@ cat("ERE\n")
  #       }
         original.order <- list() # initialise the list
         
-        well.order <- data.frame(detectors, row.names=1)
+        
 	raw.data$Ct[as.character(raw.data$Ct) %in% "Undetermined"] <- NA
 ############################################################
 # Add Plate ID information IF there were none to being with
@@ -141,6 +143,7 @@ cat("ERE\n")
             cat("individual.detectors:", individual.detectors, "\n")
             tech.reps <- total.detectors/individual.detectors
 cat("Jus before\n")
+raw.data$Detector <- as.character(raw.data$Detector) # coerce to stop funny behaviour
             if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
                 warning.text = paste("Corrupt taqman file: total number of readings for sample ", 
                        sample, " not a multiple of number of individual number of detectors")
@@ -152,34 +155,39 @@ cat("Jus before\n")
                 #if(raw.data$Detector
 #                cat(raw.data$Detector)
 #                [raw.data$Sample == sample]
-raw.data$Detector <- as.character(raw.data$Detector) # coerce to stop funny behaviour
+
 staticDetector <- raw.data$Detector[raw.data$Sample == sample]
 #cat(staticDetector, "FOR DA FIRST\n")
+jj <- 1
                  for(techDetect in unique(raw.data$Detector[raw.data$Sample == sample]))  {
-#                   cat(techDetect, "for the win\n\n")
+cat(jj)
+#jj <- 1
+                   cat(techDetect, "for the win\n\n")
 #                   cat(staticDetector, "\n\n")
                    techDLength <- sum(staticDetector %in% techDetect)
                    cat("LENGTH IS: ", techDLength, "\n")
-                   aaaa <- paste(techDetect, 1:techDLength, sep="_") 
+                   aaaa <- paste(techDetect, 1:techDLength, sep="_")
                    #aaaa <- paste(raw.data$Detector[raw.data$Detector %in% techDetect], 1:techDLength, sep="")
-                   cat("detectorNewNames are :", aaaa, "\n")
+                   #cat("detectorNewNames are :", aaaa, "\n")
                    raw.data$Detector[raw.data$Sample == sample][raw.data$Detector[raw.data$Sample == sample] %in% techDetect] <- aaaa
                    
                    #row.names(exprs) <- raw.data$Detector
+jj <- jj+1
 #stop()
                  }
             }
             if(firstTimeFlag == TRUE) {
-                exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
+                exprs <- data.frame(unique(raw.data$Detector), row.names=1) # start the exprs data frame
+                well.order <- data.frame(unique(raw.data$Detector), row.names=1)
                 firstTimeFlag <- FALSE
             }
 
-cat("Leaving this tech reps bit\n")
-cat("AND NOW\n")
-cat(raw.data$Detector, "raw data detectors\n")
-cat("done")
+#cat("Leaving this tech reps bit\n")
+#cat("AND NOW\n")
+#cat(raw.data$Detector, "raw data detectors\n")
+#cat("done")
 raw.data$Detector <- as.factor(raw.data$Detector)
-cat("now lets blow this up\n\n")
+#cat("now lets blow this up\n\n")
 #            }
             #cat(raw.data$Detector)
             original.order = c(original.order,list(cbind(as.character(raw.data$Detector[raw.data$Sample == sample]),
@@ -191,9 +199,9 @@ cat("now lets blow this up\n\n")
             Cts <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
                          as.numeric(as.character(raw.data$Ct[raw.data$Sample == sample])),
                          row.names=1)
-            print(Cts)
+            #print(Cts)
             exprs <- data.frame(merge(exprs, Cts, by="row.names"), row.names=1)
-            print(exprs)
+            #print(exprs)
 ################## if we have all the same detectors per sample:
             if (! FALSE %in% (row.names(exprs) == row.names(Cts))) stop("BYE")
 
