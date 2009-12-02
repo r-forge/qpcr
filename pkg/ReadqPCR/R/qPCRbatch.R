@@ -8,7 +8,6 @@ read.qPCR <- function(filename = character(0), phenoData = new("AnnotatedDataFra
     well.order <- qPCRInfo$well.order
 
 exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
-print(str(exprs))
 #    if(! is.null(qPCRInfo$well.order)) {
 #     exprs.well.order <- assayDataNew("environment", exprs.well.order = well.order)
 #cat("AND TO HERE\n")
@@ -25,17 +24,12 @@ print(str(exprs))
             varMetadata = data.frame(labelDescription = "arbitrary numbering",
                 row.names = "sample"))
     }
-    print(str(well.order))
     if(! is.null(qPCRInfo$well.order)) {
-cat("SSS\n\n")
-        return(new("qPCRSet", exprs = exprs, phenoData = phenoData, exprs.well.order = well.order))
+        return(new("qPCRBatch", exprs = exprs, phenoData = phenoData, exprs.well.order = well.order))
     }
     else {
-print(exprs)
-print(phenoData)
-cat("QQQ\n\n")
 
-        return(new("qPCRSet", exprs = exprs, phenoData = phenoData))
+        return(new("qPCRBatch", exprs = exprs, phenoData = phenoData))
     }
 }
 
@@ -43,11 +37,10 @@ cat("QQQ\n\n")
 {
     noWellData <- FALSE
 
-    raw.data <- read.table(filename)
+    raw.data <- read.table(filename, header=TRUE)
     if(is.null(raw.data$Well) || is.null(raw.data$PlateID)) {
          noWellData <- TRUE
-#        if (verbose) cat("No Well and/or Plate info found, skipping this part")
-cat("No Well and/or Plate info found, skipping this part\n")
+         if (verbose) cat("No Well and/or Plate info found, skipping this part")
     }
     else {
         raw.data$PlateID <- paste(raw.data$PlateID, as.character(raw.data$Well), sep= "-")
@@ -58,24 +51,59 @@ cat("No Well and/or Plate info found, skipping this part\n")
     Ct <- as.character(raw.data$Ct)
     samples <- levels(raw.data$Sample)
     detectors <- levels(raw.data$Detector)
+    allDetectors <- raw.data$Detector
 #    print(raw.data)
 #    cat("\n")
-    well.order <- data.frame(detectors, row.names=1)
-    exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
+#    well.order <- data.frame(detectors, row.names=1)
+#    exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
+firstTimeFlag <- TRUE
+#total.detectors <- length(raw.data$Detector[raw.data$Sample == sample])
+
+
     for (sample in samples) { # for each sample
         if (verbose) cat("Now reading for sample:", sample, "\n")
-        total.detectors <- length(raw.data$Detector[raw.data$Sample == sample])
-        individual.detectors <- length(levels(raw.data$Detector[raw.data$Sample == sample]))
+        total.detectors <- length(allDetectors[raw.data$Sample == sample])
+        individual.detectors <- length(levels(allDetectors[raw.data$Sample == sample]))
         tech.reps <- total.detectors/individual.detectors
+
+raw.data$Detector <- as.character(raw.data$Detector)
         if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
             warning.text = paste("File incorrect, make sure that detectors are the same for all samples")
             stop(warning.text)
         }
-        if (tech.reps > 1) { # Currently can't cope with technical replicates
+        if (tech.reps > 1) {
+                if(verbose) cat ("More than 1 technical replicate detected\n")
+#                cat(warning.text)
+                #if(raw.data$Detector
+#                cat(raw.data$Detector)
+#                [raw.data$Sample == sample]
 
+staticDetector <- raw.data$Detector[raw.data$Sample == sample]
+#cat(staticDetector, "FOR DA FIRST\n")
+#jj <- 1
+                 for(techDetect in unique(raw.data$Detector[raw.data$Sample == sample]))  {
+                 #  cat(techDetect)
+#                   cat(staticDetector, "\n\n")
+                   techDLength <- sum(staticDetector %in% techDetect)
+                  # cat("LENGTH IS: ", techDLength, "\n")
+                   suffixedNames <- paste(techDetect, 1:techDLength, sep="_TechReps.")
+                   #aaaa <- paste(raw.data$Detector[raw.data$Detector %in% techDetect], 1:techDLength, sep="")
+                   #cat("detectorNewNames are :", aaaa, "\n")
+                   raw.data$Detector[raw.data$Sample == sample][raw.data$Detector[raw.data$Sample == sample] %in% techDetect] <- suffixedNames
+
+                   #row.names(exprs) <- raw.data$Detector
+#jj <- jj+1
+#stop()
+            }
+       }
+       if(firstTimeFlag == TRUE) {
+                exprs <- data.frame(unique(raw.data$Detector), row.names=1) # start the exprs data frame
+                well.order <- data.frame(unique(raw.data$Detector), row.names=1)
+                firstTimeFlag <- FALSE
 #            warning.text = "More than 1 technical replicate detected"
 #            stop(warning.text)
-        }
+       }
+raw.data$Detector <- as.factor(raw.data$Detector)
             original.order = c(original.order,list(cbind(as.character(raw.data$Detector[raw.data$Sample == sample]), as.character(raw.data$Ct[raw.data$Sample == sample])))) # This bit to add the information about pipetting and order
 
         if(noWellData == FALSE) {
@@ -92,7 +120,6 @@ cat("No Well and/or Plate info found, skipping this part\n")
         if(noWellData == FALSE) {
             well.order <- data.frame(merge(well.order, well.info, by="row.names"), row.names=1)
         }
-cat("AND HERE????\n")
         if (verbose) cat("sample ", sample, "read\n")
     }
     qPCRInfo <- list()

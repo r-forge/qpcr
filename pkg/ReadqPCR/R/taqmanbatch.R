@@ -1,11 +1,11 @@
-setClass("qPCRSet", contains = "eSet")
+setClass("qPCRBatch", contains = "eSet")
 
 ## accessor methods
-setMethod("exprs", signature = "qPCRSet", definition = 
+setMethod("exprs", signature = "qPCRBatch", definition = 
     function (object) assayDataElement(object, "exprs")
 )
 
-setReplaceMethod("exprs", signature = "qPCRSet", definition = 
+setReplaceMethod("exprs", signature = "qPCRBatch", definition = 
     function (object, value) assayDataElementReplace(object, "exprs", value)
 )
 
@@ -19,11 +19,11 @@ setGeneric("exprs.well.order<-",
     standardGeneric("exprs.well.order<-")
 )
 
-setMethod("exprs.well.order", signature = "qPCRSet", definition = 
+setMethod("exprs.well.order", signature = "qPCRBatch", definition = 
     function (object) assayDataElement(object, "exprs.well.order")
 )
 
-setReplaceMethod("exprs.well.order", signature = "qPCRSet", definition = 
+setReplaceMethod("exprs.well.order", signature = "qPCRBatch", definition = 
     function (object, value) assayDataElementReplace(object, "exprs.well.order", value)
 )
 
@@ -48,13 +48,11 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
     }
     #print(str(well.order))
 #print(exprs)
-cat("nearly\n")
-    return(new("qPCRSet", exprs = exprs, phenoData = phenoData, exprs.well.order = well.order))
+    return(new("qPCRBatch", exprs = exprs, phenoData = phenoData, exprs.well.order = well.order))
 }
 
 .read.TaqBatch <- function(filenames, verbose)
 {
-cat("ERE\n")
     totalPlateIds <- vector()
     plate.offset <- 0 # this is used to name plates when combining several files 
     fileNameCount <- 1
@@ -76,7 +74,9 @@ cat("ERE\n")
 
         if(fileNameCount > 1) { # do some checking
           if(TRUE %in% (samples == colnames(totalExprs))) stop("Can't combine files, > 1 sample labels are the same between samples")
-          else if(! FALSE %in% (sort(detectors) == sort(rownames(totalExprs)))) cat("we are combining files with the same detector names\n")
+          else if(! FALSE %in% (sort(detectors) == sort(rownames(totalExprs)))) {
+            if(verbose == TRUE) cat("we are combining files with the same detector names\n")
+          }
           else stop("Problem combining files on detector names. Make sure detector names match for all files\n")
 
           if(TRUE %in% (raw.data$PlateID %in% totalPlateIds)) stop ("Can't proceed, duplicate plate Ids in different files. All plate IDs should be unique")
@@ -131,18 +131,19 @@ cat("ERE\n")
           totalPlateIds <- raw.data$PlateID # put them in a variable for checking for duplication
           raw.data$PlateID <- paste(raw.data$PlateID, as.character(raw.data$Well), sep= "-")
         }
+allDetectors <- raw.data$Detector
         firstTimeFlag <- TRUE
 ################################################################
         for (sample in samples) { # for each sample
             if (verbose) cat("Now reading for sample:", sample, "\n")
 
-            total.detectors <- length(raw.data$Detector[raw.data$Sample == sample])
-            cat("total.detectors:", total.detectors, "\n")
-            individual.detectors <- length(unique(raw.data$Detector[raw.data$Sample == sample]))
+            total.detectors <- length(allDetectors[raw.data$Sample == sample])
+            #cat("total.detectors:", total.detectors, "\n")
+            individual.detectors <- length(unique(allDetectors[raw.data$Sample == sample]))
 #if(individual.detectors * length(samples) != individual.detectors) {stop("HERE IT GOES")
-            cat("individual.detectors:", individual.detectors, "\n")
+            #cat("individual.detectors:", individual.detectors, "\n")
             tech.reps <- total.detectors/individual.detectors
-cat("Jus before\n")
+#cat("Jus before\n")
 raw.data$Detector <- as.character(raw.data$Detector) # coerce to stop funny behaviour
             if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
                 warning.text = paste("Corrupt taqman file: total number of readings for sample ", 
@@ -150,29 +151,27 @@ raw.data$Detector <- as.character(raw.data$Detector) # coerce to stop funny beha
                 stop(warning.text)
             }
             if (tech.reps > 1) { # Currently can't cope with technical replicates
-                warning.text = "More than 1 technical replicate detected\n"
-                cat(warning.text)
+                if(verbose) cat ("More than 1 technical replicate detected\n")
+#                cat(warning.text)
                 #if(raw.data$Detector
 #                cat(raw.data$Detector)
 #                [raw.data$Sample == sample]
 
 staticDetector <- raw.data$Detector[raw.data$Sample == sample]
 #cat(staticDetector, "FOR DA FIRST\n")
-jj <- 1
-                 for(techDetect in unique(raw.data$Detector[raw.data$Sample == sample]))  {
-cat(jj)
 #jj <- 1
-                   cat(techDetect, "for the win\n\n")
+                 for(techDetect in unique(raw.data$Detector[raw.data$Sample == sample]))  {
+                 #  cat(techDetect)
 #                   cat(staticDetector, "\n\n")
                    techDLength <- sum(staticDetector %in% techDetect)
-                   cat("LENGTH IS: ", techDLength, "\n")
-                   aaaa <- paste(techDetect, 1:techDLength, sep="_")
+                  # cat("LENGTH IS: ", techDLength, "\n")
+                   suffixedNames <- paste(techDetect, 1:techDLength, sep="_TechReps.")
                    #aaaa <- paste(raw.data$Detector[raw.data$Detector %in% techDetect], 1:techDLength, sep="")
                    #cat("detectorNewNames are :", aaaa, "\n")
-                   raw.data$Detector[raw.data$Sample == sample][raw.data$Detector[raw.data$Sample == sample] %in% techDetect] <- aaaa
+                   raw.data$Detector[raw.data$Sample == sample][raw.data$Detector[raw.data$Sample == sample] %in% techDetect] <- suffixedNames
                    
                    #row.names(exprs) <- raw.data$Detector
-jj <- jj+1
+#jj <- jj+1
 #stop()
                  }
             }

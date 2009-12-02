@@ -1,7 +1,7 @@
-%\VignetteIndexEntry{ReadPCR}                                       
+%\VignetteIndexEntry{ReadqPCR}
 %\VignetteDepends{stats,Biobase,methods}                            
 %\VignetteKeywords{real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder}
-%\VignettePackage{ReadPCR}
+%\VignettePackage{ReadqPCR}
 %
 \documentclass[11pt]{article}
 \usepackage{geometry}\usepackage{color}
@@ -11,7 +11,7 @@ baseurl={http://qpcr.r-forge.r-project.org/},%
 pdftitle={ReadqPCR: Functions to load RT-qPCR data into R},%
 pdfauthor={Matthias Kohl and James Perkins},%
 pdfsubject={ReadqPCR},%
-pdfkeywords={real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder},%
+pdfkeywords={real-time, quantitative, PCR, qPCR, RT-qPCR, housekeeper, reference gene, geNorm, NormFinder},%
 pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
 pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
 %
@@ -62,17 +62,50 @@ The format of the data file should be tab delimited and have the following colum
     \item[Ct] This is the cycle threshold for a given detector in the corresponding sample.
 \end{description}
 
+The generic function \code{read.qPCR} is called to read in the qPCR file. It is similar to the \code{read.affybatch} function of the \pkg{affy} package, in that it takes a user formatted file and outputs an object of class \code{qPCRBatch}. However, unlike \code{read.affybatch}, and the \code{read.taqman} function detailed below, only one file may be read in at a time.
+
+If \code{Well} and \code{Plate ID} information are given, then these are used to populate the \code{exprs.well.order}, a new \code{assayData} slot.
+
+
+
+
+
+SDS output will not necessarily contain plate identifiers, in which case numeric identifiers will be generated, depending on the order of t
+he plates within the SDS file, and the order in which the different files. This is important for filling the \code{exprs.well.order} slot o
+f the \code{qPCRBatch}, which is used for assessing the quality of different arrays, as explained in section \code{qPCRBatch}.
+
+
+<<read.qPCR>>=
+library(ReadqPCR) # load the ReadqPCR library
+path <- system.file("exData", package = "ReadqPCR")
+qPCR.example <- paste(path, "/qPCR.example.txt", sep="")
+qPCRBatch.qPCR <- read.qPCR(qPCR.example)
+@
+
+read.qPCR can deal with technical replicates. If the same detector and
+sample identifier occurs more than once, the suffix \code{\_TechRep.n} is concatenated to the detector name, where $n$ in \{$1, 2...N$
+\} is the number of the replication in the total number of replicates, $N$, based on
+order of appearence in the qPCR data file.
+So for a qPCR file with 2 technical replicates of 8 detectors on each sample, with one sample per plate, the detector names would be amended as follows:
+
+<<read.qPCR.tech.reps>>=
+qPCR.example.techReps <- paste(path,"/qPCR.techReps.txt", sep = "")
+qPCRBatch.qPCR.techReps <- read.qPCR(qPCR.example.techReps)
+rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
+@
+
+
+The reason for appending the suffix when technical replicates are encountered is in order to populate the \code{exprs} and \code{exprs.well.order} slots correctly and keep them to the \code{assayData} format. It also allows the decisions on how to deal with the analysis of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or otherwise.
+
 \section{read.taqman}
 
 \code{read.taqman} allows the user to read in the data output by the Sequence Detection Systems (SDS) software which is the software used to analyse the Taqman Low Density Arrays. 
 This data consists of the header section, which gives some general information about the experiment, run date etc., followed by the raw Cts values detected by the software, followed by summary data about the experiment.
-\code{read.taqman} is a generic function, and is called in a way similar to the \code{read.affybatch} of the \pkg{affy} package.
+\code{read.taqman} is a generic function, and is called in a way similar to the \code{read.affybatch} function of the \pkg{affy} package.
 
 <<read.taqman>>=
-library(ReadqPCR) # load the ReadqPCR library
-path <- system.file("exData", package = "ReadqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
-qPCRBatch <- read.taqman(taqman.example)
+qPCRBatch.taq <- read.taqman(taqman.example)
 @
 
 Currently the SDS software only allows up to 10 plates to be output onto one file. read.taqman allows any number of SDS output files to be combined to make a single \code{qPCRBatch}, as long as they have matching detector identifiers.
@@ -81,10 +114,24 @@ Currently the SDS software only allows up to 10 plates to be output onto one fil
 path <- system.file("exData", package = "ReadqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
 taqman.example.second.file <- paste(path, "/example2.txt", sep="")
-qPCRBatch.two.files <- read.taqman(taqman.example, taqman.example.second.file)
+qPCRBatch.taq.two.files <- read.taqman(taqman.example, taqman.example.second.file)
 @
 
 SDS output will not necessarily contain plate identifiers, in which case numeric identifiers will be generated, depending on the order of the plates within the SDS file, and the order in which the different files. This is important for filling the \code{exprs.well.order} slot of the \code{qPCRBatch}, which is used for assessing the quality of different arrays, as explained in section \code{qPCRBatch}.
+
+read.taqman can also deal with technical replicates. If the same detector and
+sample identifier occurs more than once, the suffix \code{\_TechRep.n} will be concatenated to the detector name, where $n$ in \{$1, 2...N$\} is the number of the replication in the total number of replicates $N$, based on
+order of appearence in the taqman data file.
+So for a taqman file with 4 technical replicates of 96 detectors per sample, with one sample per plate, the detector names would be amended as follows:
+
+<<read.taqman.tech.reps>>=
+taqman.example.tech.reps <- paste(path,"/exampleTechReps.txt", sep = "")
+qPCRBatch.taq.tech.reps <- read.taqman(taqman.example.tech.reps)
+rownames(exprs(qPCRBatch.taq.tech.reps))[1:8]
+@
+
+As with read.qPCR, the motivation for appending the suffix when technical replicates are encountered is in order to populate the \code{exprs} and \code{exprs.well.order} slots correctly and keep them to the \code{assayData} format.
+Again It also allows the decisions on how to deal with the analysis of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or otherwise.
 
 \section{qPCRBatch}
 \code{qPCRBatch} is an S4 class, designed to store information on the Cts raw values
@@ -94,14 +141,14 @@ comparisons between different tissue types or cell lines. This is achieved by
 making qPCRBatch an an extension of eSet, which means we can recycle slots such as exprs and pData.
 Here is an example of what a qPCRBatch looks like. note the similarity to eSet:
 
-<<qPCRBatch>>=
-qPCRBatch
+<<taqman.qPCRBatch>>=
+qPCRBatch.taq
 @
 
 pData will be filled automatically if no data is given, in a way analagous to read.affybatch:
 
-<<pData>>=
-pData(qPCRBatch)
+<<taqman.pData>>=
+pData(qPCRBatch.taq)
 @
 
 In addition there is a new slot, \code{exprs.well.order} which extends the \code{assayData} slot used for \code{exprs()}.
@@ -109,35 +156,56 @@ It has the same dimensions as \code{exprs} (as every instance of assayData must)
 The cells contain further details on the position on the arrays where the different meaurements were taken.
 These can be used in order to identify certain problematic arrays, housekeeper gene expression levels or gene expression levels, perhaps due to problems with the microfluidics technology that these arrays use (see \pkg{QCqPCR} for more details).
 
-This is conceptually similar to the cdf file information being stored in the \code{AffyBatch} class, except it allows for different arrays within the same experiment to have different layouts to each other. 
+This is conceptually similar to the cdf file information being stored in the \code{AffyBatch} class, except it allows for different arrays within the same experiment to have different layouts to each other.
 This information can be viewed using the \code{exprs.well.order()} function:
 and is later used in the \pkg{QCqPCR} package in order to produce pseudoplots of the qPCR cards, in a method analagous to the pseudo-images produced by \pkg{affyPLM}.
 
-If the input file includes identifiers for the different arrays in the experiment, the identifiers will be of the format \code{<plate.id>-<plate.position>}. 
-However if no names are given for the different plates, \pkg{ReadqPCR} will assign them a numeric identifier, which increments depending on the order of plates in the original file. 
+When using \code{read.taqman}, if the input file includes identifiers for the different arrays in the experiment, the identifiers will be of the format \code{<plate.id>-<plate.position>}.
+However if no names are given for the different plates, \pkg{ReadqPCR} will assign them a numeric identifier, which increments depending on the order of plates in the original file.
 When several input files are given, as in the case of SDS files, the order in which they are supplied to the \code{read.taqman} function will be mirrored in the order of the numeric identifiers for the different plates. However, to minimise confusion, we recommend the useR giving the plates their own unique identifiers where possible.
 
 Without plate names:
-<<exprs.well.order>>=
-head(exprs.well.order(qPCRBatch))
+<<taqman.exprs.well.order>>=
+head(exprs.well.order(qPCRBatch.taq))
 @
 
 With plate names:
-<<exprs.well.order.plate.names>>=
+<<taqman.exprs.well.order.plate.names>>=
 taqman.example.plateNames <-paste(path,"/exampleWithPlateNames.txt",sep="")
-qPCRBatch.plateNames <- read.taqman(taqman.example.plateNames)
-head(exprs.well.order(qPCRBatch.plateNames))
+qPCRBatch.taq.plateNames <- read.taqman(taqman.example.plateNames)
+head(exprs.well.order(qPCRBatch.taq.plateNames))
 @
 
-In addition, a mixture of files with and without plate identifiers is possible.
+In addition, a mixture of files with and without plate identifiers is possible. 
 
-<<exprs.well.order.plate.and.not>>=
+<<taqman.exprs.well.order.plate.and.not>>=
 taqman.example <- paste(path, "/example.txt", sep="")
 taqman.example.plateNames <-paste(path,"/exampleWithPlateNames.txt",sep="")
-qPCRBatch.mixedPlateNames <- read.taqman(taqman.example, taqman.example.plateNames)
-head(exprs.well.order(qPCRBatch.mixedPlateNames))
+qPCRBatch.taq.mixedPlateNames <- read.taqman(taqman.example, taqman.example.plateNames)
+head(exprs.well.order(qPCRBatch.taq.mixedPlateNames))
 @
-If the files to be combined do not have matching detector names, or if duplicate sample or plate names are given, read.taqman stop and give an error message.
+
+If the files to be combined do not have matching detector names, or if duplicate sample or plate names are given, read.taqman will stop and give an error message.
+\\
+When reading in \code{qPCR} files with \code{read.qPCR}, \code{exprs.well.order} will be populated as long as \code{Well} and \code{Plate ID} columns are given in the input file, otherwise the \code{exprs.well.order} slot will be \code{NULL}.
+
+So when plate ID and Well data are given:
+
+<<qPCR.exprs.well.order.withPlateId>>=
+head(exprs.well.order(qPCRBatch.qPCR))
+@
+
+And when they are not:
+
+<<qPCR.exprs.well.order.noPlateId>>=
+qPCR.example.noPlateOrWell <- paste(path, "/qPCR.noPlateOrWell.txt", sep="")
+qPCRBatch.qPCR.noPlateOrWell <- read.qPCR(qPCR.example.noPlateOrWell)
+exprs.well.order(qPCRBatch.qPCR.noPlateOrWell)
+@
+
+Once a qPCRBatch has been populated it is theoretically possible to use any tool which takes as it's input an \code{exprs} set matrix. However it is important to bear in mind the values are not raw expression values but Ct values, which means amongst other things that the values will be on the log scale, with the lower the Ct indicating higher expression level for a given transcript in the sample.
+Therefore we recommend the use of an algorithm such as those available in \pkg{NormqPCR} in order to calculate a more meaningful expression value.
+
 \end{document}
 
 
