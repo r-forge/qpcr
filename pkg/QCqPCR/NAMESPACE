@@ -1,1 +1,1 @@
-export(qPCRPairs, qPCRCorMatrix, plotVsHkg, PseudoPlot)
+export(qPCRPairs, qPCRCorMatrix, plotVsHkg, PseudoPlot, qPCRBoxWhisker)

@@ -1,15 +1,15 @@
 \name{qPCRPairs}
 \alias{qPCRPairs}
-\alias{qPCRPairs,qPCRSet-method}
+\alias{qPCRPairs,qPCRBatch-method}
 \title{ Make pairwise graphs for qPCR data from qPCR eset }
 \description{
   Takes set of qPCR data and makes pairwise graphs between all the samples.
 }
 \usage{
-qPCRPairs(qPCRSet, writeToFile = FALSE)
+qPCRPairs(qPCRBatch, writeToFile = FALSE)
 }
 \arguments{
-    \item{qPCRSet}{ Expression set containing qPCR data.}
+    \item{qPCRBatch}{ Expression set containing qPCR data.}
     \item{writeToFile}{ Option to write to file}
 }
 \details{
@@ -17,7 +17,7 @@ qPCRPairs(qPCRSet, writeToFile = FALSE)
 }
 \section{Methods}{
   \describe{
-    \item{qPCRPairs}{(qPCRSet): ... }
+    \item{qPCRPairs}{(qPCRBatch): ... }
   }
 }
 \value{produces graph and optionally writes to ping if called.}

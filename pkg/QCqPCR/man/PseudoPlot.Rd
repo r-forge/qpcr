@@ -1,15 +1,15 @@
 \name{PseudoPlot}
 \alias{PseudoPlot}
-\alias{PseudoPlot,qPCRSet-method}
+\alias{PseudoPlot,qPCRBatch-method}
 \title{ Plot Ct Values when normalised against different housekeeping genes }
 \description{
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
 }
 \usage{
-PseudoPlot(qPCRSet, plotType, writeToFile, cutOff, statType)
+PseudoPlot(qPCRBatch, plotType, writeToFile, cutOff, statType)
 }
 \arguments{
-    \item{qPCRSet}{ data set containing data on different Ct values normed to the different HKGs }
+    \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
     \item{plotType}{}
     \item{writeToFile}{}
     \item{cutOff}{}
@@ -21,7 +21,7 @@ PseudoPlot(qPCRSet, plotType, writeToFile, cutOff, statType)
 }
 \section{Methods}{
   \describe{
-    \item{PseudoPlot}{(qPCRSet): ... }
+    \item{PseudoPlot}{(qPCRBatch): ... }
   }
 }
 

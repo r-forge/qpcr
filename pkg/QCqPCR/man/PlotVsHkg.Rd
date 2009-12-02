@@ -1,15 +1,17 @@
 \name{plotVsHkg}
 \alias{plotVsHkg}
+\alias{plotVsHkg,qPCRBatch-method}
 \title{ Plot Ct Values when normalised against different housekeeping genes }
 \description{
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
 }
 \usage{
-plotVsHkg(qPCRSet, saveToFile = FALSE)
+plotVsHkg(qPCRBatch, hkgs, writeToFile = FALSE)
 }
 \arguments{
-    \item{qPCRSet}{ data set containing data on different Ct values normed to the different HKGs }
-    \item{saveToFile}{ Option to save to file }
+    \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
+    \item{hkgs}{ Vector of housekeeping genes. Must all be present in the exprs matrix } 
+    \item{writeToFile}{ Option to write output to file }
 }
 \details{
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes.

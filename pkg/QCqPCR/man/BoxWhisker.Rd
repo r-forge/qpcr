@@ -1,15 +1,15 @@
 \name{BoxWhisker}
 \alias{BoxWhisker}
 \alias{qPCRBoxWhisker}
-\alias{qPCRBoxWhisker,qPCRSet-method}
+\alias{qPCRBoxWhisker,qPCRBatch-method}
 \title{ Box and whisker plots }
 \description{ aaa
 }
 \usage{
-qPCRBoxWhisker(qPCRSet, cutOff, statType, plotType)
+qPCRBoxWhisker(qPCRBatch, cutOff, statType, plotType)
 }
 \arguments{
-    \item{qPCRSet}{ data set containing data on different Ct values normed to the different HKGs }
+    \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
     \item{cutOff}{}
     \item{statType}{}
     \item{plotType}{}
@@ -18,7 +18,7 @@ qPCRBoxWhisker(qPCRSet, cutOff, statType, plotType)
 }
 \section{Methods}{
   \describe{
-    \item{qPCRBoxWhisker}{(qPCRSet): ... }
+    \item{qPCRBoxWhisker}{(qPCRBatch): ... }
   }
 }
 

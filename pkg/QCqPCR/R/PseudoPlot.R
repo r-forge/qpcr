@@ -1,21 +1,21 @@
 setGeneric("PseudoPlot",
-  function(qPCRSet, plotType="Cts.Values", writeToFile=FALSE, cutOff=40, statType="parametric" )
+  function(qPCRBatch, plotType="Cts.Values", writeToFile=FALSE, cutOff=40, statType="parametric" )
     standardGeneric("PseudoPlot")
 )
-setMethod("PseudoPlot", signature = "qPCRSet", definition =
-  function(qPCRSet, plotType, writeToFile, cutOff, statType) {
+setMethod("PseudoPlot", signature = "qPCRBatch", definition =
+  function(qPCRBatch, plotType, writeToFile, cutOff, statType) {
+
 # CHECKING - IS THERE A CLEVERER WAY TO DO THIS?
- 
-if (statType == "parametric"
-    || statType == "non-parametric") {
-}
-else {
-  stop("Invalid statType argument, please use \"parametric\" or \"non-parametric\"")
-}
-    ctsMat <- exprs(qPCRSet)
+    if (statType == "parametric"
+      || statType == "non-parametric") {
+    }
+    else {
+        stop("Invalid statType argument, please use \"parametric\" or \"non-parametric\"")
+    }
+    ctsMat <- exprs(qPCRBatch)
     ctsMat[is.na(ctsMat)] <- cutOff # Cutoff point..Could change for different platforms
     ctsMat[ctsMat > cutOff] <- cutOff
-    orderMat <- exprs.well.order(qPCRSet)
+    orderMat <- exprs.well.order(qPCRBatch)
     plateVec <- as.vector(gsub("-.*", "", orderMat))
     wellVec <- as.numeric(gsub(".*-", "", orderMat))
 

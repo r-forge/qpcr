@@ -1,12 +1,12 @@
-\name{normByHKG}
-\alias{normByHKG}
-\alias{normaliseByHKG}
+\name{normByHkg}
+\alias{normByHkg}
+\alias{normaliseByHkg}
 \title{ Normalise qPCR data with housekeeping genes }
 \description{
   Normalise qPCR eset using housekeeping genes as control.
 }
 \usage{
-normByHKG(qPCRSet, hkg, verbose = FALSE)
+normByHkg(qPCRSet, hkg, verbose = FALSE)
 }
 \arguments{
   \item{qPCRSet}{ Expression set containing qPCR data. 
