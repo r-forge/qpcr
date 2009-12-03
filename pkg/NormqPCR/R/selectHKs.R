@@ -10,6 +10,10 @@
 ## na.rm: remove NA values
 selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2, 
                       log = TRUE, Symbols, trace = TRUE, na.rm = TRUE){
+    if(class(x) == "qPCRBatch") x <- t(exprs(x))
+#    else x <- t(x)
+#    print(x)
+#    x <- t(exprs(x))
     if(!is.matrix(x) & !is.data.frame(x))
         stop("'x' needs to be of class matrix or data.frame")
     if(is.data.frame(x)) x <- data.matrix(x)

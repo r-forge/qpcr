@@ -59,8 +59,10 @@ which is called {\it geNorm}. We first load the package and the data
 <<NormqPCR>>=
 options(width = 68)
 library(NormqPCR)
-data(geNorm)
-str(geNorm)
+path <- system.file("exData", package = "NormqPCR")
+geNorm.example <- paste(path, "/qPCR.geNorm.txt", sep="")
+geNorm.qPCRBatch <- read.qPCR(geNorm.example)
+str(exprs(geNorm.qPCRBatch))
 @
 We start by ranking the selected reference/housekeeping genes. The geNorm
 algorithm implemented in function \code{selectHKs} proceeds stepwise; confer 
@@ -70,21 +72,24 @@ M~value is excluded. Then, the gene stability measure~M for the remaining gene
 is calculated and so on. This procedure is repeated until two respectively, 
 \code{minNrHK} genes remain.
 <<geNorm>>=
+
+geNorm <- t(exprs(geNorm.qPCRBatch))
+
 tissue <- as.factor(c(rep("BM", 9), rep("POOL", 9), rep("FIB", 20), 
                       rep("LEU", 13), rep("NB", 34)))
 res.BM <- selectHKs(geNorm[tissue == "BM",], method = "geNorm", 
-                    Symbols = names(geNorm), minNrHK = 2, log = FALSE)
+                    Symbols = colnames(geNorm), minNrHK = 2, log = FALSE)
 res.POOL <- selectHKs(geNorm[tissue == "POOL",], method = "geNorm", 
-                      Symbols = names(geNorm), minNrHK = 2, 
+                      Symbols = colnames(geNorm), minNrHK = 2, 
                       trace = FALSE, log = FALSE)
 res.FIB <- selectHKs(geNorm[tissue == "FIB",], method = "geNorm", 
-                     Symbols = names(geNorm), minNrHK = 2, 
+                     Symbols = colnames(geNorm), minNrHK = 2, 
                      trace = FALSE, log = FALSE)
 res.LEU <- selectHKs(geNorm[tissue == "LEU",], method = "geNorm", 
-                     Symbols = names(geNorm), minNrHK = 2, 
+                     Symbols = colnames(geNorm), minNrHK = 2, 
                      trace = FALSE, log = FALSE)
 res.NB <- selectHKs(geNorm[tissue == "NB",], method = "geNorm", 
-                    Symbols = names(geNorm), minNrHK = 2, 
+                    Symbols = colnames(geNorm), minNrHK = 2, 
                     trace = FALSE, log = FALSE)
 @
 We obtain the following ranking of genes (cf. Table~3 in Vand02)
@@ -157,22 +162,32 @@ package is the method derived by \cite{NormFinder} (in the sequel: And04) called
 {\it NormFinder}.\\
 The ranking contained in Table~3 of And04 can be obtained via
 <<NormFinder>>=
-data(Colon)
-res.Colon <- stabMeasureRho(Colon[,3:15], group = Colon$Classification, 
+Colon.example <- paste(path, "/qPCR.colon.txt", sep="")
+Colon.qPCRBatch <- read.qPCR(Colon.example)
+str(exprs(Colon.qPCRBatch))
+Colon.qPCRBatch[["Group"]] <- c(rep("Normal",10),rep("Dukes A",10),rep("Dukes B",10),rep("Dukes C",10))
+pData(Colon.qPCRBatch)
+res.Colon <- stabMeasureRho(Colon.qPCRBatch, 
                             log = FALSE)
 sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
-data(Bladder)
-res.Bladder <- stabMeasureRho(Bladder[,3:16], group = Bladder$Grade, 
+
+Bladder.example <- paste(path, "/qPCR.bladder.txt", sep="")
+Bladder.qPCRBatch <- read.qPCR(Bladder.example)
+str(exprs(Bladder.qPCRBatch))
+Bladder.qPCRBatch[["Group"]] <- c(rep("Ta",10),rep("T1",8),rep("T2-4",10))
+pData(Bladder.qPCRBatch)
+
+res.Bladder <- stabMeasureRho(Bladder.qPCRBatch, 
                               log = FALSE)
 sort(res.Bladder)
 @
 Of course, we can also reproduce the geNorm ranking also included in Table~3
 of And04.
 <<NormFinder1>>=
-selectHKs(Colon[,3:15], log = FALSE, trace = FALSE, 
-          Symbols = names(Colon)[3:15])$ranking
-selectHKs(Bladder[,3:16], log = FALSE, trace = FALSE, 
-          Symbols = names(Bladder)[3:16])$ranking
+selectHKs(Colon.qPCRBatch, log = FALSE, trace = FALSE, 
+          Symbols = detectorNames(Colon.qPCRBatch))$ranking
+selectHKs(Bladder.qPCRBatch, log = FALSE, trace = FALSE, 
+          Symbols = detectorNames(Bladder.qPCRBatch))$ranking
 @
 As we are often interested in more than one reference/housekeeping gene we also
 implemented a step-wise procedure of the NormFinder algorithm explained in Section
