@@ -1,10 +1,9 @@
 setGeneric("PseudoPlot",
-  function(qPCRBatch, plotType="Cts.Values", writeToFile=FALSE, cutOff=40, statType="parametric" )
+  function(qPCRBatch, plotType="Cts.Values", writeToFile=FALSE, cutOff=NA, statType="parametric", plateToPlot="AllPlates")
     standardGeneric("PseudoPlot")
 )
 setMethod("PseudoPlot", signature = "qPCRBatch", definition =
-  function(qPCRBatch, plotType, writeToFile, cutOff, statType) {
-
+  function(qPCRBatch, plotType, writeToFile, cutOff, statType, plateToPlot) {
 # CHECKING - IS THERE A CLEVERER WAY TO DO THIS?
     if (statType == "parametric"
       || statType == "non-parametric") {
@@ -13,24 +12,32 @@ setMethod("PseudoPlot", signature = "qPCRBatch", definition =
         stop("Invalid statType argument, please use \"parametric\" or \"non-parametric\"")
     }
     ctsMat <- exprs(qPCRBatch)
-    ctsMat[is.na(ctsMat)] <- cutOff # Cutoff point..Could change for different platforms
-    ctsMat[ctsMat > cutOff] <- cutOff
+    if(! is.na(cutOff)) {
+      ctsMat[is.na(ctsMat)] <- cutOff # Cutoff point..Could change for different platforms
+      ctsMat[ctsMat > cutOff] <- cutOff
+    }
+    else {
+      warning("No cutOff value given, if you are calculating residuals, the program it will crash out ungracefully")
+    }
     orderMat <- exprs.well.order(qPCRBatch)
     plateVec <- as.vector(gsub("-.*", "", orderMat))
+    whichPlates <- unique(plateVec)
+    whichPlates <- sort(plateVec)
+    if(plateToPlot != "AllPlates") whichPlates <- plateToPlot
     wellVec <- as.numeric(gsub(".*-", "", orderMat))
 
     if (plotType == "Cts.Values") {
       minVal <- 0
       maxVal <- round(max(ctsMat, na.rm=TRUE), 2)
-      for (plate in unique(plateVec)) { # for each plate
+      for (plate in whichPlates) { # for each plate
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
-        .plotCardRaw(plotMat, plotTitle, minVal, cutOff, writeToFile)
+        .plotCardRaw(plotMat, plotTitle, minVal, max(plotMat, na.rm=TRUE), writeToFile)
       }
     }
     else if (plotType == "Plate.Residuals") {
-      for (plate in unique(plateVec)) {
+      for (plate in whichPlates) {
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         if (statType == "parametric") {
@@ -57,7 +64,7 @@ setMethod("PseudoPlot", signature = "qPCRBatch", definition =
       }
       valMat <-  totalMat /  residVec # now divide to get the results in terms of SDs/MADs from mean
       valMat[is.na(valMat)] <- 0 # bit cludgey - deals with when we have a 0 / 0 calculations
-      for (plate in unique(plateVec)) { # now we must order and plot the new values by plate
+      for (plate in whichPlates) { # now we must order and plot the new values by plate
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedVals <- valMat[plateVec == plate][order(wellVec[plateVec == plate])]
         plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
@@ -78,7 +85,7 @@ setMethod("PseudoPlot", signature = "qPCRBatch", definition =
           residWell[well] <- mad(ctsMat[wellVec == wellChar], na.rm=TRUE) # add the SD value for a given well
         }
       }
-      for (plate in unique(plateVec)) { # for each plate
+      for (plate in whichPlates) { # for each plate
         plotTitle <- paste(plotType, "for plate:", plate)
         orderedCts <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         totalVec <- orderedCts - averageWell
@@ -124,7 +131,6 @@ setMethod("PseudoPlot", signature = "qPCRBatch", definition =
   segments(0.5 + 0:m, rep(0.5, m + 1), 0.5 + 0:m, rep(n + 0.5, m), col = "gray")
   bg <- myCol[plotMat * (128/maxVal)]
   symbols(rep(1:m, each = n), rep(n:1, m), add = TRUE, inches = F, circles = rep(0.4, (m*n)), bg = as.vector(bg))
-  
   x.bar <- seq(from = minVal, to = maxVal, length = 128)
   par(mar = c(5.1, 4.1, 1, 2))
   image(x.bar, 1, matrix(x.bar, length(x.bar), 1), axes = FALSE, xlab = "", ylab = "", col = myCol)
