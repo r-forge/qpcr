@@ -9,6 +9,7 @@ produceHkgsDF <- function(qPCRSet, hkgs, design, cutoff = 40, verbose = FALSE){ 
     hkgs <- make.names(hkgs)
     ##########
     # Use design 'matrix' to work out which is case and which is control
+cat("HHHH\n")
     logicase <- design == "case" 
     logicontrol <- design == "control"
     lenCase <- sum(logicase==TRUE)
@@ -18,12 +19,13 @@ produceHkgsDF <- function(qPCRSet, hkgs, design, cutoff = 40, verbose = FALSE){ 
     DiscardNACase <- floor(lenCase/4) # less or equal to this number of NAs we discard
     DiscardNAControl <- floor(lenControl/4) # max number of NA values allowed for control
     ##########
-
-    normSet <- data.frame(row.names = featureNames(qPCRSet)) # turn exprs component into a data frame
+cat("HHHH\n")
+    normSet <- exprs(qPCRSet) # turn exprs component into a data frame
+cat("HHHH\n")
     normSet[normSet > cutoff] <- NA
     tabFormat <- vector()
     laterColNames <- vector()
-
+cat("HHHH\n")
     for(hkg in hkgs) { # For each nominal housekeeping gene
         if(hkg %in% featureNames(qPCRSet) == FALSE) stop (hkg," not found in file. Ensure entered housekeeping genes appear in the file")
         # first see if it's suitable
@@ -33,7 +35,7 @@ produceHkgsDF <- function(qPCRSet, hkgs, design, cutoff = 40, verbose = FALSE){ 
         # if unsuitable, stop the loop
         if(sum(is.na(hkgCtsCase)) > maxNAinCaseHkg) stop (hkg, " is unsuitable as a housekeeping gene because a value was obtained for it less than", maxNAinCaseHkg, "times out of", lenControl, ".")
         if(sum(is.na(hkgCtsControl)) > maxNAinControlHkg) stop (hkg, " is unsuitable as a housekeeping gene because a value was obtained for it less than", maxNAinControlHkg, "times out of ", lenControl, ".")
-
+cat("HHHHHHHHHH\n")
         
         hkg <- gsub("-.+$","",hkg) # regexp to remove any rubbish from end of control gene spec
 	laterColNames <- c(laterColNames, paste(hkg, "Control_mean", sep = "_"), paste(hkg, "Control_Sds", sep = "_"), paste(hkg, "Case_mean", sep = "_"), paste(hkg, "Case_Sds", sep = "_"), paste(hkg, "ddCt", sep = "_"), paste(hkg, "2^DDCt", sep = "_"), paste(hkg, "2^DDCt min", sep = "_"), paste(hkg, "2^DDCt max", sep = "_")) # get the column names for the tSet matrix

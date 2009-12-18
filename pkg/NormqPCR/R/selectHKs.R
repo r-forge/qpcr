@@ -10,7 +10,17 @@
 ## na.rm: remove NA values
 selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2, 
                       log = TRUE, Symbols, trace = TRUE, na.rm = TRUE){
-    if(class(x) == "qPCRBatch") x <- t(exprs(x))
+    if(method == "geNorm") {
+        if(class(x) == "qPCRBatch") x <- t(exprs(x))
+#        else x <- t(x)
+    }
+    if(method == "NormFinder") {
+        if(class(x) == "qPCRBatch"){
+            if (missing(group)) group <- pData(x)[,"Group"]
+            x <- t(exprs(x))
+        }
+        else stop("'x' must be of class qPCRBatch")
+    }
 #    else x <- t(x)
 #    print(x)
 #    x <- t(exprs(x))
@@ -77,8 +87,10 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
         return(list(ranking = R, variation = V, meanM = meanM))
     }
     if(method == "NormFinder"){
-        if(missing(group))
-            stop("For method 'NormFinder' a group variable has to be specified")
+
+#        if(missing(group))
+#          group <- as.factor(pData(x)[,"Group"])
+            
 
         NF <- stabMeasureRho(x, group = group, log = log, na.rm = na.rm, returnAll = TRUE)
         k <- length(NF$rho)

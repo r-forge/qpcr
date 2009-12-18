@@ -2,14 +2,15 @@
 ## group: factor
 ## log: data on log-scale
 ## na.rm: remove NA values
-stabMeasureRho <- function(x, log = TRUE, na.rm = TRUE, returnAll = FALSE){
-    if(class(x) != "qPCRBatch")
-        stop("Must supply qPCRBatch to this function")
-    group <- pData(x)[,"Group"]
-    x <- t(exprs(qPCRSet))
+stabMeasureRho <- function(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE){
+    if(class(x) == "qPCRBatch") {
+#        stop("Must supply qPCRBatch to this function")  
+        if(missing(group)) group <- pData(x)[,"Group"]
+        x <- t(exprs(x))
+    }
 
     if(!is.data.frame(x) & !is.matrix(x))
-        stop("'x' has to be of class matrix or data.frame")
+        stop("'x' has to be of class qPCRBatch, matrix or data.frame")
 
     if(is.data.frame(x)) x <- data.matrix(x)
     k <- ncol(x) # number of variables
