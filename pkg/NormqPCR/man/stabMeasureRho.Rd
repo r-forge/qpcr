@@ -7,11 +7,12 @@
   Andersen et al. (2004). 
 }
 \usage{
-stabMeasureRho(x, log = TRUE, na.rm = TRUE, returnAll = FALSE)
+stabMeasureRho(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE)
 }
 \arguments{
   \item{x}{ matrix or data.frame containing real-time quantitative 
   		  RT-PCR data }
+\item{group}{ grouping factor, either a factor vector or a phenoData column called "Group" }  
   \item{log}{ logical: is data on log-scale }
   \item{na.rm}{ a logical value indicating whether \code{NA} values should be
           stripped before the computation proceeds. }
