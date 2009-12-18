@@ -9,7 +9,7 @@
 \usepackage[%
 baseurl={http://qpcr.r-forge.r-project.org/},%
 pdftitle={NormqPCR: Functions for normalisation of RT-qPCR data},%
-pdfauthor={Matthias Kohl and },%
+pdfauthor={Matthias Kohl and James Perkins},%
 pdfsubject={NormqPCR},%
 pdfkeywords={real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder},%
 pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
@@ -103,16 +103,7 @@ ranks
 {\bf Remark 1:}\\
 Since the computation is based on gene ratios, the two most stable
 control genes in each cell type cannot be ranked.
-%\begin{enumerate}
-%\item[(a)] Since the computation is based on gene ratios, the two most stable
-%control genes in each cell type cannot be ranked.
-%\item[(b)] In praxis the selection of reference/housekeeping genes may 
-%require an additional step which is the computation of relative quantities 
-%via \code{relQuant}; e.g.
-%<<relQuant, eval = TRUE>>=
-%exa1 <- apply(geNorm[tissue == "BM",], 2, relQuant, E = 2)
-%@
-%\end{enumerate}
+
 We plot the average expression stability M for each cell type 
 (cf. Figure~2 in Vand02).
 <<fig2, fig = TRUE>>=
@@ -185,27 +176,56 @@ Of course, we can also reproduce the geNorm ranking also included in Table~3
 of And04.
 <<NormFinder1>>=
 selectHKs(Colon.qPCRBatch, log = FALSE, trace = FALSE, 
-          Symbols = detectorNames(Colon.qPCRBatch))$ranking
+          Symbols = featureNames(Colon.qPCRBatch))$ranking
 selectHKs(Bladder.qPCRBatch, log = FALSE, trace = FALSE, 
-          Symbols = detectorNames(Bladder.qPCRBatch))$ranking
+          Symbols = featureNames(Bladder.qPCRBatch))$ranking
 @
 As we are often interested in more than one reference/housekeeping gene we also
 implemented a step-wise procedure of the NormFinder algorithm explained in Section
 ``Average control gene'' in the supplementary information of And04. This procedure
 is available via function \code{selectHKs}.
 <<NormFinder2>>=
-selectHKs(Colon[,3:15], group = Colon$Classification, 
+selectHKs(Colon.qPCRBatch, 
           log = FALSE, trace = TRUE, 
-          Symbols = names(Colon)[3:15], minNrHKs = 12,
+          Symbols = featureNames(Colon.qPCRBatch), minNrHKs = 12,
           method = "NormFinder")$ranking
-selectHKs(Bladder[,3:16], group = Bladder$Grade, 
+selectHKs(Bladder.qPCRBatch, 
           log = FALSE, trace = FALSE, 
-          Symbols = names(Bladder)[3:16], minNrHKs = 13,
+          Symbols = featureNames(Bladder.qPCRBatch), minNrHKs = 13,
           method = "NormFinder")$ranking
 @
 %-------------------------------------------------------------------------------
-\section{Normalization by means of reference/housekeeping genes} 
+\section{Normalization by means of reference/housekeeping genes ($2^{\delta \delta Ct}$ method)}
 %-------------------------------------------------------------------------------
+
+It is possible to use the delta delta Ct method for calculating the relative gene expression. 
+Both the same well and the seperate well methods as detailed in \cite{ddCt} can be used for this purpose.
+They have been named \code{deltaDeltaCt} and \code{deltaDeltaAvgCt} respectively, with \code{deltaDeltaAvgCt} so named since it calculates the average standard deviation between case and control as s = $\sqrt{s_{1}^{2} + s_{2}^{2}}$.
+This approach is not recommended when the housekeeper and genes to be compared are from the same sample, as is the case when using the taqman cards, but is included for compleness and for situations where readings for the housekeeper might be taken from a seperate biological replicate for example in a \it{post hoc} manner due to the originally designated housekeeping genes not performing well, or for when NormqPCR is used for amplifications from seperate wells.
+
+for the example taqman dataset from \pkg{ReadqPCR} we must first read it in the data file:
+<<taqman 1>>=
+path <- system.file("exData", package = "ReadqPCR")
+taqman.example <- paste(path, "/example.txt", sep="")
+qPCRBatch.taqman <- read.taqman(taqman.example)
+@
+
+\code{deltaDeltaCt} and \code{deltaDeltaAvgCt} also require a contrast matrix. This is to contain columns which will be used to specify the samples representing \code{case} and \code{control} which are to be compared, in a similar way to the \pkg{limma} package. these columns should contain 1s or 0s which refer to the samples in either category:
+
+<< contrast >>=
+xx <- cbind(c(0,0,0,0,1,1,1,1),c(1,1,1,1,0,0,0,0))
+colnames(xx) <- c("interestingPhenotyp","wildTypePhenotype")
+rownames(xx) <- sampleNames(zz)
+xx
+@
+
+We can now normalise each sample by a given housekeeping gene and then look at the ratio of expression between the case and control samples
+
+<< ddCt >>=
+ccc <- deltaDeltaCt(zz,1,1,hkg, xx, "case","control")
+@
+
+
 %-------------------------------------------------------------------------------
 \begin{thebibliography}{1}
 
@@ -216,6 +236,12 @@ A Model-Based Variance Estimation Approach to Identify Genes Suited for
 Normalization, Applied to Bladder and Colon Cancer Data Sets
 \newblock CANCER RESEARCH 64, 5245–5250, August 1, 2004
 \newblock \url{http://cancerres.aacrjournals.org/cgi/content/full/64/15/5245}
+
+\bibitem{ddCt}
+Kenneth Livak, Thomase Schmittgen (2001).
+\newblock Analysis of Relative Gene Expression Data Using Real-Time Quantitative PCR and the $2^{\delta \delta Ct}$ Method.
+\newblock Methods 25, 402-408, 2001
+\newblock \url{http://www.ncbi.nlm.nih.gov/pubmed/11846609}
 
 \bibitem{geNorm}
 Jo Vandesompele, Katleen De Preter, Filip Pattyn, Bruce Poppe, Nadine Van Roy, 
