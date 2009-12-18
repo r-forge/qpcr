@@ -7,12 +7,11 @@
   Andersen et al. (2004). 
 }
 \usage{
-stabMeasureRho(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE)
+stabMeasureRho(x, log = TRUE, na.rm = TRUE, returnAll = FALSE)
 }
 \arguments{
   \item{x}{ matrix or data.frame containing real-time quantitative 
   		  RT-PCR data }
-  \item{group}{ grouping factor  }
   \item{log}{ logical: is data on log-scale }
   \item{na.rm}{ a logical value indicating whether \code{NA} values should be
           stripped before the computation proceeds. }
@@ -45,12 +44,12 @@ stabMeasureRho(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE)
 %}
 \seealso{\code{selectHKs}}
 \examples{
-data(Colon)
-res.Colon <- stabMeasureRho(Colon[,3:15], group = Colon$Classification, 
+data(Colon.qPCRBatch)
+res.Colon <- stabMeasureRho(Colon.qPCRBatch, 
                             log = FALSE)
 sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
-data(Bladder)
-res.Bladder <- stabMeasureRho(Bladder[,3:16], group = Bladder$Grade, 
+data(Bladder.qPCRBatch)
+res.Bladder <- stabMeasureRho(Bladder.qPCRBatch,
                             log = FALSE)
 sort(res.Bladder) # cf. Table 3 in Andersen et al (2004)
 }

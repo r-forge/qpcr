@@ -1,2 +1,2 @@
 importClasses(qPCRSet)
-export(geomMean,stabMeasureM,stabMeasureRho,selectHKs,normByHkg,replaceNAs)
+export(geomMean,stabMeasureM,stabMeasureRho,selectHKs,normByHkg,replaceNAs,deltaDeltaCt,deltaDeltaAvgCt,produceHkgsDF)
