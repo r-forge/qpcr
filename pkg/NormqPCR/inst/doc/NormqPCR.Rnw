@@ -195,15 +195,17 @@ selectHKs(Bladder.qPCRBatch,
           method = "NormFinder")$ranking
 @
 %-------------------------------------------------------------------------------
-\section{Normalization by means of reference/housekeeping genes ($2^{\delta \delta Ct}$ method)}
+\section{Normalization by means of reference/housekeeping genes}
 %-------------------------------------------------------------------------------
+
+\subsection{$2^{\delta \delta Ct}$ method using a single housekeeper}
 
 It is possible to use the delta delta Ct method for calculating the relative gene expression. 
 Both the same well and the seperate well methods as detailed in \cite{ddCt} can be used for this purpose.
 They have been named \code{deltaDeltaCt} and \code{deltaDeltaAvgCt} respectively, with \code{deltaDeltaAvgCt} so named since it calculates the average standard deviation between case and control as s = $\sqrt{s_{1}^{2} + s_{2}^{2}}$.
-This approach is not recommended when the housekeeper and genes to be compared are from the same sample, as is the case when using the taqman cards, but is included for compleness and for situations where readings for the housekeeper might be taken from a seperate biological replicate for example in a \it{post hoc} manner due to the originally designated housekeeping genes not performing well, or for when NormqPCR is used for amplifications from seperate wells.
+This approach is not recommended when the housekeeper and genes to be compared are from the same sample, as is the case when using the taqman cards, but is included for compleness and for situations where readings for the housekeeper might be taken from a seperate biological replicate for example in a {\it post hoc} manner due to the originally designated housekeeping genes not performing well, or for when NormqPCR is used for amplifications from seperate wells.
 
-for the example taqman dataset from \pkg{ReadqPCR} we must first read it in the data file:
+for the example taqman dataset from \pkg{ReadqPCR} we must first read in the data:
 <<taqman 1>>=
 path <- system.file("exData", package = "ReadqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
@@ -213,17 +215,33 @@ qPCRBatch.taqman <- read.taqman(taqman.example)
 \code{deltaDeltaCt} and \code{deltaDeltaAvgCt} also require a contrast matrix. This is to contain columns which will be used to specify the samples representing \code{case} and \code{control} which are to be compared, in a similar way to the \pkg{limma} package. these columns should contain 1s or 0s which refer to the samples in either category:
 
 << contrast >>=
-xx <- cbind(c(0,0,0,0,1,1,1,1),c(1,1,1,1,0,0,0,0))
-colnames(xx) <- c("interestingPhenotyp","wildTypePhenotype")
-rownames(xx) <- sampleNames(zz)
-xx
+contM <- cbind(c(0,0,0,0,1,1,1,1),c(1,1,1,1,0,0,0,0))
+colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
+rownames(contM) <- sampleNames(qPCRBatch.taqman)
+contM
 @
 
-We can now normalise each sample by a given housekeeping gene and then look at the ratio of expression between the case and control samples
+We can now normalise each sample by a given housekeeping gene and then look at the ratio of expression between the case and control samples. Results show the difference between the mean value for case and control following subtraction of the housekeeping genes (first column) followed by the range of values that correspond to 1 s.d. either side of the mean value, as detailed in \cite{ddCt}
 
 << ddCt >>=
-ccc <- deltaDeltaCt(zz,1,1,hkg, xx, "case","control")
+hkg <- "Actb-Rn00667869_m1"
+ddCt.taqman <- deltaDeltaCt(qPCRBatch.taqman,1,1,hkg, contM, "interestingPhenotype","wildTypePhenotype")
+head(ddCt.taqman)
 @
+
+We can also average the taqman data using the seperate samples/wells method \code{deltaDeltaAvgCt}.
+Note how although the values are the same the ranges (+/- 1 s.d.) are generally a little higher.
+This is because the averages of case or control are calculated, and the average values for the respective housekeepers are calculated independently and then subtracted. Therefore the pairing of housekeeper with the detector value within the same sample is lost.
+
+<< ddCt Avg >>=
+hkg <- "Actb-Rn00667869_m1"
+ddCtAvg.taqman <- deltaDeltaAvgCt(qPCRBatch.taqman,1,1,hkg, contM, "interestingPhenotype","wildTypePhenotype")
+head(ddCtAvg.taqman)
+@
+
+\subsection{$2^{\delta \delta Ct}$ method) using geometric mean of a number of housekeeping genes}
+
+When the user has identified a number of housekeeping genes, for example by using the NormFinder/geNorm algorithms described above, they can use the geometric mean of these values as a pseudo-housekeeper from which to subtract the other values. We illustrate this using the data from the geNorm dataset above.
 
 
 %-------------------------------------------------------------------------------

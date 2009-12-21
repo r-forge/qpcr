@@ -1,26 +1,52 @@
 setGeneric("qPCRPairs",
-  function(qPCRBatch, writeToFile=FALSE, pairsToPlot="AllPairs")
+  function(qPCRBatch, plotType="Sample", writeToFile=FALSE, pairsToPlot="All")
   standardGeneric("qPCRPairs")
 )
 setMethod("qPCRPairs", signature = "qPCRBatch", definition =
-  function(qPCRBatch, writeToFile, pairsToPlot) {
-    if(pairsToPlot != "AllPlates") { 
-        pairsToPlot <- combn(sampleNames(qPCRBatch),2)
+  function(qPCRBatch, plotType, writeToFile, pairsToPlot) {
+    if(plotType == "Sample") {
+#cat("NOTHEREIHOPE\n")
+      if(pairsToPlot == "All") { 
+          pairsToPlot <- combn(sampleNames(qPCRBatch),2)
+      }
+      else {
+cat("HEREIHOPE\n")
+          pairsToPlot <- combn(pairsToPlot,2)
+      }
+      plotMat = exprs(qPCRBatch)
+      apply(pairsToPlot, 2, .plotPairs, plotMat, writeToFile)
     }
-    else {
-        pairsToPlot <- combn(pairsToPlot,2)
+    else if (plotType == "Plate") {
+      if(pairsToPlot == "All") {
+          pairsToPlot <- combn(sampleNames(qPCRBatch),2)
+      }
+      else {
+          
+      }
+
+        plateVec <- as.vector(gsub("-.*", "", orderMat))
+        wellVec <- as.numeric(gsub(".*-", "", orderMat))
+        plotMat <- matrix(ncol = length(levels(as.factor(plateVec))), nrow = max(wellVec))
+      }
+        for(i in plateVec) {
+          plotMat[,count] <-  exprs(qPCRBatch)[plateVec == i][wellVec[plateVec == i]]
+          pairsToPlot <- combn(pairsToPlot,2)
+          count <- count + 1
+        }
+ 
+      apply(pairsToPlot, 2, .plotPairs, plotMat, writeToFile)
     }
-    apply(pairsToPlot, 2, .plotPairs, qPCRBatch, writeToFile)
+    else stop("incorrect plotType argument given")
   }
 )
-.plotPairs <- function(samples, qPCRBatch, writeToFile) # plots graph between the 2 samples
+.plotPairs <- function(samples, plotMat, writeToFile) # plots graph between the 2 samples
 {
   x <- samples[1]
   y <- samples[2]
   if (writeToFile) jpeg(filename = paste(x, "_", y, "_Pairs_Plot.jpeg", sep = ""))
-  raw <- as.data.frame(exprs(qPCRBatch))
-  plot(raw[, x], raw[, y], xlab = x, ylab = y, xlim = c(1, max(raw[, x], na.rm=TRUE)), ylim = c(1, max(raw[, y], na.rm=TRUE)))
-  title(main <- c(x, "vs", y, "R^2 = ", cor(raw[, x] ,raw[, y], use <- "complete.obs")))
+#  plotMat <- as.data.frame(exprs(qPCRBatch))
+  plot(plotMat[, x], plotMat[, y], xlab = x, ylab = y, xlim = c(1, max(plotMat[, x], na.rm=TRUE)), ylim = c(1, max(plotMat[, y], na.rm=TRUE)))
+  title(main <- c(x, "vs", y, "R^2 = ", cor(plotMat[, x] ,plotMat[, y], use <- "complete.obs")))
   abline(0, 1)
   if (writeToFile) dev.off()
 }

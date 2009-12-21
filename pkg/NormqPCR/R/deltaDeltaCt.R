@@ -15,8 +15,6 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     controlM <- expM[,control]
     hkgVCase <- caseM[hkg, ]
     hkgVControl <- controlM[hkg, ]
-cat("EHHHHHHHHHHHHH", length(hkgVCase))
-cat("EHHHHHHHHHHHHH", length(hkgVControl))
 
     if(! FALSE %in% is.na(hkgVCase) || ! FALSE %in% is.na(hkgVControl)) stop("Need at least 1 non NA for the housekeeper")
 
@@ -26,12 +24,8 @@ cat("EHHHHHHHHHHHHH", length(hkgVControl))
 
     i <- 1
     for (detector in featureNames(qPCRBatch)) {
-        cat("i is",i,"\n")
-        cat(detector,"\n")
         VCase <- caseM[detector,]
         VControl <- controlM[detector,]
-        cat(VCase,"\n")
-        cat(VControl,"\n")
 
         if(length(VCase) == 1) {
           warning("Only one Detector for Case")
@@ -39,7 +33,7 @@ cat("EHHHHHHHHHHHHH", length(hkgVControl))
           sdCase <- NA
         }
         else {
-          dCtCase <- mean(VCase - hkgVCase, na.rm=TRUE)
+          dCtCase <- geomMean(VCase - hkgVCase, na.rm=TRUE)
           sdCase <- sd(VCase - hkgVCase, na.rm=TRUE)
         }
         if(length(VControl) == 1) {
@@ -47,7 +41,7 @@ cat("EHHHHHHHHHHHHH", length(hkgVControl))
           dCtControl <- VControl
         }
         else {
-          dCtControl <- mean(VControl - hkgVControl, na.rm=TRUE)
+          dCtControl <- geomMean(VControl - hkgVControl, na.rm=TRUE)
         }
         if(sum(is.na(VCase)) > maxNACase) {
           dCtCase <- NA
@@ -55,13 +49,9 @@ cat("EHHHHHHHHHHHHH", length(hkgVControl))
         if(sum(is.na(VControl)) > maxNAControl) {
           dCtControl <- NA
         }
-        cat("dCtCase",dCtCase,"\n")
-        cat("dCtControl",dCtControl,"\n")
         ddCt <- (dCtCase - dCtControl)
         
-        cat("ddCt",ddCt,"\n")
         if(is.na(ddCt)) {
-#cat("HEREWER")
           if(is.na(dCtCase) && ! is.na(dCtControl)) ddCt <- "-"
           else if(is.na(dCtControl) && ! is.na(dCtCase)) ddCt <- "+"
           else if(is.na(dCtControl) && is.na(dCtCase)) ddCt <- NA

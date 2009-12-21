@@ -1,5 +1,6 @@
 \name{deltaDeltaCt}
 \alias{deltaDeltaCt}
+\alias{deltaDeltaCt,qPCRBatch-method}
 \title{ Perform normalization and differential expression with given housekeeping gene }
 \description{
 Normalise qPCR eset using housekeeping genes as control, then perform differential expression analysis using the delta delta Ct method.

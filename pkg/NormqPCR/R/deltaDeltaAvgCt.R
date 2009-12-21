@@ -15,19 +15,16 @@ setMethod("deltaDeltaAvgCt", signature = "qPCRBatch", definition =
     controlM <- expM[,control]
     hkgVCase <- caseM[hkg, ]
     hkgVControl <- controlM[hkg, ]
-cat("EHHHHHHHHHHHHH", length(hkgVCase))
-cat("EHHHHHHHHHHHHH", length(hkgVControl))
 
     if(length(hkgVCase) == 1 || length(hkgVControl) == 1) {
-stop("EHHHHHHHHHHHHH", length(hkgVCase))
       meanHkgCase <- hkgVCase
       meanHkgControl <- hkgVControl
       sdHkgCase <- NA
       sdHkgControl <- NA
     }
     else {
-      meanHkgCase <- mean(hkgVCase, na.rm=TRUE)
-      meanHkgControl <- mean(hkgVControl, na.rm=TRUE)
+      meanHkgCase <- geomMean(hkgVCase, na.rm=TRUE)
+      meanHkgControl <- geomMean(hkgVControl, na.rm=TRUE)
       sdHkgCase <- sd(hkgVCase, na.rm=TRUE)
       sdHkgControl <- sd(hkgVControl, na.rm=TRUE)
     }
@@ -39,14 +36,10 @@ stop("EHHHHHHHHHHHHH", length(hkgVCase))
 
     i <- 1
     for (detector in featureNames(qPCRBatch)) {
-        cat(detector,"\n")
-        VCase <- caseM[detector,]
-        VControl <- controlM[detector,]
-        cat(VCase,"\n")
-        cat(VControl,"\n")
-
-          meanCase <- mean(VCase, na.rm=TRUE)
-          meanControl <- mean(VControl, na.rm=TRUE)
+          VCase <- caseM[detector,]
+          VControl <- controlM[detector,]
+          meanCase <- geomMean(VCase, na.rm=TRUE)
+          meanControl <- geomMean(VControl, na.rm=TRUE)
           sdCase <- sd(VCase, na.rm=TRUE)
           sdControl <- sd(VControl, na.rm=TRUE)
 
@@ -55,7 +48,7 @@ stop("EHHHHHHHHHHHHH", length(hkgVCase))
           sdCase <- NA
         }
         else {
-          meanCase <- mean(VCase, na.rm=TRUE)
+          meanCase <- geomMean(VCase, na.rm=TRUE)
           sdCase <- sd(VCase, na.rm=TRUE)
         }
         if(sum(is.na(VControl)) > maxNAControl) {
@@ -63,22 +56,14 @@ stop("EHHHHHHHHHHHHH", length(hkgVCase))
           sdControl <- NA
         }
         else {
-          meanControl <- mean(VControl, na.rm=TRUE)
+          meanControl <- geomMean(VControl, na.rm=TRUE)
           sdControl <- sd(VControl, na.rm=TRUE)
         }
-        cat("meanCase",meanCase,"\n")
-        cat("meanControl",meanControl,"\n")
-        cat("sdCase",sdCase,"\n")
-        cat("sdControl",sdControl,"\n")
         dCtCase <- meanCase - meanHkgCase
         dCtControl <- meanControl - meanHkgControl
-        cat("dCtCase",dCtCase,"\n")
-        cat("dCtControl",dCtControl,"\n")
-        cat(i,"\n")
         ddCt <- (dCtCase - dCtControl)
-        cat("ddCt",ddCt,"\n")
+
         if(is.na(ddCt)) {
-#cat("HEREWER")
           if(is.na(dCtCase) && ! is.na(dCtControl)) ddCt <- "-"
           else if(is.na(dCtControl) && ! is.na(dCtCase)) ddCt <- "+"
           else if(is.na(dCtControl) && is.na(dCtCase)) ddCt <- NA
