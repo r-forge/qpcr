@@ -52,11 +52,11 @@ ReadqPCR is designed to be complementary to 2 other R modules: QCqPCR and NormqP
 %-------------------------------------------------------------------------------
 \section{read.qPCR}
 
-\code{read.qPCR} allows the user to read in qPCR data and populate a \code{qPCRBatch} R object (see section \code{qPCRBatch}). 
+\code{read.qPCR} allows the user to read in qPCR data and populate a \code{qPCRBatch} R object (see section \code{qPCRBatch}) using their own data matrix. 
 The format of the data file should be tab delimited and have the following columns, the first two of which are optional (although they should either be provided both together, or not at all):
 
 \begin{description}
-    \item[Well] Optional, this represents the position of the detector on a given plate. This information, if given, will be used to check the plates are of the same size and in order to plot a representation of the card to look for spatial effects and other potential problems.
+    \item[Well] Optional, this represents the position of the detector on a given plate. This information, if given, will be used to check the plates are of the same size and will also be used in order to plot a representation of the card to look for spatial effects and other potential problems. Both Well number and Plate ID must be present to enable a plate to be plotted.
     \item[Plate ID] Optional, this is an identifier for the plate on which an experiment was performed. It is not possible to have duplicate plate IDs with the same Well number. Neither is it possible to have Plate Ids without Well numbers. Both Well number and Plate ID must be present to enable a plate to be plotted.
     \item[Sample] The sample being analysed. Each sample must contain the same detectors in order to combine and compare samples effectively and to form a valid expression set matrix.
     \item[Detector] This is the identifier for the gene being investigated. The Detectors must be identical for each sample.
@@ -65,8 +65,7 @@ The format of the data file should be tab delimited and have the following colum
 
 The generic function \code{read.qPCR} is called to read in the qPCR file. It is similar to the \code{read.affybatch} function of the \pkg{affy} package, in that it reads a file and automatically populates an R object, code{qPCRBatch} described below. However it is different in that the file is user formatted. In addition, unlike \code{read.affybatch}, and also unlike the \code{read.taqman} function detailed below, only one file may be read in at a time.
 
-If \code{Well} and \code{Plate ID} information are given, then these are used to populate the \code{exprs.well.order}, a new \code{assayDat
-a} slot introduced in the \code{qPCRBatch} object, as detailed below in section \code{qPCRBatch}.
+If \code{Well} and \code{Plate ID} information are given, then these are used to populate the \code{exprs.well.order}, a new \code{assayData} slot introduced in the \code{qPCRBatch} object, as detailed below in section \code{qPCRBatch}.
 
 So for the \code{qPCR.example.txt} file, in directory \code{exData} of this library, which contains \code{Well} and \code{Plate ID} information, as well as the mandatory \code{Sample}, \code{Detector} and \code{Ct} information, we can read in the data as follows.
 <<read.qPCR>>=
@@ -76,11 +75,9 @@ qPCR.example <- paste(path, "/qPCR.example.txt", sep="")
 qPCRBatch.qPCR <- read.qPCR(qPCR.example)
 @
 
-\code{qPCRBatch.qPCR} will be a \code{qPCRBatch} object with an exprs and exprs.well.order, as well as a phenoData slot which gets automatically populated in the same was as when using \code{read.affybatch}. More detail is given in the \code{qPCRBatch} section below.
+\code{qPCRBatch.qPCR} will be a \code{qPCRBatch} object with an exprs and exprs.well.order, as well as a phenoData slot which gets automatically populated in the same way as when using \code{read.affybatch}. More detail is given in the \code{qPCRBatch} section below.
 
-
-read.qPCR can deal with technical replicates. If the same detector and
-sample identifier occurs more than once, the suffix \code{\_TechRep.n} is concatenated to the detector name, where $n$ in \{$1, 2...N$
+read.qPCR can deal with technical replicates. If the same detector and sample identifier occurs more than once, the suffix \code{\_TechRep.n} is concatenated to the detector name, where $n$ in \{$1, 2...N$
 \} is the number of the replication in the total number of replicates, $N$, based on
 order of appearence in the qPCR data file.
 So for a qPCR file with 2 technical replicates of 8 detectors on each sample, with one sample per plate, the detector names would be amended as follows:
@@ -93,7 +90,7 @@ rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
 
 
 The reason for appending the suffix when technical replicates are encountered is in order to populate the \code{exprs} and \code{exprs.well.order} slots correctly and keep them to the \code{assayData} format.
-It also allows the decisions on how to deal with the analysis and combination of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or otherwise.
+It also allows the decisions on how to deal with the analysis and combination of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or any other function that takes \code{assayData} format R objects as input.
 
 \section{read.taqman}
 
