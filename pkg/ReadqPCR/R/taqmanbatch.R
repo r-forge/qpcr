@@ -74,39 +74,8 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
 
         if(fileNameCount > 1) { # do some checking
           if(TRUE %in% (samples == colnames(totalExprs))) stop("Can't combine files, > 1 sample labels are the same between samples")
-          else if(! FALSE %in% (sort(detectors) == sort(rownames(totalExprs)))) {
-            if(verbose == TRUE) cat("we are combining files with the same detector names\n")
-          }
-          else stop("Problem combining files on detector names. Make sure detector names match for all files\n")
-
           if(TRUE %in% (raw.data$PlateID %in% totalPlateIds)) stop ("Can't proceed, duplicate plate Ids in different files. All plate IDs should be unique")
         }
-################################################################################################
-####################################################
-# Work out if we have technical replicates
-####################################################
-#        no.of.detectors <- length(detectors)
-#        total.detectors <- length(raw.data$Detector)
-#        tech.reps <- total.detectors/total.detectors
-#cat("aa", diff.detectors, "bb", max.detectors, "\n")
-#        if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
-#            warning.text = paste("Corrupt taqman file: total number of readings for sample ", 
-#               sample, " not a multiple of number of individual number of detectors")
-#            stop(warning.text)
-#        }
-#        #staticDetector <- raw.data$Detector
-#        if (tech.reps > 1) { # Currently can't cope with technical replicates
-#            warning.text = "More than 1 technical replicate detected\n"
-#            cat(warning.text, "aa", diff.detectors, "bb", max.detectors)
-
-#            for(techDetect in  unique(raw.data$Detector)) {
-#                techDLength <- sum(techDetect %in% raw.data$Detector)
-#                cat("LENGTH IS: ", techDLength, "\n")
-#                aaaa <- paste(raw.data$Detector[raw.data$Detector %in% techDetect], 1:tech.reps, sep="_ZZ_")
-#                cat("detectorNewNames are :", aaaa, "\n")
-#                raw.data$Detector[raw.data$Detector %in% techDetect] <- aaaa
- #           }
- #       }
         original.order <- list() # initialise the list
         
         
@@ -169,12 +138,18 @@ staticDetector <- raw.data$Detector[raw.data$Sample == sample]
                    #aaaa <- paste(raw.data$Detector[raw.data$Detector %in% techDetect], 1:techDLength, sep="")
                    #cat("detectorNewNames are :", aaaa, "\n")
                    raw.data$Detector[raw.data$Sample == sample][raw.data$Detector[raw.data$Sample == sample] %in% techDetect] <- suffixedNames
-                   
-                   #row.names(exprs) <- raw.data$Detector
-#jj <- jj+1
-#stop()
                  }
             }
+#            cat("FIRSTONE:", sort(raw.data$Detector[raw.data$Sample == sample]))
+#            cat("SECONDONE:", sort(rownames(totalExprs)))
+        if(fileNameCount > 1) { # do some checking
+            cat("FIRSTONE:", sort(raw.data$Detector[raw.data$Sample == sample]))
+            cat("SECONDONE:", sort(rownames(totalExprs)))
+          if(! FALSE %in% (sort(raw.data$Detector[raw.data$Sample == sample]) == sort(rownames(totalExprs)))) {
+            if(verbose == TRUE) cat("we are combining files with the same detector names\n")
+          }
+          else stop("Problem combining files on detector names. Make sure detector names match for all files\n")
+        }
             if(firstTimeFlag == TRUE) {
                 exprs <- data.frame(unique(raw.data$Detector), row.names=1) # start the exprs data frame
                 well.order <- data.frame(unique(raw.data$Detector), row.names=1)
