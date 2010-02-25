@@ -33,7 +33,7 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
           sdCase <- NA
         }
         else {
-          dCtCase <- geomMean(VCase - hkgVCase, na.rm=TRUE)
+          dCtCase <- mean(VCase - hkgVCase, na.rm=TRUE)
           sdCase <- sd(VCase - hkgVCase, na.rm=TRUE)
         }
         if(length(VControl) == 1) {
@@ -41,7 +41,7 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
           dCtControl <- VControl
         }
         else {
-          dCtControl <- geomMean(VControl - hkgVControl, na.rm=TRUE)
+          dCtControl <- mean(VControl - hkgVControl, na.rm=TRUE)
         }
         if(sum(is.na(VCase)) > maxNACase) {
           dCtCase <- NA

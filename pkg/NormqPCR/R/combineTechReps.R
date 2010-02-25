@@ -15,6 +15,8 @@ setMethod("combineTechReps", signature = "qPCRBatch", definition =
       dValues <- as.numeric(apply(expM[grepl(detector, origDetectors),],2,mean,na.rm=TRUE))
       NewExpM[detector,] <- dValues
     }
+    NewExpM[is.na(NewExpM)] <- NA
     qPCRBatch <- new("qPCRBatch", exprs = NewExpM, phenoData = phenoData(qPCRBatch))
+    return(qPCRBatch)
   }
 )

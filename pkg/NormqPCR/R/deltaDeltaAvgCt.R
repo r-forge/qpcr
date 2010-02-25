@@ -23,8 +23,8 @@ setMethod("deltaDeltaAvgCt", signature = "qPCRBatch", definition =
       sdHkgControl <- NA
     }
     else {
-      meanHkgCase <- geomMean(hkgVCase, na.rm=TRUE)
-      meanHkgControl <- geomMean(hkgVControl, na.rm=TRUE)
+      meanHkgCase <- mean(hkgVCase, na.rm=TRUE)
+      meanHkgControl <- mean(hkgVControl, na.rm=TRUE)
       sdHkgCase <- sd(hkgVCase, na.rm=TRUE)
       sdHkgControl <- sd(hkgVControl, na.rm=TRUE)
     }
@@ -38,8 +38,8 @@ setMethod("deltaDeltaAvgCt", signature = "qPCRBatch", definition =
     for (detector in featureNames(qPCRBatch)) {
           VCase <- caseM[detector,]
           VControl <- controlM[detector,]
-          meanCase <- geomMean(VCase, na.rm=TRUE)
-          meanControl <- geomMean(VControl, na.rm=TRUE)
+          meanCase <- mean(VCase, na.rm=TRUE)
+          meanControl <- mean(VControl, na.rm=TRUE)
           sdCase <- sd(VCase, na.rm=TRUE)
           sdControl <- sd(VControl, na.rm=TRUE)
 
@@ -48,7 +48,7 @@ setMethod("deltaDeltaAvgCt", signature = "qPCRBatch", definition =
           sdCase <- NA
         }
         else {
-          meanCase <- geomMean(VCase, na.rm=TRUE)
+          meanCase <- mean(VCase, na.rm=TRUE)
           sdCase <- sd(VCase, na.rm=TRUE)
         }
         if(sum(is.na(VControl)) > maxNAControl) {
@@ -56,7 +56,7 @@ setMethod("deltaDeltaAvgCt", signature = "qPCRBatch", definition =
           sdControl <- NA
         }
         else {
-          meanControl <- geomMean(VControl, na.rm=TRUE)
+          meanControl <- mean(VControl, na.rm=TRUE)
           sdControl <- sd(VControl, na.rm=TRUE)
         }
         dCtCase <- meanCase - meanHkgCase
