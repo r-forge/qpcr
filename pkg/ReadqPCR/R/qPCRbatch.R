@@ -8,13 +8,6 @@ read.qPCR <- function(filename = character(0), phenoData = new("AnnotatedDataFra
     well.order <- qPCRInfo$well.order
 
 exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
-#    if(! is.null(qPCRInfo$well.order)) {
-#     exprs.well.order <- assayDataNew("environment", exprs.well.order = well.order)
-#cat("AND TO HERE\n")
-#    }
-#    else {
-#        well.order <- matrix()
-#    }
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
@@ -45,72 +38,43 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
     else {
         raw.data$PlateID <- paste(raw.data$PlateID, as.character(raw.data$Well), sep= "-")
     }
-    original.order <- list()
     levels(raw.data$Sample) <- make.names(levels(raw.data$Sample))
     levels(raw.data$Detector) <- make.names(levels(raw.data$Detector))
     Ct <- as.character(raw.data$Ct)
     samples <- levels(raw.data$Sample)
     detectors <- levels(raw.data$Detector)
     allDetectors <- raw.data$Detector
-#    print(raw.data)
-#    cat("\n")
-#    well.order <- data.frame(detectors, row.names=1)
-#    exprs <- data.frame(detectors, row.names=1) # start the exprs data frame
-firstTimeFlag <- TRUE
-#total.detectors <- length(raw.data$Detector[raw.data$Sample == sample])
-
-
+    firstTimeFlag <- TRUE
     for (sample in samples) { # for each sample
         if (verbose) cat("Now reading for sample:", sample, "\n")
         total.detectors <- length(allDetectors[raw.data$Sample == sample])
         individual.detectors <- length(levels(allDetectors[raw.data$Sample == sample]))
         tech.reps <- total.detectors/individual.detectors
-
-raw.data$Detector <- as.character(raw.data$Detector)
-        if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
+        raw.data$Detector <- as.character(raw.data$Detector)
+          if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
             warning.text = paste("File incorrect, make sure that detectors are the same for all samples")
             stop(warning.text)
         }
         if (tech.reps > 1) {
-                if(verbose) cat ("More than 1 technical replicate detected\n")
-#                cat(warning.text)
-                #if(raw.data$Detector
-#                cat(raw.data$Detector)
-#                [raw.data$Sample == sample]
-
-staticDetector <- raw.data$Detector[raw.data$Sample == sample]
-#cat(staticDetector, "FOR DA FIRST\n")
-#jj <- 1
-                 for(techDetect in unique(raw.data$Detector[raw.data$Sample == sample]))  {
-                 #  cat(techDetect)
-#                   cat(staticDetector, "\n\n")
-                   techDLength <- sum(staticDetector %in% techDetect)
-                  # cat("LENGTH IS: ", techDLength, "\n")
-                   suffixedNames <- paste(techDetect, 1:techDLength, sep="_TechReps.")
-                   #aaaa <- paste(raw.data$Detector[raw.data$Detector %in% techDetect], 1:techDLength, sep="")
-                   #cat("detectorNewNames are :", aaaa, "\n")
-                   raw.data$Detector[raw.data$Sample == sample][raw.data$Detector[raw.data$Sample == sample] %in% techDetect] <- suffixedNames
-
-                   #row.names(exprs) <- raw.data$Detector
-#jj <- jj+1
-#stop()
+            if(verbose) cat ("More than 1 technical replicate detected\n")
+              staticDetector <- raw.data$Detector[raw.data$Sample == sample]
+              for(techDetect in unique(raw.data$Detector[raw.data$Sample == sample]))  {
+                techDLength <- sum(staticDetector %in% techDetect)
+                suffixedNames <- paste(techDetect, 1:techDLength, sep="_TechReps.")
+                raw.data$Detector[raw.data$Sample == sample][raw.data$Detector[raw.data$Sample == sample] 
+                  %in% techDetect] <- suffixedNames
             }
        }
        if(firstTimeFlag == TRUE) {
-                exprs <- data.frame(unique(raw.data$Detector), row.names=1) # start the exprs data frame
-                well.order <- data.frame(unique(raw.data$Detector), row.names=1)
-                firstTimeFlag <- FALSE
-#            warning.text = "More than 1 technical replicate detected"
-#            stop(warning.text)
+           exprs <- data.frame(unique(raw.data$Detector), row.names=1) # start the exprs data frame
+           well.order <- data.frame(unique(raw.data$Detector), row.names=1)
+           firstTimeFlag <- FALSE
        }
-raw.data$Detector <- as.factor(raw.data$Detector)
-            original.order = c(original.order,list(cbind(as.character(raw.data$Detector[raw.data$Sample == sample]), as.character(raw.data$Ct[raw.data$Sample == sample])))) # This bit to add the information about pipetting and order
-
+       raw.data$Detector <- as.factor(raw.data$Detector)
         if(noWellData == FALSE) {
             well.info <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
               raw.data$PlateID[raw.data$Sample == sample],
                 row.names=1)
-          #totalPlateIds <- raw.data$PlateID # put them in a variable for checking for duplication
         }
 
         Cts <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
