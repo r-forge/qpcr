@@ -26,22 +26,31 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     for (detector in featureNames(qPCRBatch)) {
         VCase <- caseM[detector,]
         VControl <- controlM[detector,]
-
+warning("length")
+#stop("length of case is:",VCase,"_",length(VCase))
         if(length(VCase) == 1) {
           warning("Only one Detector for Case")
           dCtCase <- VCase
           sdCase <- NA
-        }
-        else {
-          dCtCase <- mean(VCase - hkgVCase, na.rm=TRUE)
+        } else if(is.na(VCase)) {
+          warning("No Detector for Case")
+          dCtCase <- rep(NA, length = VCase)
+          dCtControl <- NA
+        } else {
+          dCtCase <- geomMean(VCase, na.rm=TRUE) - geomMean(hkgVCase, na.rm=TRUE)
           sdCase <- sd(VCase - hkgVCase, na.rm=TRUE)
         }
+
         if(length(VControl) == 1) {
           warning("Only one Detector for Control")
           dCtControl <- VControl
-        }
-        else {
-          dCtControl <- mean(VControl - hkgVControl, na.rm=TRUE)
+          sdControl <- NA
+        } else if(is.na(VControl)) {
+          warning("No Detector for Control")
+          dCtControl <- rep(NA, length = VControl)
+          sdControl <- NA
+        } else {
+          dCtControl <- geomMean(VControl, na.rm=TRUE) - geomMean(hkgVControl, na.rm=TRUE)
         }
         if(sum(is.na(VCase)) > maxNACase) {
           dCtCase <- NA
