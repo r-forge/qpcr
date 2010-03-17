@@ -46,6 +46,7 @@ stabMeasureRho(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE)
 \seealso{\code{selectHKs}}
 \examples{
 data(Colon.qPCRBatch)
+Colon.qPCRBatch[["Group"]] <- c(rep("Normal",10),rep("Dukes A",10),rep("Dukes B",10),rep("Dukes C",10))
 res.Colon <- stabMeasureRho(Colon.qPCRBatch, 
                             log = FALSE)
 sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
