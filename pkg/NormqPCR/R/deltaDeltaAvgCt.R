@@ -38,9 +38,15 @@ setMethod("deltaDeltaAvgCt", signature = "qPCRBatch", definition =
     for (detector in featureNames(qPCRBatch)) {
           VCase <- caseM[detector,]
           VControl <- controlM[detector,]
-          if(is.na(VCase)) VCase <- rep(NA, length(VCase))
+          if(! FALSE %in% is.na(VCase)) {
+              warning("No Detector for Case")
+              VCase <- rep(NA, length(VCase))
+          }
           else meanCase <- geomMean(VCase, na.rm=TRUE)
-          if(is.na(VControl)) VControl <- rep(NA, length(VControl))
+          if(! FALSE %in% is.na(VControl)) {
+              warning("No Detector for Control")
+              VControl <- rep(NA, length(VControl))
+          }
           else meanControl <- geomMean(VControl, na.rm=TRUE)
           sdCase <- sd(VCase, na.rm=TRUE)
           sdControl <- sd(VControl, na.rm=TRUE)

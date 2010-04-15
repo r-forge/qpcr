@@ -26,13 +26,12 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     for (detector in featureNames(qPCRBatch)) {
         VCase <- caseM[detector,]
         VControl <- controlM[detector,]
-warning("length")
 #stop("length of case is:",VCase,"_",length(VCase))
         if(length(VCase) == 1) {
-          warning("Only one Detector for Case")
+          warning("Only one Detector for Control")
           dCtCase <- VCase
           sdCase <- NA
-        } else if(is.na(VCase)) {
+        } else if(! FALSE %in% is.na(VCase)) {
           warning("No Detector for Case")
           dCtCase <- rep(NA, length = VCase)
           dCtControl <- NA
@@ -45,7 +44,7 @@ warning("length")
           warning("Only one Detector for Control")
           dCtControl <- VControl
           sdControl <- NA
-        } else if(is.na(VControl)) {
+        } else if(! FALSE %in% is.na(VControl)) {
           warning("No Detector for Control")
           dCtControl <- rep(NA, length = VControl)
           sdControl <- NA
