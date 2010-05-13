@@ -378,7 +378,7 @@ similar way to the \pkg{limma} package. these columns should contain 1s or 0s
 which refer to the samples in either category:
 
 << contrast >>=
-contM <- cbind(c(0,0,0,0,1,1,1,1),c(1,1,1,1,0,0,0,0))
+contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
 colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
 rownames(contM) <- sampleNames(qPCRBatch.taqman)
 contM
@@ -392,8 +392,7 @@ correspond to 1 s.d. either side of the mean value, as detailed in \cite{ddCt}
 
 << ddCt >>=
 hkg <- "Actb-Rn00667869_m1"
-ddCt.taqman <- deltaDeltaCt(qPCRBatch.taqman,1,1,hkg, contM,
-"interestingPhenotype","wildTypePhenotype")
+ddCt.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype")
 head(ddCt.taqman)
 @
 
@@ -408,8 +407,7 @@ the same sample is lost, increasing the variance.
 
 << ddCt Avg >>=
 hkg <- "Actb-Rn00667869_m1"
-ddCtAvg.taqman <- deltaDeltaAvgCt(qPCRBatch.taqman,1,1,hkg, contM,
-"interestingPhenotype","wildTypePhenotype")
+ddCtAvg.taqman <- deltaDeltaAvgCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype")
 head(ddCtAvg.taqman)
 @
 %-------------------------------------------------------------------------------
@@ -419,10 +417,34 @@ housekeeping genes}
 If the user wishes to normalise by more than one housekeeping gene, for example
 if they have found a more than one housekeeping gene using the NormFinder/geNorm
 algorithms described above, they can. This is implemented by calculating the
-geometric
-mean of these values to form a "pseudo-housekeeper" from which the other
-values are subtracted. We illustrate this using the data from the geNorm dataset
-above.
+geometric mean of these values to form a "pseudo-housekeeper" from which the other
+values are subtracted. For the dataset above:
+
+<<taqman gM>>=
+path <- system.file("exData", package = "ReadqPCR")
+taqman.example <- paste(path, "/example.txt", sep="")
+qPCRBatch.taqman <- read.taqman(taqman.example)
+contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
+colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
+rownames(contM) <- sampleNames(qPCRBatch.taqman)
+hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
+ddCt.gM.taqman <- gM_ddCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype")
+head(ddCt.gM.taqman)
+@
+
+There is also the option of using the geometric mean method using shared variance between the samples being compared, similar
+to the \code{deltaDeltaAvgCt} method shown above, intended for use when the samples are being compared from different experiments.
+<<taqman gM Avg>>=
+path <- system.file("exData", package = "ReadqPCR")
+taqman.example <- paste(path, "/example.txt", sep="")
+qPCRBatch.taqman <- read.taqman(taqman.example)
+contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
+colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
+rownames(contM) <- sampleNames(qPCRBatch.taqman)
+hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
+ddAvgCt.gM.taqman <- gM_ddAvgCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype")
+head(ddAvgCt.gM.taqman)
+@
 
 
 %-------------------------------------------------------------------------------
