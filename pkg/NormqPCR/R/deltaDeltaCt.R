@@ -1,11 +1,11 @@
 setGeneric("deltaDeltaCt",
-  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkg=FALSE)
+  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkgs=FALSE)
   standardGeneric("deltaDeltaCt")
 )
 setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
-  function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, combineHkg) {
+  function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, combineHkgs) {
     hkgs <- make.names(hkgs)
-    if(combineHkg == TRUE) {
+    if(combineHkgs == TRUE) {
 	if(length(hkgs) == 1) stop("Not enough hkgs given")
     }
 #    for(hkg in hkgs) {
@@ -22,11 +22,11 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
 
 #    hkgMCase <- caseM[hkgs, ]
 #    hkgMControl <- controlM[hkgs, ]
-    if(combineHkg == TRUE) {
+    if(combineHkgs == TRUE) {
 	hkgMCase <- caseM[hkgs, ]
         hkgMControl <- controlM[hkgs, ]
-	hkgVCase <- apply(hkgMCase, 2, geomMean, na.rm=TRUE)
-	hkgVControl <- apply(hkgMControl, 2, geomMean, na.rm=TRUE)
+	hkgVCase <- apply(hkgMCase, 2, mean, na.rm=TRUE)
+	hkgVControl <- apply(hkgMControl, 2, mean, na.rm=TRUE)
     } else {
         hkg <- hkgs[1]
     }
@@ -62,7 +62,7 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
           dCtCase <- rep(NA, length = VCase)
           dCtControl <- NA
         } else {
-          dCtCase <- geomMean(VCase, na.rm=TRUE) - geomMean(hkgVCase, na.rm=TRUE)
+          dCtCase <- mean(VCase, na.rm=TRUE) - mean(hkgVCase, na.rm=TRUE)
 	  if (paired == TRUE) {
 	    sdCase <- sd(VCase - hkgVCase, na.rm=TRUE)
 	  } else  {
@@ -77,7 +77,7 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
           warning("No Detector for Control")
           dCtControl <- rep(NA, length = VControl)
         } else {
-          dCtControl <- geomMean(VControl, na.rm=TRUE) - geomMean(hkgVControl, na.rm=TRUE)
+          dCtControl <- mean(VControl, na.rm=TRUE) - mean(hkgVControl, na.rm=TRUE)
           if (paired == TRUE) {
             sdControl <- sd(VControl - hkgVControl, na.rm=TRUE)
           } else  {
