@@ -40,7 +40,7 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
-        samplenames <- sub("^/?([^/]*/)*", "", colnames(exprs), extended = TRUE)
+        samplenames <- sub("^/?([^/]*/)*", "", colnames(exprs))
         pdata <- data.frame(sample = 1:length(samplenames), row.names = samplenames)
         phenoData <- new("AnnotatedDataFrame", data = pdata,
             varMetadata = data.frame(labelDescription = "arbitrary numbering",

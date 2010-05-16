@@ -5,8 +5,7 @@ setGeneric("qPCRPairs",
 setMethod("qPCRPairs", signature = "qPCRBatch", definition =
   function(qPCRBatch, plotType, writeToFile, pairsToPlot) {
     if(plotType == "Sample") {
-#cat("NOTHEREIHOPE\n")
-      if(pairsToPlot == "All") { 
+      if(pairsToPlot == "All") {
           pairsToPlot <- combn(sampleNames(qPCRBatch),2)
       }
       else {
@@ -21,9 +20,6 @@ cat("HEREIHOPE\n")
           pairsToPlot <- combn(sampleNames(qPCRBatch),2)
       }
       else {
-          
-      }
-
         plateVec <- as.vector(gsub("-.*", "", orderMat))
         wellVec <- as.numeric(gsub(".*-", "", orderMat))
         plotMat <- matrix(ncol = length(levels(as.factor(plateVec))), nrow = max(wellVec))
@@ -37,7 +33,7 @@ cat("HEREIHOPE\n")
       apply(pairsToPlot, 2, .plotPairs, plotMat, writeToFile)
     }
     else stop("incorrect plotType argument given")
-  }
+}
 )
 .plotPairs <- function(samples, plotMat, writeToFile) # plots graph between the 2 samples
 {

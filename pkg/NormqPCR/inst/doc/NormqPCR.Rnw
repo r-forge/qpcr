@@ -39,8 +39,8 @@ pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
 %-------------------------------------------------------------------------------
 \title{NormqPCR: Functions for normalisation of RT-qPCR data}
 %-------------------------------------------------------------------------------
-\author{Matthias Kohl\\ 
-University of Bayreuth (Germany)\medskip\\
+\author{James Perkins and Matthias Kohl\\ 
+University College London (UK) / University of Bayreuth (Germany)\medskip\\
 }
 \maketitle
 \tableofcontents
@@ -397,13 +397,8 @@ head(ddCt.taqman)
 @
 
 We can also average the taqman data using the separate samples/wells method
-\code{deltaDeltaAvgCt}.
-Note how although the values are the same the ranges (+/- 1 s.d.) are generally
-a little higher.
-This is because the averages for case or control are calculated, and the average
-values for the respective housekeepers are calculated independently and then
-subtracted. Therefore the pairing of housekeeper with the detector value within
-the same sample is lost, increasing the variance.
+\code{deltaDeltaAvgCt}. Here sd is calculated separately for the sample of interest and the sample used for callibration (i.e. case versus control) and combined Therefore the pairing of housekeeper with the detector value within
+the same sample is lost, in some cases causing increased variance.
 
 << ddCt Avg >>=
 hkg <- "Actb-Rn00667869_m1"
@@ -428,8 +423,8 @@ contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
 colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
 rownames(contM) <- sampleNames(qPCRBatch.taqman)
 hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
-ddCt.gM.taqman <- gM_ddCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype")
-head(ddCt.gM.taqman)
+#ddCt.gM.taqman <- gM_ddCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype")
+#head(ddCt.gM.taqman)
 @
 
 There is also the option of using the geometric mean method using shared variance between the samples being compared, similar

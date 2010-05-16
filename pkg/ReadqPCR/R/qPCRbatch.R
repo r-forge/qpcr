@@ -11,7 +11,7 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
-        samplenames <- sub("^/?([^/]*/)*", "", colnames(exprs), extended = TRUE)
+        samplenames <- sub("^/?([^/]*/)*", "", colnames(exprs))
         pdata <- data.frame(sample = 1:length(samplenames), row.names = samplenames)
         phenoData <- new("AnnotatedDataFrame", data = pdata,
             varMetadata = data.frame(labelDescription = "arbitrary numbering",
@@ -33,7 +33,7 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
     raw.data <- read.table(filename, header=TRUE)
     if(is.null(raw.data$Well) || is.null(raw.data$PlateID)) {
          noWellData <- TRUE
-         if (verbose) cat("No Well and/or Plate info found, skipping this part")
+         if (verbose) cat("No Well and/or Plate info found, skipping this part", "\n")
     }
     else {
         raw.data$PlateID <- paste(raw.data$PlateID, as.character(raw.data$Well), sep= "-")
