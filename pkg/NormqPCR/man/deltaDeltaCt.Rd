@@ -8,7 +8,7 @@ Differs from the deltaDeltaAvgCt method in that the hkg values are subtracted an
 Suitable when housekeeping genes are from same wells/sample as the other detectors
 }
 \usage{
-deltaDeltaCt(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkg=FALSE)
+deltaDeltaCt(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkgs=FALSE)
 }
 \arguments{
   \item{qPCRBatch}{ Expression set containing qPCR data. 
