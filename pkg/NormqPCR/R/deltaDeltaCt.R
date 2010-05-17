@@ -5,6 +5,8 @@ setGeneric("deltaDeltaCt",
 setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
   function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, combineHkgs) {
     hkgs <- make.names(hkgs)
+#case <- as.character(case)
+#control <- as.character(control)
     if(combineHkgs == TRUE) {
 	if(length(hkgs) == 1) stop("Not enough hkgs given")
     }
@@ -14,11 +16,11 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     for(hkg in hkgs){
         if(sum(is.na(hkg)) > 0) warning(hkg, " May be a bad housekeeping gene to normalise with since it did not produce a reading ", sum(is.na(hkg)), "times out of", length(hkg))
     }
-    case <- row.names(contrastM)[contrastM[,case] == 1]
-    control <- row.names(contrastM)[contrastM[,control] == 1]
+    cases <- row.names(contrastM)[contrastM[,case] == 1]
+    controls <- row.names(contrastM)[contrastM[,control] == 1]
     expM <- exprs(qPCRBatch)
-    caseM <- expM[,case]
-    controlM <- expM[,control]
+    caseM <- expM[,cases]
+    controlM <- expM[,controls]
 
 #    hkgMCase <- caseM[hkgs, ]
 #    hkgMControl <- controlM[hkgs, ]
@@ -118,6 +120,9 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
 	sdCtControls[i] <- sdControl
         i <- i+1
     }
-    return(cbind(featureNames(qPCRBatch),dCtCases,sdCtCases,dCtControls,sdCtControls,ddCts,minddCts,maxddCts))
+    ddCtTable <- as.data.frame(cbind(featureNames(qPCRBatch),dCtCases,sdCtCases,dCtControls,sdCtControls,ddCts,minddCts,maxddCts))
+    names(ddCtTable) <- c("ID", case, paste(case,"sd",sep="."), control, paste(control,"sd",sep="."),"ddCt","ddCt.min", "ddCt.max")
+    return(ddCtTable)
+#    stop(ddCtTable)
   }
 )
