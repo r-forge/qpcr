@@ -11,8 +11,9 @@ The package provides functions to read raw RT-qPCR data of different platforms.
 Package: \tab ReadqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2008-10-16\cr
-License: \tab GPL (>= 2)\cr
+Date: \tab 20010-05-22\cr
+Depends: \tab R(>= 2.10.0), Biobase, ReadqPCR, methods, RColorBrewer\cr
+License: \tab LGPL-3\cr
 LazyLoad: \tab yes\cr
 }
 library(ReadqPCR)
@@ -32,7 +33,11 @@ Maintainer: James Perkins <jperkins@biochem.ucl.ac.uk>
 %~~ Optional links to other man pages, e.g. ~~
 %~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 %}
-%\examples{
-%~~ simple examples of the most important functions ~~
-%}
+\examples{
+## some examples are given in the vignette
+\dontrun{
+library(ReadqPCR)
+vignette("ReadqPCR")
+}
+}
 \keyword{ package }

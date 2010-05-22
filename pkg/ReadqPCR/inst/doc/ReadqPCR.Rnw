@@ -9,9 +9,9 @@
 \usepackage[%
 baseurl={http://qpcr.r-forge.r-project.org/},%
 pdftitle={ReadqPCR: Functions to load RT-qPCR data into R},%
-pdfauthor={Matthias Kohl and James Perkins},%
+pdfauthor={James Perkins},%
 pdfsubject={Functions to load RT-qPCR data into R},%
-pdfkeywords={real-time, quantitative, PCR, qPCR, RT-qPCR, housekeeper, reference gene, geNorm, NormFinder},%
+pdfkeywords={real-time, quantitative, PCR, qPCR, RT-qPCR, load data},%
 pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
 pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
 %
