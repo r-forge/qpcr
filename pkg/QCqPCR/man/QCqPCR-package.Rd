@@ -11,8 +11,9 @@ The package provides functions for quality control of RT-qPCR data.
 Package: \tab QCqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2008-10-20\cr
-License: \tab GPL (>= 2)\cr
+Date: \tab 2010-05-22\cr
+Depends: \tab R(>= 2.10.0), Biobase, ReadqPCR, methods, RColorBrewer\cr
+License: \tab LGPL-3\cr
 LazyLoad: \tab yes\cr
 }
 library(QCqPCR)
@@ -32,7 +33,11 @@ Maintainer: James Perkins <jperkins@biochem.ucl.ac.uk>
 %~~ Optional links to other man pages, e.g. ~~
 %~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 %}
-%\examples{
-%~~ simple examples of the most important functions ~~
-%}
+\examples{
+## some examples are given in the vignette
+\dontrun{
+library(QCqPCR)
+vignette("QCqPCR")
+}
+}
 \keyword{ package }

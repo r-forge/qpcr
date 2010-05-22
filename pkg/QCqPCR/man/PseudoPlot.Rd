@@ -6,14 +6,16 @@
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
 }
 \usage{
-PseudoPlot(qPCRBatch, plotType, writeToFile, cutOff, statType)
+PseudoPlot(qPCRBatch, plotType = "Cts.Values", writeToFile = FALSE, 
+           cutOff = NA, statType = "parametric", plateToPlot = "AllPlates")
 }
 \arguments{
     \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
-    \item{plotType}{}
-    \item{writeToFile}{}
-    \item{cutOff}{}
-    \item{statType}{}
+    \item{plotType}{ yet to fill }
+    \item{writeToFile}{ yet to fill }
+    \item{cutOff}{ yet to fill }
+    \item{statType}{ yet to fill }
+    \item{plateToPlot}{ yet to fill }
 }
 \details{
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes.
@@ -21,7 +23,7 @@ PseudoPlot(qPCRBatch, plotType, writeToFile, cutOff, statType)
 }
 \section{Methods}{
   \describe{
-    \item{PseudoPlot}{(qPCRBatch): ... }
+    \item{PseudoPlot}{(qPCRBatch): method for object of class \code{"qPCRBatch"} }
   }
 }
 

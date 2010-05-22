@@ -12,7 +12,7 @@ setMethod("qPCRPairs", signature = "qPCRBatch", definition =
 cat("HEREIHOPE\n")
           pairsToPlot <- combn(pairsToPlot,2)
       }
-      plotMat = exprs(qPCRBatch)
+      plotMat <- exprs(qPCRBatch)
       apply(pairsToPlot, 2, .plotPairs, plotMat, writeToFile)
     }
     else if (plotType == "Plate") {
@@ -20,8 +20,8 @@ cat("HEREIHOPE\n")
           pairsToPlot <- combn(sampleNames(qPCRBatch),2)
       }
       else {
-        plateVec <- as.vector(gsub("-.*", "", orderMat))
-        wellVec <- as.numeric(gsub(".*-", "", orderMat))
+        plateVec <- as.vector(gsub("-.*", "", pairsToPlot)) # orderMat not defined!
+        wellVec <- as.numeric(gsub(".*-", "", pairsToPlot))
         plotMat <- matrix(ncol = length(levels(as.factor(plateVec))), nrow = max(wellVec))
       }
         for(i in plateVec) {
@@ -42,7 +42,7 @@ cat("HEREIHOPE\n")
   if (writeToFile) jpeg(filename = paste(x, "_", y, "_Pairs_Plot.jpeg", sep = ""))
 #  plotMat <- as.data.frame(exprs(qPCRBatch))
   plot(plotMat[, x], plotMat[, y], xlab = x, ylab = y, xlim = c(1, max(plotMat[, x], na.rm=TRUE)), ylim = c(1, max(plotMat[, y], na.rm=TRUE)))
-  title(main <- c(x, "vs", y, "R^2 = ", cor(plotMat[, x] ,plotMat[, y], use <- "complete.obs")))
+  title(main = paste(x, "vs", y, "R^2 = ", cor(plotMat[, x] ,plotMat[, y], use = "complete.obs")))
   abline(0, 1)
   if (writeToFile) dev.off()
 }

@@ -1,6 +1,6 @@
 %\VignetteIndexEntry{QCqPCR}                                       
 %\VignetteDepends{stats,Biobase,methods,ReadqPCR}                            
-%\VignetteKeywords{real-time, quantitative, PCR, housekeeper, reference gene, geNorm, NormFinder}
+%\VignetteKeywords{real-time, quantitative, PCR, quality control}
 %\VignettePackage{QCqPCR}
 %
 \documentclass[11pt]{article}
@@ -9,9 +9,9 @@
 \usepackage[%
 baseurl={http://qpcr.r-forge.r-project.org/},%
 pdftitle={QCqPCR: Functions to assess the quality of qPCR data in R},%
-pdfauthor={Matthias Kohl and James Perkins},%
+pdfauthor={James Perkins},%
 pdfsubject={QCqPCR},%
-pdfkeywords={real-time, quantitative, PCR, qPCR, RT-qPCR, housekeeper, reference gene, geNorm, NormFinder},%
+pdfkeywords={real-time, quantitative, PCR, qPCR, RT-qPCR, quality control},%
 pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
 pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
 %

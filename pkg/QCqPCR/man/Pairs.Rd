@@ -6,21 +6,24 @@
   Takes set of qPCR data and makes pairwise graphs between all the samples.
 }
 \usage{
-qPCRPairs(qPCRBatch, writeToFile = FALSE)
+qPCRPairs(qPCRBatch, plotType = "Sample", writeToFile = FALSE, pairsToPlot = "All")
 }
 \arguments{
     \item{qPCRBatch}{ Expression set containing qPCR data.}
-    \item{writeToFile}{ Option to write to file}
+    \item{plotType}{ type of plot. So far, \code{"Sample"} and \code{"Plate"}
+      are implemented. Default is \code{"Sample"}. }
+    \item{writeToFile}{ logical, write to jpeg-file. Default is \code{FALSE}. }
+    \item{pairsToPlot}{ which pairs shall be plotted. Default is \code{"All"}. }
 }
 \details{
-  reads in qPCR data and pairwise graphs, optionally saving them to file
+  generate pairwise graphs, optionally saving them to file.
 }
 \section{Methods}{
   \describe{
-    \item{qPCRPairs}{(qPCRBatch): ... }
+    \item{qPCRPairs}{(qPCRBatch): method for object of class \code{"qPCRBatch"}. }
   }
 }
-\value{produces graph and optionally writes to ping if called.}
+\value{produces graph and optionally writes to jpeg if called.}
 %\references{ ~put references to the literature/web site here ~ }
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk} }
 %\examples{
