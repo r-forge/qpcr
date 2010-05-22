@@ -13,9 +13,12 @@ Functions for normalisation of real-time quantitative PCR data.
 Package: \tab NormqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2009-05-27\cr
-Depends: \tab R(>= 2.7.0), stats, RColorBrewer, Biobase, methods, ReadqPCR\cr
-License: \tab GPL (>=2)\cr
+Date: \tab 2010-05-22\cr
+Depends: \tab R(>= 2.10.0), stats, RColorBrewer, Biobase, methods, ReadqPCR, gplots\cr
+License: \tab LGPL-3\cr
+LazyLoad: \tab yes \cr
+LazyData: \tab yes \cr
+
 }
 require(NormqPCR)
 }
@@ -40,7 +43,11 @@ Maintainer: Matthias Kohl  \email{Matthias.Kohl@stamats.de}}
 %~~ Optional links to other man pages, e.g. ~~
 %~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 %}
-%\examples{
-%~~ simple examples of the most important functions ~~
-%}
+\examples{
+## some examples are given in the vignette
+\dontrun{
+library(NormqPCR)
+vignette("NormqPCR")
+}
+}
 \keyword{package}
