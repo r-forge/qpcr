@@ -19,7 +19,7 @@ setMethod("deltaCt", signature = "qPCRBatch", definition =
       hkgV <- vector(length = dim(hkgM)[2])
       for(i in 1:dim(hkgM)[2]) {
           if(! FALSE %in% is.na(hkgM[,i])) next # go to next sequence if we have only NAs
-          hkgV[i] <- geomMean(hkgM[,i], na.rm=TRUE)
+          hkgV[i] <- mean(hkgM[,i], na.rm=TRUE)
       }
     }
     else {
@@ -30,7 +30,7 @@ setMethod("deltaCt", signature = "qPCRBatch", definition =
       hkgV <- hkgM # Because it's a vector really anyway
       cat(hkgV)
     }
-    exprs(qPCRBatch) <- 2^-(t(t(exprs(qPCRBatch)) - hkgV))
+    exprs(qPCRBatch) <- t(t(exprs(qPCRBatch)) - hkgV)
     return(qPCRBatch)
   }
 )

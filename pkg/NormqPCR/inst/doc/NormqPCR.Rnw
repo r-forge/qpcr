@@ -78,7 +78,7 @@ rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
 @
 
 It is likely that before continuing with the analysis, the user would wish to
-average the technical replicates by finding their geometric mean. This can be
+average the technical replicates by finding their mean. This can be
 achieved using the combineTechReps function, which will produce a new qPCRBatch
 object, with all tech reps reduced to one reading:
 
@@ -289,7 +289,7 @@ abline(h = 0.15, lty = 1, col = "black")
 Vand02 recommend a cut-off value of 0.15 for the pairwise variation. Below this
 bound the inclusion of an additional housekeeping gene is not required. 
 %-------------------------------------------------------------------------------
-\subsection{NormFinder} 
+\subsection{NormFinder}
 %-------------------------------------------------------------------------------
 The second method for selection reference/housekeeping genes implemented in 
 package is the method derived by \cite{NormFinder} (in the sequel: And04)
@@ -362,7 +362,12 @@ We then need to supply a housekeeper gene to be subtracted:
 <<dCt>>=
 hkgs<-"Actb-Rn00667869_m1"
 qPCRBatch.norm <- deltaCt(qPCRBatch =  qPCRBatch.taqman, hkgs = hkgs)
+head(exprs(qPCRBatch.norm))
 @
+
+This returns a new \code{qPCRBatch}, with new values in the exprs slot. This will be compatible with many other bioconductor and R packages, such as heatmap.
+
+Note these numbers might be negative. For further analysis requiring postive values only, 2^ can be used to transform the data into $2^{\Delta CT}$ values.
 
 %-------------------------------------------------------------------------------
 \subsection{$\Delta Ct$ method using a combination of housekeeping genes}
@@ -372,7 +377,11 @@ if they have found a more than one housekeeping gene using the NormFinder/geNorm
 algorithms described above, they can. This is implemented by calculating the
 average of these values to form a "pseudo-housekeeper" which is subtracted from the other values. So using the same dataset as above, using housekeeping genes GAPDH, Beta-2-microglobulin and Beta-actin, the following steps would be taken:
 
-
+<<dCt many genes>>=
+hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
+qPCRBatch.norm <- deltaCt(qPCRBatch =  qPCRBatch.taqman, hkgs = hkgs)
+head(exprs(qPCRBatch.norm))
+@
 
 %-------------------------------------------------------------------------------
 \subsection{$2^{-\Delta \Delta Ct}$ method using a single housekeeper}
@@ -456,7 +465,7 @@ housekeeping genes}
 If the user wishes to normalise by more than one housekeeping gene, for example
 if they have found a more than one housekeeping gene using the NormFinder/geNorm
 algorithms described above, they can. This is implemented by calculating the
-average of these values to form a "pseudo-housekeeper" which is subtracted from the other values. For the dataset above, using housekeeping genes GAPDH, Beta-2-microglobulin and Beta-actin:
+average of these values using the geometric mean to form a "pseudo-housekeeper" which is subtracted from the other values. For the dataset above, using housekeeping genes GAPDH, Beta-2-microglobulin and Beta-actin:
 
 <<taqman gM>>=
 path <- system.file("exData", package = "ReadqPCR")
@@ -466,14 +475,13 @@ contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
 colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
 rownames(contM) <- sampleNames(qPCRBatch.taqman)
 hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
-#ddCt.gM.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", combineHkgs=TRUE)
-#head(ddCt.gM.taqman)
+ddCt.gM.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", combineHkgs=TRUE)
+head(ddCt.gM.taqman)
 @
 
-There is also the option of using the geometric mean method using shared
+There is also the option of using the mean housekeeper method using shared
 variance between the samples being compared, similar
-to the second \code{deltaDeltaCt} method shown above, intended for use when the samples
-are being compared from different experiments.
+to the second \code{deltaDeltaCt} method shown above.
 <<taqman gM Avg>>=
 path <- system.file("exData", package = "ReadqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")

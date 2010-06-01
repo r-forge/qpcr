@@ -27,8 +27,8 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     if(combineHkgs == TRUE) {
 	hkgMCase <- caseM[hkgs, ]
         hkgMControl <- controlM[hkgs, ]
-	hkgVCase <- apply(hkgMCase, 2, mean, na.rm=TRUE)
-	hkgVControl <- apply(hkgMControl, 2, mean, na.rm=TRUE)
+	hkgVCase <- apply(hkgMCase, 2, geomMean, na.rm=TRUE)
+	hkgVControl <- apply(hkgMControl, 2, geomMean, na.rm=TRUE)
     } else {
         hkg <- hkgs[1]
     }

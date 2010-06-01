@@ -10,7 +10,7 @@ setMethod("combineTechReps", signature = "qPCRBatch", definition =
     newDetectors <- unique(gsub("_TechReps.\\d","", origDetectors))
     NewExpM <- matrix(nrow = length(newDetectors), ncol = dim(expM)[2], dimnames = list(newDetectors,colnames(expM)))
     for(detector in newDetectors){
-      dValues <- as.numeric(apply(expM[grepl(detector, origDetectors),],2,geomMean,na.rm=TRUE))
+      dValues <- as.numeric(apply(expM[grepl(detector, origDetectors),],2,mean,na.rm=TRUE))
       NewExpM[detector,] <- dValues
     }
     NewExpM[is.na(NewExpM)] <- NA
