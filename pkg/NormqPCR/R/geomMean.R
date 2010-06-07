@@ -6,7 +6,7 @@ geomMean <- function(x, na.rm = TRUE){
     warning("argument is not numeric or logical: returning NA")
     return(as.numeric(NA))
   }
-  if(! FALSE %in% (is.na(x))) {
+  if(all(is.na(x))){
     warning("no non-NAs in 'x'"); return (NA)
   }
   if(na.rm) x <- x[!is.na(x)]
