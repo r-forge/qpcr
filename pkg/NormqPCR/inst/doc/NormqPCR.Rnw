@@ -367,7 +367,8 @@ head(exprs(qPCRBatch.norm))
 
 This returns a new \code{qPCRBatch}, with new values in the exprs slot. This will be compatible with many other bioconductor and R packages, such as heatmap.
 
-Note these numbers might be negative. For further analysis requiring postive values only, 2^ can be used to transform the data into $2^{\Delta CT}$ values.
+Note these numbers might be negative. For further analysis requiring postive values only, \verb+2^+ can be used to transform the data into 
+$2^{\Delta CT}$ values.
 
 %-------------------------------------------------------------------------------
 \subsection{$\Delta Ct$ method using a combination of housekeeping genes}
@@ -459,7 +460,7 @@ ddCtAvg.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAC
 head(ddCtAvg.taqman)
 @
 %-------------------------------------------------------------------------------
-\subsection{$2^{\Delta \Delta Ct}$ method) using a combination of
+\subsection{$2^{\Delta \Delta Ct}$ method using a combination of
 housekeeping genes}
 %-------------------------------------------------------------------------------
 If the user wishes to normalise by more than one housekeeping gene, for example
