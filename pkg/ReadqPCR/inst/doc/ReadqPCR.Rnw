@@ -48,7 +48,7 @@ The package \pkg{ReadqPCR} contains different functions for reading qPCR data in
 As well as the functions to read in the data, \pkg{ReadqPCR} contains the \code{qPCRBatch} class definition.
 The data output by these RT-qPCR systems is in the form of cycle threshold, or Ct values, which represents the number of cycles of amplification needed in order to detect the expression of a given gene from a sample.
 
-ReadqPCR is designed to be complementary to 2 other R modules: QCqPCR and NormqPCR, which are intended for (respectively) the quality control and normalisation of qPCR data.
+ReadqPCR is designed to be complementary to 2 other R modules: QCqPCR and NormqPCR, which are intended for (respectively) the quality control and normalisation of qPCR data. It must be installed before the other two modules can be.
 %-------------------------------------------------------------------------------
 \section{read.qPCR}
 
@@ -63,7 +63,7 @@ The format of the data file should be tab delimited and have the following colum
     \item[Ct] This is the cycle threshold for a given detector in the corresponding sample.
 \end{description}
 
-The generic function \code{read.qPCR} is called to read in the qPCR file. It is similar to the \code{read.affybatch} function of the \pkg{affy} package, in that it reads a file and automatically populates an R object, code{qPCRBatch} described below. However it is different in that the file is user formatted. In addition, unlike \code{read.affybatch}, and also unlike the \code{read.taqman} function detailed below, only one file may be read in at a time.
+The generic function \code{read.qPCR} is called to read in the qPCR file. It is similar to the \code{read.affybatch} function of the \pkg{affy} package, in that it reads a file and automatically populates an R object, \code{qPCRBatch} described below. However it is different in that the file is user formatted. In addition, unlike \code{read.affybatch}, and also unlike the \code{read.taqman} function detailed below, only one file may be read in at a time.
 
 If \code{Well} and \code{Plate ID} information are given, then these are used to populate the \code{exprs.well.order}, a new \code{assayData} slot introduced in the \code{qPCRBatch} object, as detailed below in section \code{qPCRBatch}.
 
@@ -90,7 +90,7 @@ rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
 
 
 The reason for appending the suffix when technical replicates are encountered is in order to populate the \code{exprs} and \code{exprs.well.order} slots correctly and keep them to the \code{assayData} format.
-It also allows the decisions on how to deal with the analysis and combination of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or any other function that takes \code{assayData} format R objects as input.
+It also allows the decisions on how to deal with the analysis and combination of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or potentially some other function that takes \code{assayData} format R objects as input.
 
 \section{read.taqman}
 
@@ -109,7 +109,8 @@ Currently the SDS software only allows up to 10 plates to be output onto one fil
 path <- system.file("exData", package = "ReadqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
 taqman.example.second.file <- paste(path, "/example2.txt", sep="")
-qPCRBatch.taq.two.files <- read.taqman(taqman.example, taqman.example.second.file)
+qPCRBatch.taq.two.files <- read.taqman(taqman.example, 
+                             taqman.example.second.file)
 @
 
 SDS output will not necessarily contain plate identifiers, in which case a numeric identifier will be generated, which will increment for each plate, depending on the order of the plates within the SDS files.
@@ -126,7 +127,7 @@ rownames(exprs(qPCRBatch.taq.tech.reps))[1:8]
 @
 
 As with read.qPCR, the motivation for appending the suffix when technical replicates are encountered is in order to populate the \code{exprs} and \code{exprs.well.order} slots correctly and keep them to the \code{assayData} format.
-Again it also allows the decisions on how to deal with the analysis of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or otherwise.
+Again it allows the decisions on how to deal with the analysis of technical replicates to be controlled by the user, either using the \pkg{NormqPCR} package, or otherwise.
 
 \section{qPCRBatch}
 \code{qPCRBatch} is an S4 class, designed to store information on the Ct raw values
@@ -174,8 +175,10 @@ In addition, a mixture of files with and without plate identifiers is possible.
 
 <<taqman.exprs.well.order.plate.and.not>>=
 taqman.example <- paste(path, "/example.txt", sep="")
-taqman.example.plateNames <-paste(path,"/exampleWithPlateNames.txt",sep="")
-qPCRBatch.taq.mixedPlateNames <- read.taqman(taqman.example, taqman.example.plateNames)
+taqman.example.plateNames <-paste(path,"/exampleWithPlateNames.txt",
+                                                               sep="")
+qPCRBatch.taq.mixedPlateNames <- read.taqman(taqman.example, 
+                                    taqman.example.plateNames)
 head(exprs.well.order(qPCRBatch.taq.mixedPlateNames))
 @
 

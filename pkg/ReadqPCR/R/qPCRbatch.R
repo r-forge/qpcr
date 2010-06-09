@@ -72,7 +72,7 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
        }
        raw.data$Detector <- as.factor(raw.data$Detector)
         if(noWellData == FALSE) {
-            well.info <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
+            well.info <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put well info values in a matrix
               raw.data$PlateID[raw.data$Sample == sample],
                 row.names=1)
         }
@@ -89,7 +89,12 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
     qPCRInfo <- list()
     names(exprs) <- samples
     qPCRInfo$exprs <- as.matrix(exprs)
-    if(noWellData == FALSE) qPCRInfo$well.order <- well.order
+#    colnames(well.order) <- names(exprs)
+    if(noWellData == FALSE) {
+      colnames(well.order) <- names(exprs)
+      qPCRInfo$well.order <- well.order
+#      colnames(well.order) <- names(exprs)
+    }
     return(qPCRInfo)
 }
 

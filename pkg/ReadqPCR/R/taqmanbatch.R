@@ -131,7 +131,7 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
             original.order <- c(original.order,list(cbind(as.character(raw.data$Detector[raw.data$Sample == sample]),
                 as.character(raw.data$Ct[raw.data$Sample == sample])))) # This bit to add the information about pipetting and order
 
-            well.info <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
+            well.info <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Well data in a matrix
                          raw.data$PlateID[raw.data$Sample == sample],
                          row.names=1)
             Cts <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix

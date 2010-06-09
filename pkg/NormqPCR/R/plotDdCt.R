@@ -7,20 +7,20 @@ cat("start")
 #expM
 
 if(detectors!="") {
-#cat("WEN")
     bbb <- ddCtTable[ddCtTable$ID %in% detectors,]
     qPCRSet <- qPCRSet[detectors]
 #    expM <- matrix(exprs(qPCRSet)[detectors,], ncol=8)
 #    rownames(expM) <- detectors
-    expM <- exprs(qPCRSet)
+#    expM <- exprs(qPCRSet)
 } else {
-cat("try")
+#cat("try")
     bbb <- ddCtTable
-    expM <- exprs(qPCRSet)
+#    expM <- exprs(qPCRSet)
 }
-cat("out")
+expM <- exprs(qPCRSet)
+#cat("out")
 #print(bbb)
-cat("YEAH")
+#cat("YEAH")
 ddCts <- as.vector(bbb$ddCt)
 ddCtsNames <- as.vector(bbb$ID)
 ddCtsMax <- log2(as.numeric(as.vector(bbb$ddCt.max)))
@@ -39,13 +39,20 @@ par(op)
 #qq <- qPCRSet
 #cat("bbbbbbl")
 #return(expM)
-expM <- log2(expM)[,c(3:4,7:8)] - log2(expM)[,c(1:2,5:6)]
-if(length(detectors) == 1) expM <- matrix(expM, ncol=4)
+controlSubbed <- expM[,c(3:4,7:8)] - apply(expM[,c(1:2,5:6)],1,mean,na.rm=TRUE)
+#two <- 2^(-controlSubbed)
+#three <- log2(two)
+#controlSubbed <- log2((2^-((expM[,c(3:4,7:8)]) - (apply(expM[,c(1:2,5:6)],1,mean,na.rm=TRUE)))))
+#controlSubbed <- three
+#print(controlSubbed)
+print(expM)
+controlSubbed <- -(expM[,c(3:4,7:8)] - apply(expM[,c(1:2,5:6)],1,mean,na.rm=TRUE))
+controlSubebed <- log2(controlSubbed)
+#if(length(detectors) == 1) expM <- matrix(expM, ncol=4)
 #cat(featureNames(qPCRSet))
 #rownames(expM) <- featureNames(qPCRSet)
 #print(expM)
 #return(expM)
-source("/home/bsm/jperkins/qpcr/pkg/NormqPCR/R/plotDdCt.R")
-j<-1; for(i in 1:length(featureNames(qPCRSet))) {cat(i);cat(bp[j]);print(expM[i,]); points(rep(bp[j],4),expM[i,]);j=j+1 }
-
+#source("/home/bsm/jperkins/qpcr/pkg/NormqPCR/R/plotDdCt.R")
+#j<-1; for(i in 1:length(featureNames(qPCRSet))) { print(controlSubbed[i,]); points(rep(bp[j],4),controlSubbed[i,]);j=j+1 }
 }

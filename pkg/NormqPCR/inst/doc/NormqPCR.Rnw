@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{NormqPCR}
+%\VignetteIndexEntry{NormqPCR: Functions for normalisation of RT-qPCR data}
 %\VignetteDepends{stats,RColorBrewer,Biobase,methods,ReadqPCR}
 %\VignetteKeywords{real-time, quantitative, PCR, housekeeper, reference gene,geNorm, NormFinder}
 %\VignettePackage{NormqPCR}
@@ -48,17 +48,18 @@ University College London (UK) / Jena University Hospital (Germany)\medskip\\
 %-------------------------------------------------------------------------------
 The package \pkg{NormqPCR} provides methods for the normalization of 
 real-time quantitative RT-PCR data. In this vignette we describe and 
-demonstrate the available functions. Firstly we show
-how the user may combine technical replicates, and deal with undetermined values
-and values above a user-chosen threshold. The rest of the vignette is split into
+demonstrate the available functions. 
+Firstly we show
+how the user may combine technical replicates, deal with undetermined values
+and deal with values above a user-chosen threshold. The rest of the vignette is split into
 two distinct sections, the first giving details of different methods to select
 the best houskeeping gene/genes for normalisation, and the second showing how to
-use the selected housekeeping genes to produce $2^{-\Delta Ct}$ normalised
+use the selected housekeeping gene(s) to produce $2^{-\Delta Ct}$ normalised
 estimators and $2^{-\Delta \Delta Ct}$ estimators of differential expression.
 %-------------------------------------------------------------------------------
 \section{Combining technical replicates} 
 %-------------------------------------------------------------------------------
-When a raw data file is read in using read.qPCR contains technical replicates,
+When a raw data file read in using read.qPCR contains technical replicates,
 they are dealt with by concatenating the suffix \_TechRep.n to the detector
 name, where
 n in {1, 2...N } is the number of the replication in the total number of
@@ -78,7 +79,7 @@ rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
 @
 
 It is likely that before continuing with the analysis, the user would wish to
-average the technical replicates by finding their mean. This can be
+average the technical replicates by using the arithmetic mean of the raw Ct values. This can be
 achieved using the combineTechReps function, which will produce a new qPCRBatch
 object, with all tech reps reduced to one reading:
 
@@ -92,8 +93,8 @@ combinedTechReps
 %-------------------------------------------------------------------------------
 
 When an RT-qPCR experiment does not produce a reading after a certain number of
-cycles (cycle threshold), the reading is given as undetermined. These are
-represented in qPCRBatch objects as "NA". Different users may have different
+cycles (the cycle threshold), the reading is given as undetermined. These are
+represented in qPCRBatch objects as \code{NA}. Different users may have different
 ideas about how many cycles they wish to allow before declaring a detector as
 not present in the sample. There are two methods for the user to decide what to
 do with numbers above a given cycle threshold:
@@ -111,14 +112,14 @@ taqman.example <- paste(path, "/example.txt", sep="")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 @
 
-We can see that for the detector: Ccl20.Rn00570287\_m1 have these readings for
+We can see that for the detector: \code{Ccl20.Rn00570287\_m1} we have these readings for
 the different samples:
 <<taqman detector example>>=
 exprs(qPCRBatch.taqman)["Ccl20.Rn00570287_m1",]
 @
 
 
-Now use the \code{replaceAboveCutOff} method in order to replace anything above
+We can now use the \code{replaceAboveCutOff} method in order to replace anything above
 35 with NA:
 
 <<replace above cutoff>>=
@@ -150,7 +151,7 @@ using a contrast matrix. It is also necessary to make a sampleMaxMatrix which
 gives a maximum number of NAs allowed for each sample type.
 
 So in the example file above we two sample types, with 4 biological replicates
-for each. the contrastMatrix and sampleMaxMatrix might be contructed like this:
+for each, the contrastMatrix and sampleMaxMatrix might be contructed like this:
 
 <<construct contrast matrix>>=
 sampleNames(qPCRBatch.taqman)
@@ -165,10 +166,10 @@ colnames(sMaxM) <- c("case","control") # make sure these line up with samples
 sMaxM
 @
 
-More details on the contrast matrix can be found in the limma manual.
+More details on contrast matrices can be found in the limma manual, which requires a similar matrix when testing for differential expression between samples.
 
 For example, if the user decides that if at least 3 out of 4 readings are NAs
-for a given detector, then all readings should be NA, they will can do the
+for a given detector, then all readings should be NA, they can do the
 following, using the \code{makeAllNAs} method:
 
 <<replace 3 or more NAs with all NAs>>=
@@ -179,14 +180,14 @@ Here you can see for the Ccl20.Rn00570287\_m1 detector, the control values have
 been made all NA, wheras before 3 were NA and one was 35. However the case
 values have been kept, since they were all below the NA threshold. It is
 important to filter the data in this way to ensure the correct calculations are
-made downstream.
+made downstream when calculating variation and other parameters.
 
 << ccl20 is now all NAs >>=
 exprs(qPCRBatch.taqman.replaced)["Ccl20.Rn00570287_m1",]
 @
 
 %-------------------------------------------------------------------------------
-\section{Selection of most stable reference/housekeeping genes} 
+\section{Selection of most stable reference/housekeeping genes}
 %-------------------------------------------------------------------------------
 This section contains two subsections containing different methods for the
 selection of appropriate housekeeping genes.
@@ -387,12 +388,12 @@ head(exprs(qPCRBatch.norm))
 %-------------------------------------------------------------------------------
 \subsection{$2^{-\Delta \Delta Ct}$ method using a single housekeeper}
 %-------------------------------------------------------------------------------
-It is possible to use the $2^{-\Delta \Delta Ct}$ method for calculating the
-relative gene expression. 
+It is possible to use the $2^{-\Delta \Delta Ct}$ method for calculating
+relative gene expression between two sample types.
 Both the same well and the separate well methods as detailed in \cite{ddCt} can
-be used for this purpose.
-By default detectors in the same sample will be paired, and the standard deviation used will be that of the differences between cases and controls. However, if the argument \code{paired=FALSE} is added ,standard deviation between case and control will be calculated as s = $\sqrt{s_{1}^{2} +
-s_{2}^{2}}$, where $s_{1}$ is the standard deviation for all the case readings and $s_{2}$ is the standard deviation for all control readings.
+be used for this purpose, and will produce the same answers, but with different levels of variation.
+By default detectors in the same sample will be paired with the housekeeper, and the standard deviation used will be that of the differences between detectors and the housekeepers. However, if the argument \code{paired=FALSE} is added, standard deviation between case and control will be calculated as s = $\sqrt{s_{1}^{2} +
+s_{2}^{2}}$, where $s_{1}$ is the standard deviation for the detector readings and $s_{2}$ is the standard deviation the housekeeper gene readings.
 The latter approach is not recommended when the housekeeper and genes to be compared
 are from the same sample, as is the case when using the taqman cards, but is
 included for completeness and for situations where readings for the housekeeper
@@ -452,11 +453,11 @@ head(ddCt.taqman)
 We can also average the taqman data using the separate samples/wells method .
 Here standard deviation is calculated separately and then combined, as described above. Therefore the pairing
 of housekeeper with the detector value within
-the same sample is lost. This can increase variance
+the same sample is lost. This can potentially increase variance.
 
 << ddCt Avg >>=
 hkg <- "Actb-Rn00667869_m1"
-ddCtAvg.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", paired=TRUE)
+ddCtAvg.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", paired=FALSE)
 head(ddCtAvg.taqman)
 @
 %-------------------------------------------------------------------------------
@@ -495,6 +496,8 @@ ddAvgCt.gM.taqman <-deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxN
 head(ddAvgCt.gM.taqman)
 @
 
+
+TO SHOW EXAMPLE USING GENORM/NORMFINDER DATA
 
 %-------------------------------------------------------------------------------
 \begin{thebibliography}{1}

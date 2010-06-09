@@ -108,7 +108,6 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
             maxddCts[i] <- NA
           }
           else {
-#            sdCt <- sqrt(sdCase)
             minddCts[i] <- 2 ^ -(ddCt + sdCase)
             maxddCts[i] <- 2 ^ -(ddCt - sdCase)
             ddCts[i] <- 2^-ddCt
