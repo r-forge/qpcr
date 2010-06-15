@@ -1,9 +1,9 @@
 setGeneric("deltaDeltaCt",
-  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkgs=FALSE)
+  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkgs=FALSE, calc="arith")
   standardGeneric("deltaDeltaCt")
 )
 setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
-  function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, combineHkgs) {
+  function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, combineHkgs, calc) {
     hkgs <- make.names(hkgs)
 #case <- as.character(case)
 #control <- as.character(control)
@@ -64,12 +64,18 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
           dCtCase <- rep(NA, length = VCase)
           dCtControl <- NA
         } else {
-          dCtCase <- mean(VCase, na.rm=TRUE) - mean(hkgVCase, na.rm=TRUE)
-	  if (paired == TRUE) {
-	    sdCase <- sd(VCase - hkgVCase, na.rm=TRUE)
-	  } else  {
+          if(calc == "arith") {
+            dCtCase <- mean(2^-(VCase - hkgVCase), na.rm=TRUE)
+            sdCase <- sd(2^-(VCase - hkgVCase), na.rm=TRUE)
+          }
+          if(calc == "geom") {
+            dCtCase <- mean(VCase, na.rm=TRUE) - mean(hkgVCase, na.rm=TRUE)
+	    if (paired == TRUE) {
+	      sdCase <- sd(VCase - hkgVCase, na.rm=TRUE)
+	    } else  {
 	    sdCase <- sqrt(sd(VCase, na.rm=TRUE)^2 + sdHkgCase^2)
-	  }
+	    }
+          }
         }
 
         if(length(VControl) == 1) {
@@ -79,11 +85,17 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
           warning("No Detector for Control")
           dCtControl <- rep(NA, length = VControl)
         } else {
-          dCtControl <- mean(VControl, na.rm=TRUE) - mean(hkgVControl, na.rm=TRUE)
-          if (paired == TRUE) {
-            sdControl <- sd(VControl - hkgVControl, na.rm=TRUE)
-          } else  {
-            sdControl <- sqrt(sd(VControl, na.rm=TRUE)^2 + sdHkgControl^2)
+          if(calc == "arith") {
+            dCtControl <- mean(2^-(VControl - hkgVControl), na.rm=TRUE)
+            sdControl <- sd(2^-(VControl - hkgVControl), na.rm=TRUE)
+          }
+          if(calc == "geom") {
+            dCtControl <- mean(VControl, na.rm=TRUE) - mean(hkgVControl, na.rm=TRUE)
+            if (paired == TRUE) {
+              sdControl <- sd(VControl - hkgVControl, na.rm=TRUE)
+            } else  {
+              sdControl <- sqrt(sd(VControl, na.rm=TRUE)^2 + sdHkgControl^2)
+            }
           }
         }
         if(sum(is.na(VCase)) > maxNACase) {
@@ -92,8 +104,12 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
         if(sum(is.na(VControl)) > maxNAControl) {
           dCtControl <- NA
         }
-        ddCt <- (dCtCase - dCtControl)
-        
+        if(calc == "arith") {
+          ddCt <- dCtCase / dCtControl
+        }
+        if(calc == "geom") {
+          ddCt <- dCtCase - dCtControl
+        }
         if(is.na(ddCt)) {
           if(is.na(dCtCase) && ! is.na(dCtControl)) ddCt <- "-"
           else if(is.na(dCtControl) && ! is.na(dCtCase)) ddCt <- "+"
@@ -108,15 +124,33 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
             maxddCts[i] <- NA
           }
           else {
-            minddCts[i] <- 2 ^ -(ddCt + sdCase)
-            maxddCts[i] <- 2 ^ -(ddCt - sdCase)
-            ddCts[i] <- 2^-ddCt
+            if(calc == "arith") {
+              minddCts[i] <- (ddCt - sdCase)
+              maxddCts[i] <- (ddCt + sdCase)
+              ddCts[i] <- ddCt
+            }
+            if(calc == "geom") {
+              minddCts[i] <- 2 ^ -(ddCt + sdCase)
+              maxddCts[i] <- 2 ^ -(ddCt - sdCase)
+              ddCts[i] <- 2^-ddCt
+            }
+
           }
         }
-	dCtCases[i] <- 2^-dCtCase
-	sdCtCases[i] <- sdCase
-	dCtControls[i] <- 2^-dCtControl
-	sdCtControls[i] <- sdControl
+        if(calc == "arith") {
+#          ddCts[i] <- (dCtCase/dCtControl)
+	  dCtCases[i] <- dCtCase
+	  sdCtCases[i] <- sdCase
+	  dCtControls[i] <- dCtControl
+	  sdCtControls[i] <- sdControl
+        }
+        if(calc == "geom") {
+	  dCtCases[i] <- 2^-dCtCase
+	  sdCtCases[i] <- sdCase
+	  dCtControls[i] <- 2^-dCtControl
+	  sdCtControls[i] <- sdControl
+
+        }
         i <- i+1
     }
     ddCtTable <- as.data.frame(cbind(featureNames(qPCRBatch),dCtCases,sdCtCases,dCtControls,sdCtControls,ddCts,minddCts,maxddCts))
