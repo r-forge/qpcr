@@ -218,8 +218,8 @@ is calculated and so on. This procedure is repeated until two respectively,
 
 geNorm <- t(exprs(geNorm.qPCRBatch))
 
-tissue <- as.factor(c(rep("BM", 9), rep("POOL", 9), rep("FIB", 20), 
-                      rep("LEU", 13), rep("NB", 34)))
+tissue <- as.factor(c(rep("BM", 9),  rep("FIB", 20), rep("LEU", 13),
+                    rep("NB", 34), rep("POOL", 9)))
 res.BM <- selectHKs(geNorm[tissue == "BM",], method = "geNorm", 
                     Symbols = colnames(geNorm), minNrHK = 2, log = FALSE)
 res.POOL <- selectHKs(geNorm[tissue == "POOL",], method = "geNorm", 
@@ -275,7 +275,7 @@ mypalette <- brewer.pal(8, "YlGnBu")
 barplot(cbind(res.POOL$variation, res.LEU$variation, res.NB$variation, 
               res.FIB$variation, res.BM$variation), beside = TRUE, 
         col = mypalette, space = c(0, 2), 
-        names.arg = c("BM", "POOL", "FIB", "LEU", "NB"),
+        names.arg = c("POOL", "LEU", "NB", "FIB", "BM"),
         ylab = "Pairwise variation V",
         main = "Figure 3(a) in Vandesompele et al. (2002)")
 legend("topright", legend = c("V9/10", "V8/9", "V7/8", "V6/7", 

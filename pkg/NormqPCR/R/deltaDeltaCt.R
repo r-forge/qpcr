@@ -62,7 +62,8 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
         } else if(! FALSE %in% is.na(VCase)) {
           warning("No Detector for Case")
           dCtCase <- rep(NA, length = VCase)
-          dCtControl <- NA
+#          dCtControl <- NA
+          sdCase <- NA
         } else {
           if(calc == "arith") {
             dCtCase <- mean(2^-(VCase - hkgVCase), na.rm=TRUE)
@@ -81,9 +82,12 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
         if(length(VControl) == 1) {
           warning("Only one Detector for Control")
           dCtControl <- VControl
+          sdControl <- NA
         } else if(! FALSE %in% is.na(VControl)) {
           warning("No Detector for Control")
           dCtControl <- rep(NA, length = VControl)
+#          dCtCase <- NA
+          sdControl <- NA
         } else {
           if(calc == "arith") {
             dCtControl <- mean(2^-(VControl - hkgVControl), na.rm=TRUE)
