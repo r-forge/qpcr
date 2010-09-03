@@ -63,7 +63,7 @@ The user must first read in their taqman file(s) using the \pkg{ReadqPCR} packag
 <<readTaqman, echo=TRUE, width=200, height=160, eval=TRUE>>=
 library(ReadqPCR)
 library(QCqPCR)
-path <- system.file("exData", package = "ReadqPCR")
+path <- system.file("exData", package = "NormqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
 taqmanqPCRBatch <- read.taqman(taqman.example)
 @
