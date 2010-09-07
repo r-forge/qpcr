@@ -72,7 +72,7 @@ detector/feature names are thus suffixed:
 <<read.qPCR.tech.reps>>=
 library(ReadqPCR) # load the ReadqPCR library
 library(NormqPCR)
-path <- system.file("exData", package = "ReadqPCR")
+path <- system.file("exData", package = "NormqPCR")
 qPCR.example.techReps <- paste(path,"/qPCR.techReps.txt", sep = "")
 qPCRBatch.qPCR.techReps <- read.qPCR(qPCR.example.techReps)
 rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
@@ -107,7 +107,7 @@ They can replace the value of all readings above 38 as NA using the following:
 Firstly read in the taqman example file from \pkg{ReadqPCR} which has 96
 detectors, with 4 replicates for mia (case) and 4 non-mia (control):
 <<taqman read>>=
-path <- system.file("exData", package = "ReadqPCR")
+path <- system.file("exData", package = "NormqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 @
@@ -353,7 +353,7 @@ This can be done in \code{NormqPCR} as follows:
 for the example dataset from \pkg{ReadqPCR} we must first read in the
 data:
 <<taqman read dCt>>=
-path <- system.file("exData", package = "ReadqPCR")
+path <- system.file("exData", package = "NormqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 @
@@ -405,7 +405,7 @@ undergo amplifications from separate wells.
 for the example dataset from \pkg{ReadqPCR} we must first read in the
 data:
 <<taqman read>>=
-path <- system.file("exData", package = "ReadqPCR")
+path <- system.file("exData", package = "NormqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 @
@@ -470,8 +470,6 @@ algorithms described above, they can. This is implemented by calculating the
 average of these values using the geometric mean to form a "pseudo-housekeeper" which is subtracted from the other values. For the dataset above, using housekeeping genes GAPDH, Beta-2-microglobulin and Beta-actin:
 
 <<taqman gM>>=
-path <- system.file("exData", package = "ReadqPCR")
-taqman.example <- paste(path, "/example.txt", sep="")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
 colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
@@ -485,8 +483,6 @@ There is also the option of using the mean housekeeper method using shared
 variance between the samples being compared, similar
 to the second \code{deltaDeltaCt} method shown above.
 <<taqman gM Avg>>=
-path <- system.file("exData", package = "ReadqPCR")
-taqman.example <- paste(path, "/example.txt", sep="")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
 colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
