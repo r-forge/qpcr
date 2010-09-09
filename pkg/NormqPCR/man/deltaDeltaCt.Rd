@@ -8,7 +8,7 @@ Differs from the deltaDeltaAvgCt method in that the hkg values are subtracted an
 Suitable when housekeeping genes are from same wells/sample as the other detectors
 }
 \usage{
-deltaDeltaCt(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkgs=FALSE)
+deltaDeltaCt(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkgs=FALSE, calc="arith")
 }
 \arguments{
   \item{qPCRBatch}{ Expression set containing qPCR data. 
@@ -27,7 +27,9 @@ deltaDeltaCt(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, cont
 }
   \item{paired}{ Logical - if TRUE the detectors and housekeepers in the same sample will be paired for calculating standard deviation, effectively meaning we will be calculating standard deviation of the differences. If FALSE, there will be no pairing, and standard deviation will be pooled between the detector and housekeepers
 }
-  \item{combineHkgs}{ Logical - if TRUE, then as long as more than one housekeeper given for argument hkgs, it will combine the housekeepers by finding the geometric mean. Housekeepers can be found using geNorm or NormFinder algorithms
+  \item{combineHkgs}{ Logical - if TRUE, then as long as more than one housekeeper given for argument hkgs, it will combine the housekeepers by finding the mean. Housekeepers can be found using geNorm or NormFinder algorithms
+}
+  \item{calc}{ String - either "arith" or "geom", details how the different housekeeper genes should be combined - either by using the arithmetic or geometric mean
 }
 }
 \details{
