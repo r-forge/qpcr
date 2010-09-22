@@ -1,4 +1,3 @@
-
 read.qPCR <- function(filename = character(0), phenoData = new("AnnotatedDataFrame"), notes = "", verbose = FALSE)
 {
     pdata <- pData(phenoData)
@@ -6,8 +5,7 @@ read.qPCR <- function(filename = character(0), phenoData = new("AnnotatedDataFra
     qPCRInfo <- .read.qPCR(filename, verbose) # need to make this work for tech reps and multiple files
     exprs <- qPCRInfo$exprs
     well.order <- qPCRInfo$well.order
-
-exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
+    exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
     n <- length(colnames(exprs))
     if (dim(pdata)[1] != n) { # so if we don't have a row for each sample in the pData matrix
         warning("Incompatible phenoData object. Created a new one using sample name data derived from raw data.\n")
@@ -29,7 +27,6 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
 .read.qPCR <- function(filename, verbose)
 {
     noWellData <- FALSE
-
     raw.data <- read.table(filename, header=TRUE)
     if(is.null(raw.data$Well) || is.null(raw.data$PlateID)) {
          noWellData <- TRUE
@@ -76,8 +73,7 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
               raw.data$PlateID[raw.data$Sample == sample],
                 row.names=1)
         }
-
-        Cts <- data.frame(raw.data$Detector[raw.data$Sample == sample], # put Cts values in a matrix
+        Cts <- data.frame(raw.data$Detector[raw.data$Sample == sample],
           as.numeric(as.character(raw.data$Ct[raw.data$Sample == sample])),
             row.names=1)
         exprs <- data.frame(merge(exprs, Cts, by="row.names"), row.names=1)
@@ -89,11 +85,9 @@ exprs.well.order <- assayDataNew("environment", exprs.well.order = exprs)
     qPCRInfo <- list()
     names(exprs) <- samples
     qPCRInfo$exprs <- as.matrix(exprs)
-#    colnames(well.order) <- names(exprs)
     if(noWellData == FALSE) {
       colnames(well.order) <- names(exprs)
       qPCRInfo$well.order <- well.order
-#      colnames(well.order) <- names(exprs)
     }
     return(qPCRInfo)
 }

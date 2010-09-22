@@ -102,7 +102,6 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
             total.detectors <- length(allDetectors[raw.data$Sample == sample])
             individual.detectors <- length(unique(allDetectors[raw.data$Sample == sample]))
             tech.reps <- total.detectors/individual.detectors
-#raw.data$Detector <- as.character(raw.data$Detector) # coerce to stop funny behaviour
             if ((tech.reps %% 1) != 0) { # if total number of replicates not a multiple of number of individual detectors
               warning.text <- paste("Corrupt taqman file: total number of readings for sample ", 
                 sample, " not a multiple of number of individual number of detectors")
@@ -122,7 +121,7 @@ read.taqman <- function(..., filenames = character(0), phenoData = new("Annotate
                 if(verbose == TRUE) cat("we are combining files with the same detector names\n")
               }
               else stop("Problem combining files on detector names. Make sure detector names match for all files\n")
-              }
+              }#raw.data$Detector <- as.character(raw.data$Detector) # coerce to stop funny behaviour
               if(firstTimeFlag == TRUE) {
               exprs <- data.frame(unique(raw.data$Detector), row.names=1) # start the exprs data frame
               well.order <- data.frame(unique(raw.data$Detector), row.names=1)
