@@ -4,7 +4,6 @@
 ## na.rm: remove NA values
 stabMeasureRho <- function(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE){
     if(class(x) == "qPCRBatch") {
-#        stop("Must supply qPCRBatch to this function")  
         if(missing(group)) group <- pData(x)[,"Group"]
         x <- t(exprs(x))
     }

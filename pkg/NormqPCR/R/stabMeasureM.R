@@ -25,7 +25,6 @@ stabMeasureM <- function(x, log = TRUE, na.rm = TRUE){
         N[N < 1] <- NA
         Mean <- colMeans(A, na.rm = na.rm)
         M[j] <- mean(sqrt(rowSums((t(A) - Mean)^2, na.rm = na.rm)/(N - 1)))
-#        M[j] <- mean(apply(A, 2, sd, na.rm = na.rm))
     }else
         M[j] <- sd(A, na.rm = na.rm)
     }

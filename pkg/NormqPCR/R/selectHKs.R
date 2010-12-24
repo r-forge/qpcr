@@ -12,7 +12,6 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
                       log = TRUE, Symbols, trace = TRUE, na.rm = TRUE){
     if(method == "geNorm") {
         if(class(x) == "qPCRBatch") x <- t(exprs(x))
-#        else x <- t(x)
     }
     if(method == "NormFinder") {
         if(class(x) == "qPCRBatch"){
@@ -21,9 +20,6 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
         }
         else stop("'x' must be of class qPCRBatch")
     }
-#    else x <- t(x)
-#    print(x)
-#    x <- t(exprs(x))
     if(!is.matrix(x) & !is.data.frame(x))
         stop("'x' needs to be of class matrix or data.frame")
     if(is.data.frame(x)) x <- data.matrix(x)
@@ -57,7 +53,7 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
                 R[1:minNrHKs] <- Symbols
             else
                 R[i] <- Symbols[ind]
-                      
+
             if(i > 2){
                 if(log){
                     NF.old <- rowMeans(x)
@@ -69,7 +65,7 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
                     V[n-i+1] <- sd(log2(NF.new/NF.old), na.rm = na.rm)
                 }
             }
-      
+
             if(trace){
                 cat("###############################################################\n")
                 cat("Step ", n-i+1, ":\n")
@@ -88,10 +84,6 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
     }
     if(method == "NormFinder"){
 
-#        if(missing(group))
-#          group <- as.factor(pData(x)[,"Group"])
-            
-
         NF <- stabMeasureRho(x, group = group, log = log, na.rm = na.rm, returnAll = TRUE)
         k <- length(NF$rho)
         R <- character(minNrHKs)
@@ -101,7 +93,7 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
         b[1] <- which.min(rho)
         rho.min <- numeric(minNrHKs)
         rho.min[1] <- rho[b[1]]
-        
+
         if(trace){
             cat("###############################################################\n")
             cat("Step ", 1, ":\n")

@@ -1,6 +1,6 @@
-%\VignetteIndexEntry{QCqPCR}                                       
+%\VignetteIndexEntry{Functions to assess the quality of RT-qPCR data in R}                                       
 %\VignetteDepends{stats,Biobase,methods,ReadqPCR}                            
-%\VignetteKeywords{real-time, quantitative, PCR, quality control}
+%\VignetteKeywords{real-time, quantitative, RT-qPCR, qPCR, quality control}
 %\VignettePackage{QCqPCR}
 %
 \documentclass[11pt]{article}
@@ -34,7 +34,7 @@ pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
 \begin{document}
 %\SweaveOpts{keep.source = TRUE, eval = TRUE, include = FALSE}
 %-------------------------------------------------------------------------------
-\title{QCqPCR: Functions to assess the quality of qPCR data in R}
+\title{QCqPCR: Functions to assess the quality of RT-qPCR data in R}
 %-------------------------------------------------------------------------------
 \author{James Perkins\\
 University College London\medskip\\
@@ -45,41 +45,41 @@ University College London\medskip\\
 \section{Introduction}
 
 There are a number of problems inherent with the technologies used by high throughput RT-qPCR systems, and also problems related to normalisation of the data, which apply to using RT-qPCR in general, and can apply to other technologies, such as metabolomics assays.
+
 The former, technology related problem can lead to the presence of spatial effects and other systematic biases on the arrays.
-The latter problems refers to problems related to chosing the optimal housekeeping genes for normalisation.
-These are internal control genes that are chosen to normalise the samples because they are not expected to change in abundance between different tissues types being investigated, or in response to experimental treatments being applied.
-\\
-QCqPCR consists of a number of S4 methods that can be called on the qPCRBatch object described in \pkg{ReadqPCR}. The general way to call these methods is as: \code{<METHOD>(qPCRBatch, <other arguments seperated by `,'>)}. The methods output various things, such as correlation matrices and graphical plots, which can be used for the easy identification and quantification of problems in an experiment.
 
+The latter problems refers to problems related to chosing the optimal housekeeping genes for normalisation. These are internal control genes that are chosen to normalise the samples because they are not expected to change in abundance between different tissues types being investigated, or in response to experimental treatments being applied.
 
+QCqPCR consists of a number of S4 methods that can be called on the qPCRBatch object described in \pkg{ReadqPCR}. They are documented in this vignette.
+%-------------------------------------------------------------------------------
 \section{Identifying spatial effects and other systematic bias}
 
 \subsection{PseudoPlots}
-The Pseudoplots method creates a pseudo-image of the different plates used in the experiment. For taqman files they will have a default layout of 24 x 16 Wells. This is a representation of the plate, with the spatial locations of the wells on the plate represented as circles. The colour of the circles will vary depending on what is being plotted. 
+The Pseudoplots method creates a pseudo-image of the different plates used in the experiment. Currently these only work for Taqman SDS output. They will therefore have a default layout of 24 x 16 Wells. This is a representation of the plate, with the spatial locations of the wells on the plate represented as circles. The colour of the circles will vary depending on what is being plotted.
 Currently one can plot raw Ct values, or residuals, depending on what the user wishes to identify.
 
-The user must first read in their taqman file(s) using the \pkg{ReadqPCR} package. Here we show an example with a 2 plate experiment, with each plate consisting of 4 samples, with the same detectors. Each sample has the same order of detectors and takes up 4 consecutive rows on each plate. So for example the first sample will be all the columns in rows 1 - 4, the second sample all columns in 5-8, and so forth.
+The user must first read in their taqman file(s) using the \pkg{ReadqPCR} package. Here we show an example with a 2 plate experiment, with each plate consisting of 4 samples, with the same detectors. Each sample has the same order of detectors and takes up 4 consecutive rows on each plate. So for example the first sample will be contained in rows 1 - 4, the second sample in 5-8, and so forth.
 
 <<readTaqman, echo=TRUE, width=200, height=160, eval=TRUE>>=
 library(ReadqPCR)
 library(QCqPCR)
 path <- system.file("exData", package = "NormqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
-taqmanqPCRBatch <- read.taqman(taqman.example)
+taqman.qPCRBatch <- read.taqman(taqman.example)
 @
 
 \subsubsection{Raw Ct Values}
 
-Raw Ct values can be plotted to show obvious problems with the data. Undetermined values can be given a specified value, or a user defined cut-off can be used instead. This is mainly of use in order to find any detectors that arise too soon, or problematic channels. If the plate contains undertermined values, these will not be plotted.
+Raw Ct values can be plotted to show obvious problems with the data. Undetermined values can be given a specified value, or a user defined cut-off can be used instead. The plotting of raw, unnormalised Ct values is mainly of use in order to find any detectors that arise too soon, or any problematic channels. If the plate contains undetermined values, these will not be plotted, and a gap will appear
 
 <<PseudoPlotCtsNA, fig=TRUE, width = 200, height=200>>=
-PseudoPlot(qPCRBatch=taqmanqPCRBatch)
+PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1")
 @
 
-The alternative way to deal with undertermined Ct values is to make a cutoff Ct value, and assign it to anything equal or above this value. Other ways of dealing with Undertermined Ct values are shown in the \pkg{NormqPCR} package. Here we show what happens with a cutoff of 38.
+The alternative way to deal with undetermined Ct values is to make a cutoff Ct value, and assign it to anything equal or above this value. Other ways of dealing with Undertermined Ct values are shown in the \pkg{NormqPCR} package. Here we show what happens with a cutoff of 38.
 
 <<PseudoPlotCts, fig=TRUE, width = 200, height=200>>=
-PseudoPlot(qPCRBatch=taqmanqPCRBatch, cutOff=38)
+PseudoPlot(qPCRBatch=taqman.qPCRBatch,  plateToPlot="1", cutOff=38)
 @
 
 \subsubsection{Plot with average and residuals}
@@ -90,26 +90,24 @@ The average can be the average Ct value for all wells on a given plate, as is th
 
 For plate residuals:
 <<PseudoPlotPlate, fig=TRUE, width = 200, height=200>>=
-PseudoPlot(qPCRBatch=taqmanqPCRBatch, plotType="Plate.Residuals", cutOff=38)
+#PseudoPlot(qPCRBatch=taqman.qPCRBatch, plotType="Plate.Residuals", cutOff=38)
+#PseudoPlot(qPCRBatch=taqman.qPCRBatch, plotType="Plate.Residuals", cutOff=38, statType="non-parametric")
 @
 For well residuals:
 <<PseudoPlotWell, fig=TRUE, width = 200, height=200>>=
-PseudoPlot(qPCRBatch=taqmanqPCRBatch, plateToPlot="1", plotType="Well.Residuals", cutOff=38)
+#PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Well.Residuals", cutOff=38)
+#PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Well.Residuals", cutOff=38, statType="non-parametric")
 @
 For detector residuals:
 \subsubsection{Detector Residuals}
 <<PseudoPlotDetector, fig=TRUE, width = 200, height=200>>=
-PseudoPlot(qPCRBatch=taqmanqPCRBatch, plateToPlot="1", plotType="Detector.Residuals", cutOff=38)
+#PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Detector.Residuals", cutOff=38)
+#PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Detector.Residuals", cutOff=38, statType="non-parametric")
 @
-
-\subsection{qPCRPairs}
-
-Pairwise plots can be made between the different samples, or between different plates, in a similar way to the \code{pairs} function in the \code{graphics} package (in fact it calls this function directly after re-arranging the data).
-The latter option will only be likely to produce sensible looking and  results when comparing plates with the same experimental setup.
-
-\subsection{Pairs}
-
+%-------------------------------------------------------------------------------
 \section{Visual comparison of housekeeping gene performance}
+
+
 
 SOMETHING ABOUT THIS
 %-------------------------------------------------------------------------------

@@ -2,29 +2,60 @@ setGeneric("plotVsHkg",
   function(qPCRBatch, hkgs, writeToFile=FALSE)
     standardGeneric("plotVsHkg")
 )
+
+
 setMethod("plotVsHkg", signature = "qPCRBatch", definition =
   function(qPCRBatch, hkgs, writeToFile)
   {
     cts <- exprs(qPCRBatch) # this refers to the actual data
-#    hkgs <-  # these are the housekeeping genes the data has been normalised to
+    hkgs <- make.names(hkgs)
+
     if(FALSE %in% hkgs %in% featureNames(qPCRBatch)) stop("one or more housekeeper not found in exprs matrix")
-    plotFrame <- row.names(cts)
+    plotFrame <- matrix(nrow=length(featureNames(qPCRBatch)),ncol=length(hkgs), dimnames = list(featureNames(qPCRBatch), hkgs))
     for (hkg in hkgs) {
-        cat("wiv da", hkg, "\n")
+        cat("housekeeping genes", hkg, "\n\n")
+
+	dCts <- deltaCt(qPCRBatch = qPCRBatch, hkgs = hkg, calc="arith")
+        for(detector in featureNames(qPCRBatch)) {
+#cat("\n\n\n")
+#	print(dCts)
+#	cat(exprs(qPCRBatch)[detector,],"\t")
+	plotFrame[detector,hkg] <- mean(exprs(dCts)[detector,],na.rm=TRUE)
+#cat(mean(exprs(qPCRBatch)[detector,],na.rm=TRUE),"\t")
+#cat(plotFrame[detector,hkg],"\n")
 #        hkg <- gsub("-.+$", "", hkg) # cut off the stuff from the detector's name after the - 
 #        hkg2ddct <- paste(hkg, "_2^DDCt", sep = "")
 #        ddct <- cts[, hkg2ddct]
-#        plotFrame <- data.frame(plotFrame, ddct)
-         
+#        plotFrame[,hkgs] <-  <- data.frame(plotFrame, ddct)
+         }
+#cat("\n")
     }
-    plotFrame <- plotFrame[, -1] # take off first column of detector names
-    for (i in seq(hkgs)) { # now order by each hkg and print
-        plotFrame <- plotFrame[order(plotFrame[, i]), ] # order by 1st column
-        if (writeToFile) jpeg(file = paste("OrderedBy", hkgs[i], ".jpg", sep = ""))
-        matplot(plotFrame, type = "l", pch = seq(hkgs), lty = seq(hkgs), log = "y", main = paste("Ordered By ", hkgs[i], sep = ""),xlab=paste("rank order of ",hkgs[i]))
-        legend(1, tail(seq(hkgs), n = 1), hkgs, lty = seq(hkgs), col = seq(hkgs))
-        if (writeToFile) dev.off()
+
+#    for (hkg in hkgs[1]) {
+#        for(detectors in featureNames(qPCRBatch)) {
+#	    cat(plotFrame[detector,hkg])
+
+#        }
+#    }
+#stop()
+#    plotFrame <- plotFrame[, -1] # take off first column of detector names
+   for (hkg in hkgs) { # now order by each hkg and print
+        ord.plotFrame <- plotFrame[order(plotFrame[, hkg]), ] # order by 1st column
+        if (writeToFile) jpeg(file = paste("mean.deltaCt.ordered.by.", hkg, ".jpg", sep = ""))
+
+
+        matplot(ord.plotFrame, type = "l", pch = seq(hkgs), lty = seq(hkgs), main = paste("Ordered By hkg ", hkg, sep = ""),xlab=paste("rank order of ",hkg))
+        legend(ceiling(1/2*length(featureNames(qPCRBatch))), min(ord.plotFrame,na.rm=TRUE)+5, hkgs, lty = seq(hkgs), col = seq(hkgs))
+        if (writeToFile) {
+          dev.off()
+        } else {
+          .wait()
+        }
     }
     return(plotFrame)
   }
 )
+
+.wait <- function() {
+  par(ask=TRUE)
+}

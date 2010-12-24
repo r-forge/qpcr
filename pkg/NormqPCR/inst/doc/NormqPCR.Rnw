@@ -16,7 +16,7 @@ NormFinder},%
 pagebackref,bookmarks,colorlinks,linkcolor=darkblue,citecolor=darkblue,%
 pagecolor=darkblue,raiselinks,plainpages,pdftex]{hyperref}
 %
-\markboth{\sl Package ``{\tt NormqPCR}''}{\slinst/exData/ Package ``{\tt NormqPCR}''}
+\markboth{\sl Package ``{\tt NormqPCR}''}{\sl Package ``{\tt NormqPCR}''}
 %
 %------------------------------------------------------------------------------
 \newcommand{\code}[1]{{\tt #1}}
@@ -362,7 +362,7 @@ We then need to supply a housekeeper gene to be subtracted:
 
 <<dCt>>=
 hkgs<-"Actb-Rn00667869_m1"
-qPCRBatch.norm <- deltaCt(qPCRBatch =  qPCRBatch.taqman, hkgs = hkgs)
+qPCRBatch.norm <- deltaCt(qPCRBatch =  qPCRBatch.taqman, hkgs = hkgs, calc="arith")
 head(exprs(qPCRBatch.norm))
 @
 
@@ -381,7 +381,7 @@ average of these values to form a "pseudo-housekeeper" which is subtracted from 
 
 <<dCt many genes>>=
 hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
-qPCRBatch.norm <- deltaCt(qPCRBatch =  qPCRBatch.taqman, hkgs = hkgs)
+qPCRBatch.norm <- deltaCt(qPCRBatch =  qPCRBatch.taqman, hkgs = hkgs, calc="arith")
 head(exprs(qPCRBatch.norm))
 @
 
@@ -446,7 +446,7 @@ case and control. We then find $2^{-}$ of this value.
 
 << ddCt >>=
 hkg <- "Actb-Rn00667869_m1"
-ddCt.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype")
+ddCt.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", statCalc="geom", hkgCalc="arith")
 head(ddCt.taqman)
 @
 
@@ -457,7 +457,7 @@ the same sample is lost. This can potentially increase variance.
 
 << ddCt Avg >>=
 hkg <- "Actb-Rn00667869_m1"
-ddCtAvg.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", paired=FALSE)
+ddCtAvg.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", paired=FALSE, statCalc="geom", hkgCalc="arith")
 head(ddCtAvg.taqman)
 @
 %-------------------------------------------------------------------------------
@@ -475,7 +475,7 @@ contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
 colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
 rownames(contM) <- sampleNames(qPCRBatch.taqman)
 hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
-ddCt.gM.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", combineHkgs=TRUE)
+ddCt.gM.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", statCalc="arith", hkgCalc="arith")
 head(ddCt.gM.taqman)
 @
 
@@ -488,7 +488,7 @@ contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
 colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
 rownames(contM) <- sampleNames(qPCRBatch.taqman)
 hkgs<-c("Actb-Rn00667869_m1", "B2m-Rn00560865_m1", "Gapdh-Rn99999916_s1")
-ddAvgCt.gM.taqman <-deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", paired=FALSE, combineHkgs=TRUE)
+ddAvgCt.gM.taqman <-deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkgs=hkgs, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", paired=FALSE, statCalc="arith", hkgCalc="arith")
 head(ddAvgCt.gM.taqman)
 @
 

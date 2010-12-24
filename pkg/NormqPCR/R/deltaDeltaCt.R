@@ -1,17 +1,14 @@
 setGeneric("deltaDeltaCt",
-  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, combineHkgs=FALSE, calc="arith")
+  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, hkgCalc="arith", statCalc="arith")
   standardGeneric("deltaDeltaCt")
 )
 setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
-  function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, combineHkgs, calc) {
+  function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, hkgCalc, statCalc) {
     hkgs <- make.names(hkgs)
-#case <- as.character(case)
-#control <- as.character(control)
-    if(combineHkgs == TRUE) {
-	if(length(hkgs) == 1) stop("Not enough hkgs given")
-    }
-#    for(hkg in hkgs) {
-#    if(! hkg %in% featureNames(qPCRBatch)) stop("invalid housekeeping gene")
+
+#    if(combineHkgs == TRUE) {
+	if(length(hkgs) < 1) stop("Not enough hkgs given")
+#    }
     if(FALSE %in% (hkgs %in% featureNames(qPCRBatch))) stop("invalid housekeeping gene given")
     for(hkg in hkgs){
         if(sum(is.na(hkg)) > 0) warning(hkg, " May be a bad housekeeping gene to normalise with since it did not produce a reading ", sum(is.na(hkg)), "times out of", length(hkg))
@@ -22,20 +19,22 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     caseM <- expM[,cases]
     controlM <- expM[,controls]
 
-#    hkgMCase <- caseM[hkgs, ]
-#    hkgMControl <- controlM[hkgs, ]
-    if(combineHkgs == TRUE) {
+    if(length(hkgs) > 1) {
 	hkgMCase <- caseM[hkgs, ]
         hkgMControl <- controlM[hkgs, ]
-	hkgVCase <- apply(hkgMCase, 2, geomMean, na.rm=TRUE)
-	hkgVControl <- apply(hkgMControl, 2, geomMean, na.rm=TRUE)
-    } else {
-        hkg <- hkgs[1]
+	#hkgVCase <- apply(hkgMCase, 2, geomMean, na.rm=TRUE)
+	#hkgVControl <- apply(hkgMControl, 2, geomMean, na.rm=TRUE)
+	if(hkgCalc == "arith") {
+		hkgVCase <- apply(hkgMCase, 2, mean, na.rm=TRUE)
+		hkgVControl <- apply(hkgMControl, 2, mean, na.rm=TRUE)
+	} else {
+		hkgVCase <- apply(hkgMCase, 2, geomMean, na.rm=TRUE)
+		hkgVControl <- apply(hkgMControl, 2, geomMean, na.rm=TRUE)
+	}
+    } else { # Just use the first HKG
+        hkgVCase <- caseM[hkgs[1], ]
+        hkgVControl <- controlM[hkgs[1], ]
     }
-
-    hkgVCase <- caseM[hkg, ]
-    hkgVControl <- controlM[hkg, ]
-
 
     sdHkgCase <- sd(hkgVCase, na.rm=TRUE)
     sdHkgControl <- sd(hkgVControl, na.rm=TRUE)
@@ -65,16 +64,16 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
 #          dCtControl <- NA
           sdCase <- NA
         } else {
-          if(calc == "arith") {
+          if(statCalc == "geom") {
             dCtCase <- mean(2^-(VCase - hkgVCase), na.rm=TRUE)
             sdCase <- sd(2^-(VCase - hkgVCase), na.rm=TRUE)
           }
-          if(calc == "geom") {
+          if(statCalc == "arith") {
             dCtCase <- mean(VCase, na.rm=TRUE) - mean(hkgVCase, na.rm=TRUE)
 	    if (paired == TRUE) {
 	      sdCase <- sd(VCase - hkgVCase, na.rm=TRUE)
 	    } else  {
-	    sdCase <- sqrt(sd(VCase, na.rm=TRUE)^2 + sdHkgCase^2)
+	      sdCase <- sqrt(sd(VCase, na.rm=TRUE)^2 + sdHkgCase^2)
 	    }
           }
         }
@@ -89,11 +88,11 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
 #          dCtCase <- NA
           sdControl <- NA
         } else {
-          if(calc == "arith") {
+          if(statCalc == "geom") {
             dCtControl <- mean(2^-(VControl - hkgVControl), na.rm=TRUE)
             sdControl <- sd(2^-(VControl - hkgVControl), na.rm=TRUE)
           }
-          if(calc == "geom") {
+          if(statCalc == "arith") {
             dCtControl <- mean(VControl, na.rm=TRUE) - mean(hkgVControl, na.rm=TRUE)
             if (paired == TRUE) {
               sdControl <- sd(VControl - hkgVControl, na.rm=TRUE)
@@ -108,10 +107,10 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
         if(sum(is.na(VControl)) > maxNAControl) {
           dCtControl <- NA
         }
-        if(calc == "arith") {
+        if(statCalc == "geom") {
           ddCt <- dCtCase / dCtControl
         }
-        if(calc == "geom") {
+        if(statCalc == "arith") {
           ddCt <- dCtCase - dCtControl
         }
         if(is.na(ddCt)) {
@@ -128,12 +127,12 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
             maxddCts[i] <- NA
           }
           else {
-            if(calc == "arith") {
-              minddCts[i] <- (ddCt - sdCase)
-              maxddCts[i] <- (ddCt + sdCase)
+            if(statCalc == "geom") {
+              minddCts[i] <- NA
+              maxddCts[i] <- NA
               ddCts[i] <- ddCt
             }
-            if(calc == "geom") {
+            if(statCalc == "arith") {
               minddCts[i] <- 2 ^ -(ddCt + sdCase)
               maxddCts[i] <- 2 ^ -(ddCt - sdCase)
               ddCts[i] <- 2^-ddCt
@@ -141,14 +140,14 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
 
           }
         }
-        if(calc == "arith") {
+        if(statCalc == "geom") {
 #          ddCts[i] <- (dCtCase/dCtControl)
 	  dCtCases[i] <- dCtCase
 	  sdCtCases[i] <- sdCase
 	  dCtControls[i] <- dCtControl
 	  sdCtControls[i] <- sdControl
         }
-        if(calc == "geom") {
+        if(statCalc == "arith") {
 	  dCtCases[i] <- 2^-dCtCase
 	  sdCtCases[i] <- sdCase
 	  dCtControls[i] <- 2^-dCtControl
@@ -157,8 +156,9 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
         }
         i <- i+1
     }
-    ddCtTable <- as.data.frame(cbind(featureNames(qPCRBatch),dCtCases,sdCtCases,dCtControls,sdCtControls,ddCts,minddCts,maxddCts))
-    names(ddCtTable) <- c("ID", case, paste(case,"sd",sep="."), control, paste(control,"sd",sep="."),"ddCt","ddCt.min", "ddCt.max")
+
+    ddCtTable <- as.data.frame(cbind(featureNames(qPCRBatch),format(dCtCases, digits=4),format(sdCtCases, digits=4),format(dCtControls, digits=4),format(sdCtControls, digits=4),format(ddCts,digits=4),format(minddCts, digits=4),format(maxddCts, digits=4)))
+    names(ddCtTable) <- c("ID", paste("2^-dCt",case,sep="."), paste(case,"sd",sep="."), paste("2^-dCt",control,sep="."), paste(control,"sd",sep="."),"2^-ddCt","2^-ddCt.min", "2^-ddCt.max")
     return(ddCtTable)
 #    stop(ddCtTable)
   }

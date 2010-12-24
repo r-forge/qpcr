@@ -1,8 +1,8 @@
 \name{replaceAboveCutOff}
 \alias{replaceAboveCutOff}
 \alias{replaceAboveCutOff,qPCRBatch-method}
-\title{ Replace values above a given threshold with a new value }
-\description{ Replace values above a given threshold with a new value
+\title{ Replace Ct values with new value}
+\description{ Replace Ct values above a given threshold with a new value
 }
 \usage{
 replaceAboveCutOff(qPCRBatch, newVal=NA, cutOff=38)
@@ -16,15 +16,21 @@ replaceAboveCutOff(qPCRBatch, newVal=NA, cutOff=38)
 }
 }
 \details{
-  Replaces values in the exprs slot of the qPCRBatch object that are above a threshold value with a new number
+  Replaces values in the exprs slot of the \code{qPCRBatch} object that are above a threshold value with a new number
 }
 \value{
-  qPCRBatch object with a new exprs slot
+  \code{qPCRBatch} object with a new exprs slot
 }
 %\references{ }
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
 %\note{}
 %\seealso{}
-%\examples{
-%}
+\examples{
+  path <- system.file("exData", package = "NormqPCR")
+  taqman.example <- paste(path, "/example.txt", sep="")
+  qPCRBatch.taqman <- read.taqman(taqman.example)
+  exprs(qPCRBatch.taqman)["Ccl20.Rn00570287_m1",]
+  qPCRBatch.taqman.replaced <- replaceAboveCutOff(qPCRBatch.taqman, newVal = NA, cutOff = 35)
+  exprs(qPCRBatch.taqman.replaced)["Ccl20.Rn00570287_m1",]
+}
 \keyword{data}

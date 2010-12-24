@@ -4,7 +4,6 @@ setGeneric("PseudoPlot",
 )
 setMethod("PseudoPlot", signature = "qPCRBatch", definition =
   function(qPCRBatch, plotType, writeToFile, cutOff, statType, plateToPlot) {
-# CHECKING - IS THERE A CLEVERER WAY TO DO THIS?
     if (statType == "parametric"
       || statType == "non-parametric") {
     }
@@ -17,15 +16,14 @@ setMethod("PseudoPlot", signature = "qPCRBatch", definition =
       ctsMat[ctsMat > cutOff] <- cutOff
     }
     else {
-      warning("No cutOff value given, if you are calculating residuals, the program it will crash out ungracefully")
+      warning("No cutOff value given, if you are calculating residuals, the program will crash out ungracefully")
     }
     orderMat <- exprs.well.order(qPCRBatch)
     plateVec <- as.vector(gsub("-.*", "", orderMat))
-    whichPlates <- unique(plateVec)
-    whichPlates <- sort(plateVec)
+    whichPlates <- sort(unique(plateVec))
     if(plateToPlot != "AllPlates") whichPlates <- plateToPlot
     wellVec <- as.numeric(gsub(".*-", "", orderMat))
-
+cat("ZZZZ",whichPlates,"here\n")
     if (plotType == "Cts.Values") {
       minVal <- 0
       maxVal <- round(max(ctsMat, na.rm=TRUE), 2)
@@ -135,7 +133,7 @@ setMethod("PseudoPlot", signature = "qPCRBatch", definition =
   par(mar = c(5.1, 4.1, 1, 2))
   image(x.bar, 1, matrix(x.bar, length(x.bar), 1), axes = FALSE, xlab = "", ylab = "", col = myCol)
   Labels <- c("Min", "Max")
-  axis(1, at = c(0,40), labels = Labels, las = 1)
+  axis(1, at = c(minVal,maxVal), labels = Labels, las = 1)
 
   if(writeToFile == TRUE) {
     dev.off()

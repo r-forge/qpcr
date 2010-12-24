@@ -1,29 +1,26 @@
-plotDCt <- function(ddCtTable, detectors="", logFC = FALSE) {
+plotDCt <- function(..., ddCtTable, detectors="", statCalc="arith") {
   if(detectors[1]!="") {
     ddCtTable <- ddCtTable[ddCtTable$ID %in% detectors, ,drop=FALSE]
   } else {
     ddCtTable <- ddCtTable
   }
   plotNames <- ddCtTable$ID
-  plotCts <- ddCtTable[,c("case","control")]
-  plotSds <- ddCtTable[,c("case.sd","control.sd")]
+  plotCts <- ddCtTable[,c(2,4)]
+  plotSds <- ddCtTable[,c(3,5)]
   plotCts <- sapply(plotCts, function(x) as.numeric(as.character(x)))
   plotSds <- sapply(plotSds, function(x) as.numeric(as.character(x)))
 
-#  plotCts <- plotTable[,c("case","control")]
-#  plotSds <- plotTable[,c("case.sd","control.sd")]
-  plotU <- plotCts + plotSds
-#  plotL <- plotCts - plotTable[,c("case.sd","control.sd")]
-#  plotU <- plotCts + plotSds
-  plotL <- plotCts - plotSds
-print(plotCts)
+  if(statCalc == "arith") {
+    plotU <- 2^(log2(plotCts) + plotSds)
+    plotL <- 2^(log2(plotCts) - plotSds)
+  } else {
+    plotU <- plotCts  + plotSds
+    plotL <- plotCts - plotSds
+  }
+#  print(plotCts)
+  
+#  cat(plotU,"\t")
+#  cat(plotL,"\n")
 
-#cat(plotU,"\n")
-#cat(plotL,"\n")
-#  plotCts <- sapply(ddCtTable, function(x) as.numeric(as.character(x)))
-#  plotCtsd
-#  plotCtMax
-#  plotCtMin
-
-  barplot2(height=t(plotCts), plot.ci=TRUE, ci.u=t(plotU), ci.l=t(plotL), beside=T)
+  barplot2(..., height=t(plotCts), plot.ci=TRUE, ci.u=t(plotU), ci.l=t(plotL), beside=T)
 }

@@ -1,16 +1,16 @@
 \name{makeAllNAs}
 \alias{makeAllNAs}
 \alias{makeAllNAs,qPCRBatch-method}
-\title{ Make all NAs when number of NAs above a given threshold }
-\description{ Make all NAs when number of NAs above a given threshold
+\title{ Make all Ct values NA  }
+\description{ Make all Ct values for a given detector NA when the number of NAs for that detector is above a given threshold
 }
 \usage{
-makeAllNAs(qPCRBatch, contrastM, sampleMaxM)
+  makeAllNAs(qPCRBatch, contrastM, sampleMaxM)
 }
 \arguments{
   \item{qPCRBatch}{ Expression set containing qPCR data. 
 }
-  \item{contrastM}{ Contrast Matrix like that used in Limma. Columns represent the different samples types, rows are the different samples,
+  \item{contrastM}{ Contrast Matrix like that used in \code{limma}. Columns represent the different samples types, rows are the different samples,
 with a 1 or 0 in the matrix indicating which sample types the different samples belong to.
 }
   \item{sampleMaxM}{ Sample Max Matrix. Columns represent the different sample types. There is one value per column, which represents the max number of NAs allowed for that sample type.
@@ -20,12 +20,34 @@ with a 1 or 0 in the matrix indicating which sample types the different samples 
   Make all NAs when number of NAs above a given threshold
 }
 \value{
-  qPCRBatch object with a new exprs slot, everything else equal
+  \code{qPCRBatch} object with a new exprs slot, everything else equal
 }
 %\references{ }
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
 %\note{}
 %\seealso{}
-%\examples{
-%}
+\examples{
+  # read in the data
+  path <- system.file("exData", package = "NormqPCR")
+  taqman.example <- paste(path, "/example.txt", sep="")
+  qPCRBatch.taqman <- read.taqman(taqman.example)
+  exprs(qPCRBatch.taqman)["Ccl20.Rn00570287_m1",] # values before
+
+  # make contrastM
+  a <- c(0,0,1,1,0,0,1,1) # one for each sample type, with 1 representing
+  b <- c(1,1,0,0,1,1,0,0) # position of sample type in the samplenames vector
+  contM <- cbind(a,b)
+  colnames(contM) <- c("case","control") # then give the names of each sample type
+  rownames(contM) <- sampleNames(qPCRBatch.taqman) # and the rows of the matrix
+  contM
+
+  # make sampleMaxM
+  sMaxM <- t(as.matrix(c(3,3))) # now make the sample max matrix
+  colnames(sMaxM) <- c("case","control") # make sure these line up with samples
+  sMaxM
+
+  # function
+  qPCRBatch.taqman.replaced <- makeAllNAs(qPCRBatch.taqman, contM, sMaxM)
+  exprs(qPCRBatch.taqman.replaced)["Ccl20.Rn00570287_m1",]
+}
 \keyword{data}
