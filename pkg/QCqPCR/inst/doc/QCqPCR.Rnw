@@ -89,18 +89,18 @@ There are 3 further ways of plotting values back onto the chips, which involve c
 The average can be the average Ct value for all wells on a given plate, as is the case when plotting plate residuals, calculated for the same position across the different plates, as is the case when plotting well residuals, or can be calculated for each of the detectors, which might be intra or inter-plate, depending on the experimental setup.
 
 For plate residuals:
-<<PseudoPlotPlate, fig=TRUE, width = 200, height=200>>=
+<<PseudoPlotPlate, width = 200, height=200>>=
 #PseudoPlot(qPCRBatch=taqman.qPCRBatch, plotType="Plate.Residuals", cutOff=38)
 #PseudoPlot(qPCRBatch=taqman.qPCRBatch, plotType="Plate.Residuals", cutOff=38, statType="non-parametric")
 @
 For well residuals:
-<<PseudoPlotWell, fig=TRUE, width = 200, height=200>>=
+<<PseudoPlotWell, width = 200, height=200>>=
 #PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Well.Residuals", cutOff=38)
 #PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Well.Residuals", cutOff=38, statType="non-parametric")
 @
 For detector residuals:
 \subsubsection{Detector Residuals}
-<<PseudoPlotDetector, fig=TRUE, width = 200, height=200>>=
+<<PseudoPlotDetector, width = 200, height=200>>=
 #PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Detector.Residuals", cutOff=38)
 #PseudoPlot(qPCRBatch=taqman.qPCRBatch, plateToPlot="1", plotType="Detector.Residuals", cutOff=38, statType="non-parametric")
 @
