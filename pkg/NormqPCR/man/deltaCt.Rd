@@ -6,10 +6,11 @@
 Normalise qPCR eset using a given housekeeping gene as control, then perform differential expression analysis using the delta delta Ct method
 }
 \usage{
-deltaCt(qPCRBatch, hkgs, combineHkgs=FALSE, calc="arith")
+deltaCt(qPCRBatch, \dots)
 }
 \arguments{
   \item{qPCRBatch}{ Expression set containing qPCR data. }
+  \item{\dots}{ Extra arguments, detailed below }
   \item{hkgs}{ String containing the name of the name of the housekeeping gene which will be used to normalise the rest of the genes.}
   \item{combineHkgs}{  Logical - if TRUE, then as long as more than one housekeeper given for argument hkgs, it will combine the housekeepers by finding the geometric mean. Housekeepers can be found using geNorm or NormFinder algorithms.}
   \item{calc}{ use arithmetic or geometric mean.}

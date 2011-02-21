@@ -8,10 +8,11 @@ Differs from the deltaDeltaAvgCt method in that the hkg values are subtracted an
 Suitable when housekeeping genes are from same wells/sample as the other detectors
 }
 \usage{
-deltaDeltaCt(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, hkgCalc="arith", statCalc="arith")
+deltaDeltaCt(qPCRBatch,\dots)
 }
 \arguments{
   \item{qPCRBatch}{ Expression set containing qPCR data. }
+  \item{\dots}{ Extra arguments, detailed below }
   \item{maxNACase}{ Maximum number of NA values allowed before a detector's reading is discarded for samples designated as case. }
   \item{maxNAControl}{ Maximum number of NA values allowed before a detector's reading is discarded for samples designated as control. }
   \item{hkgs}{ String containing the name of th name of the housekeeping gene which will be used to normalise the rest of the genes. }

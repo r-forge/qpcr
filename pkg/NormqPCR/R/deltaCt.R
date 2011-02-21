@@ -1,9 +1,5 @@
-setGeneric("deltaCt",
-  function(qPCRBatch, hkgs, combineHkgs=FALSE, calc="arith")
-  standardGeneric("deltaCt")
-)
 setMethod("deltaCt", signature = "qPCRBatch", definition =
-  function(qPCRBatch, hkgs, combineHkgs, calc) {
+  function(qPCRBatch, hkgs, combineHkgs=FALSE, calc="arith") {
     hkgs <- make.names(hkgs)
 #    cat("hkgs",hkgs)
     if(FALSE %in% (hkgs %in% featureNames(qPCRBatch))) stop ("given housekeeping gene, ", hkgs," not found in file. Ensure entered housekeeping genes appear in the file")

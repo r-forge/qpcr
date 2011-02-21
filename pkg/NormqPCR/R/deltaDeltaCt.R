@@ -1,9 +1,5 @@
-setGeneric("deltaDeltaCt",
-  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, hkgCalc="arith", statCalc="arith")
-  standardGeneric("deltaDeltaCt")
-)
 setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
-  function(qPCRBatch, maxNACase, maxNAControl, hkgs, contrastM, case, control, paired, hkgCalc, statCalc) {
+  function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, hkgCalc="arith", statCalc="arith") {
     hkgs <- make.names(hkgs)
 
 #    if(combineHkgs == TRUE) {

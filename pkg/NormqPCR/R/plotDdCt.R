@@ -1,4 +1,3 @@
-
 plotDdCt <- function(..., ddCtTable, detectors="", logFC=TRUE) {
   if(detectors[1]!="") {
     ddCtTable <- ddCtTable[ddCtTable$ID %in% detectors, ,drop=FALSE]
