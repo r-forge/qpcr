@@ -1,11 +1,11 @@
 Package: QCqPCR
 Version: 1.0
-Date: 2010-05-22
+Date: 2011-02-22
 Title: Functions for quality control of RT-qPCR data
 Description: Functions for quality control of real-time quantitative PCR data
 Author: James Perkins, Matthias Kohl
 Maintainer: James Perkins <jperkins@biochem.ucl.ac.uk>
-Depends: R(>= 2.10.0), Biobase, ReadqPCR, methods, RColorBrewer
+Depends: R(>= 2.10.0), methods, RColorBrewer, Biobase, ReadqPCR, NormqPCR
 License: LGPL-3
 LazyLoad: yes
 URL: http://qpcr.r-forge.r-project.org/

@@ -11,8 +11,8 @@ The package provides functions to read raw RT-qPCR data of different platforms.
 Package: \tab ReadqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 20010-05-22\cr
-Depends: \tab R(>= 2.11.0), Biobase, ReadqPCR, methods, RColorBrewer\cr
+Date: \tab 2011-01-22\cr
+Depends: \tab R(>= 2.10.0), Biobase, ReadqPCR, methods, RColorBrewer\cr
 License: \tab LGPL-3\cr
 LazyLoad: \tab yes\cr
 }

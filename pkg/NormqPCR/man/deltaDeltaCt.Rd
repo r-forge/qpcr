@@ -1,5 +1,6 @@
 \name{deltaDeltaCt}
 \alias{deltaDeltaCt}
+\alias{deltaDeltaCt-methods}
 \alias{deltaDeltaCt,qPCRBatch-method}
 \title{ Perform normalization and differential expression with given housekeeping gene }
 \description{
@@ -9,6 +10,9 @@ Suitable when housekeeping genes are from same wells/sample as the other detecto
 }
 \usage{
 deltaDeltaCt(qPCRBatch,\dots)
+
+\S4method{deltaDeltaCt}{qPCRBatch}(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, 
+             case, control, paired=TRUE, hkgCalc="arith", statCalc="arith")
 }
 \arguments{
   \item{qPCRBatch}{ Expression set containing qPCR data. }

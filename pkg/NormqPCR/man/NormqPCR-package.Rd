@@ -13,7 +13,7 @@ Functions for normalisation of real-time quantitative PCR data.
 Package: \tab NormqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2010-05-22\cr
+Date: \tab 2011-02-22\cr
 Depends: \tab R(>= 2.10.0), stats, RColorBrewer, Biobase, methods, ReadqPCR, gplots\cr
 License: \tab LGPL-3\cr
 LazyLoad: \tab yes \cr

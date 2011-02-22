@@ -1,6 +1,6 @@
 Package: NormqPCR
 Version: 1.0
-Date: 2010-05-22
+Date: 2011-02-22
 Title: Functions for normalisation of RT-qPCR data
 Description: Functions for normalisation of real-time quantitative PCR data
 Author: Matthias Kohl, James Perkins

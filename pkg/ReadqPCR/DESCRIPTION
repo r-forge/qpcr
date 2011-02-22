@@ -1,6 +1,6 @@
 Package: ReadqPCR
 Version: 1.0
-Date: 2010-05-22
+Date: 2011-02-22
 Title: Read qPCR data
 Description: The package provides functions to read raw RT-qPCR data of different platforms.
 Author: James Perkins, Matthias Kohl

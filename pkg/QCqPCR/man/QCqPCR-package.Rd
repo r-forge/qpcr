@@ -11,8 +11,8 @@ The package provides functions for quality control of RT-qPCR data.
 Package: \tab QCqPCR\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
-Date: \tab 2010-05-22\cr
-Depends: \tab R(>= 2.10.0), Biobase, ReadqPCR, methods, RColorBrewer\cr
+Date: \tab 2011-02-22\cr
+Depends: \tab R(>= 2.10.0), methods, RColorBrewer, Biobase, ReadqPCR, NormqPCR\cr
 License: \tab LGPL-3\cr
 LazyLoad: \tab yes\cr
 }
