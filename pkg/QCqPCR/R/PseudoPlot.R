@@ -23,12 +23,11 @@ setMethod("PseudoPlot", signature = "qPCRBatch", definition =
     whichPlates <- sort(unique(plateVec))
     if(plateToPlot != "AllPlates") whichPlates <- plateToPlot
     wellVec <- as.numeric(gsub(".*-", "", orderMat))
-cat("ZZZZ",whichPlates,"here\n")
     if (plotType == "Cts.Values") {
       minVal <- 0
       maxVal <- round(max(ctsMat, na.rm=TRUE), 2)
       for (plate in whichPlates) { # for each plate
-        plotTitle <- paste(plotType, "for plate:", plate)
+        plotTitle <- paste(gsub("\\."," ",plotType), "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
         .plotCardRaw(plotMat, plotTitle, minVal, max(plotMat, na.rm=TRUE), writeToFile)
@@ -36,7 +35,7 @@ cat("ZZZZ",whichPlates,"here\n")
     }
     else if (plotType == "Plate.Residuals") {
       for (plate in whichPlates) {
-        plotTitle <- paste(plotType, "for plate:", plate)
+        plotTitle <- paste(gsub("\\."," ",plotType), "for plate:", plate)
         orderedVals <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         if (statType == "parametric") {
           plateResidual <- sd(as.vector(orderedVals), na.rm = TRUE)
@@ -63,7 +62,7 @@ cat("ZZZZ",whichPlates,"here\n")
       valMat <-  totalMat /  residVec # now divide to get the results in terms of SDs/MADs from mean
       valMat[is.na(valMat)] <- 0 # bit cludgey - deals with when we have a 0 / 0 calculations
       for (plate in whichPlates) { # now we must order and plot the new values by plate
-        plotTitle <- paste(plotType, "for plate:", plate)
+        plotTitle <- paste(gsub("\\."," ",plotType), "for plate:", plate)
         orderedVals <- valMat[plateVec == plate][order(wellVec[plateVec == plate])]
         plotMat <- matrix(orderedVals, nrow=16, byrow=TRUE)
         .plotCardStats(plotMat, plotTitle, writeToFile, statType)
@@ -84,7 +83,7 @@ cat("ZZZZ",whichPlates,"here\n")
         }
       }
       for (plate in whichPlates) { # for each plate
-        plotTitle <- paste(plotType, "for plate:", plate)
+        plotTitle <- paste(gsub("\\."," ",plotType), "for plate:", plate)
         orderedCts <- ctsMat[plateVec == plate][order(wellVec[plateVec == plate])]
         totalVec <- orderedCts - averageWell
         valMat <- totalVec / residWell
