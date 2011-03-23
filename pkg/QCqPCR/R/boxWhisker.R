@@ -1,9 +1,5 @@
-setGeneric("qPCRBoxWhisker",
-  function(qPCRBatch, cutOff = 40, statType = "parametric", plotType = "sample")
-    standardGeneric("qPCRBoxWhisker")
-)
 setMethod("qPCRBoxWhisker", signature = "qPCRBatch", definition =
-  function(qPCRBatch, cutOff, statType, plotType) {
+  function(qPCRBatch, cutOff = 40, statType = "parametric", plotType = "sample") {
 
     if (statType == "parametric" || statType == "non-parametric") {
     }

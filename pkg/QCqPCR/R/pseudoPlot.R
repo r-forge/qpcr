@@ -1,9 +1,5 @@
-setGeneric("PseudoPlot",
-  function(qPCRBatch, plotType="Cts.Values", writeToFile=FALSE, cutOff=NA, statType="parametric", plateToPlot="AllPlates")
-    standardGeneric("PseudoPlot")
-)
 setMethod("PseudoPlot", signature = "qPCRBatch", definition =
-  function(qPCRBatch, plotType, writeToFile, cutOff, statType, plateToPlot) {
+  function(qPCRBatch, plotType="Cts.Values", writeToFile=FALSE, cutOff=NA, statType="parametric", plateToPlot="AllPlates") {
     if (statType == "parametric"
       || statType == "non-parametric") {
     }

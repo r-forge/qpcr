@@ -1,9 +1,5 @@
-setGeneric("qPCRPairs",
-  function(qPCRBatch, plotType="Sample", writeToFile=FALSE, pairsToPlot="All")
-  standardGeneric("qPCRPairs")
-)
 setMethod("qPCRPairs", signature = "qPCRBatch", definition =
-  function(qPCRBatch, plotType, writeToFile, pairsToPlot) {
+  function(qPCRBatch, plotType="Sample", writeToFile=FALSE, pairsToPlot="All") {
     if(plotType == "Sample") {
       if(pairsToPlot == "All") {
           pairsToPlot <- combn(sampleNames(qPCRBatch),2)

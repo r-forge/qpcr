@@ -1,7 +1,3 @@
-setGeneric("qPCRCorMatrix",
-  function(qPCRBatch)
-  standardGeneric("qPCRCorMatrix")
-)
 setMethod("qPCRCorMatrix", signature = "qPCRBatch", definition =
   function(qPCRBatch)
   {

@@ -1,12 +1,5 @@
-setGeneric("plotVsHkg",
-  function(qPCRBatch, hkgs, writeToFile=FALSE)
-    standardGeneric("plotVsHkg")
-)
-
-
 setMethod("plotVsHkg", signature = "qPCRBatch", definition =
-  function(qPCRBatch, hkgs, writeToFile)
-  {
+  function(qPCRBatch, hkgs, writeToFile = FALSE) {
     cts <- exprs(qPCRBatch) # this refers to the actual data
     hkgs <- make.names(hkgs)
 
