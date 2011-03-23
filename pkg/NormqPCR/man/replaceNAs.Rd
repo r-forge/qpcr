@@ -5,13 +5,14 @@
 \description{ Replace NAs with a given value
 }
 \usage{
-replaceNAs(qPCRBatch, newNA)
+replaceNAs(qPCRBatch, \dots)
+
+\S4method{replaceNAs}{qPCRBatch}(qPCRBatch, newNA)
 }
 \arguments{
-  \item{qPCRBatch}{ Expression set containing qPCR data. 
-}
-  \item{newNA}{ The new value to replace the NAs with
-}
+  \item{qPCRBatch}{ Expression set containing qPCR data.}
+  \item{\dots}{ Extra arguments, detailed below}
+  \item{newNA}{ The new value to replace the NAs with}
 }
 \details{
   Replaces NA values in the exprs slot of the qPCRBatch object with a given number

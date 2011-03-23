@@ -5,15 +5,15 @@
 \description{ Replace Ct values above a given threshold with a new value
 }
 \usage{
-replaceAboveCutOff(qPCRBatch, newVal=NA, cutOff=38)
+replaceAboveCutOff(qPCRBatch, \dots)
+
+\S4method{replaceAboveCutOff}{qPCRBatch}(qPCRBatch, newVal=NA, cutOff=38)
 }
 \arguments{
-  \item{qPCRBatch}{ Expression set containing qPCR data. 
-}
-  \item{newVal}{ The new value with which to replace the values above the cutoff
-}
-  \item{cutOff}{ the minimal threshold above which the values will be replaced
-}
+  \item{qPCRBatch}{ Expression set containing qPCR data. }
+  \item{\dots}{ Extra arguments, detailed below }
+  \item{newVal}{ The new value with which to replace the values above the cutoff }
+  \item{cutOff}{ the minimal threshold above which the values will be replaced }
 }
 \details{
   Replaces values in the exprs slot of the \code{qPCRBatch} object that are above a threshold value with a new number

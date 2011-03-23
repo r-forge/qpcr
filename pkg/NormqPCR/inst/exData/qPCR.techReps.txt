@@ -7,7 +7,7 @@ Well PlateIcontrolB Sample Detector Cts
 6 caseA one gene_ei 20.7773052257951
 7 caseA one gene_bo 18.8705150882936
 8 caseA one gene_cp 20.3037101230571
-1 caseB one gene_dx 20.2712554227792
+1 caseB one gene_dx NA
 2 caseB one gene_aj 19.8498329931463
 3 caseB one gene_jy 19.5007131087816
 4 caseB one gene_ax 19.1686621517887
