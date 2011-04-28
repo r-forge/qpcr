@@ -1,1 +1,6 @@
-export(qPCRPairs, qPCRCorMatrix, plotVsHkg, PseudoPlot, qPCRBoxWhisker)
+importClassesFrom(ReadqPCR, qPCRBatch)
+export(qPCRPairs,
+       qPCRCorMatrix,
+       plotVsHkg,
+       PseudoPlot,
+       qPCRBoxWhisker)

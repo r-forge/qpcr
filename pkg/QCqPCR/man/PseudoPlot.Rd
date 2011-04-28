@@ -3,19 +3,22 @@
 \alias{PseudoPlot,qPCRBatch-method}
 \title{ Plot Ct Values when normalised against different housekeeping genes }
 \description{
-  Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
+Takes normalised qPCR data and plot the different Ct values from the different house keeping genes
 }
 \usage{
-PseudoPlot(qPCRBatch, plotType = "Cts.Values", writeToFile = FALSE, 
-           cutOff = NA, statType = "parametric", plateToPlot = "AllPlates")
+PseudoPlot(qPCRBatch, \dots)
+
+\S4method{PseudoPlot}{qPCRBatch}(qPCRBatch, plotType = "Cts.Values", writeToFile = FALSE, 
+           cutOff = NA, statType = "parametric", plateToPlot = "AllPlates") 
 }
 \arguments{
-    \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
-    \item{plotType}{ yet to fill }
-    \item{writeToFile}{ yet to fill }
-    \item{cutOff}{ yet to fill }
-    \item{statType}{ yet to fill }
-    \item{plateToPlot}{ yet to fill }
+  \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
+  \item{\dots}{ Extra arguments, detailed below }
+  \item{plotType}{ yet to fill }
+  \item{writeToFile}{ yet to fill }
+  \item{cutOff}{ yet to fill }
+  \item{statType}{ yet to fill }
+  \item{plateToPlot}{ yet to fill }
 }
 \details{
   Takes normalised qPCR data and plot the different Ct values from the different house keeping genes.

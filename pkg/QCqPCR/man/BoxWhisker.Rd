@@ -7,13 +7,16 @@
   yet to fill 
 }
 \usage{
-qPCRBoxWhisker(qPCRBatch, cutOff, statType, plotType)
+qPCRBoxWhisker(qPCRBatch, \dots)
+
+\S4method{qPCRBoxWhisker}{qPCRBatch}(qPCRBatch, cutOff, statType, plotType) 
 }
 \arguments{
-    \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
-    \item{cutOff}{ yet to fill }
-    \item{statType}{ yet to fill }
-    \item{plotType}{ yet to fill }
+  \item{qPCRBatch}{ data set containing data on different Ct values normed to the different HKGs }
+  \item{\dots}{ Extra arguments, detailed below }
+  \item{cutOff}{ yet to fill }
+  \item{statType}{ yet to fill }
+  \item{plotType}{ yet to fill }
 }
 \details{ aaa
 }
