@@ -2,10 +2,10 @@
 \alias{read.taqman}
 \alias{read_TaqBatch}
 \alias{checkValidTaqmanFilenames}
-\title{ Read Taqman qPCR data into ExpressionSet }
+\title{ Read Taqman qPCR data and produce a qPCRBatch }
 \description{
-  Reads Taqman RT-qPCR data to object of class
-  \code{"ExpressionSet"}.
+  Reads Taqman RT-qPCR data and uses the data to populate an object of class
+  \code{"qPCRBatch"}.
 }
 \usage{
 read.taqman(\dots,
@@ -21,7 +21,7 @@ read.taqman(\dots,
   \code{\link[Biobase:class.AnnotatedDataFrame]{AnnotatedDataFrame}}
   object, a \code{character} of length one, or a \code{data.frame}.}
   \item{notes}{notes.}
-  \item{verbose}{verbosity flag.}
+  \item{verbose}{verbosity flag. If true more messages are given to the user on the processing steps}
 }
 \details{
   Permits the user to read in qPCR Ct value data from an sds output file, 
@@ -29,7 +29,7 @@ read.taqman(\dots,
   is a \code{data.frame}, it is converted to an \code{AnnotatedDataFrame}. If it
   is \code{NULL} then a default object  of class \code{AnnotatedDataFrame} is
   created, whose \code{pData} is a \code{data.frame} with rownames being the
-  names of the CEL files, and with one column \code{sample} with an integer index.
+  names of the , and with one column \code{sample} with an integer index.
   More details on how technical replicates are handled in the \code{ReadqPCR}
 package vignette
 }
