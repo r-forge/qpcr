@@ -29,7 +29,7 @@ with a 1 or 0 in the matrix indicating which sample types the different samples 
 \examples{
   # read in the data
   path <- system.file("exData", package = "NormqPCR")
-  taqman.example <- paste(path, "/example.txt", sep="")
+  taqman.example <- file.path(path, "example.txt")
   qPCRBatch.taqman <- read.taqman(taqman.example)
   exprs(qPCRBatch.taqman)["Ccl20.Rn00570287_m1",] # values before
 

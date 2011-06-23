@@ -105,7 +105,7 @@ read in the data as follows.
 <<read.qPCR>>=
 library(ReadqPCR) # load the ReadqPCR library
 path <- system.file("exData", package = "ReadqPCR")
-qPCR.example <- paste(path, "/qPCR.example.txt", sep="")
+qPCR.example <- file.path(path, "qPCR.example.txt")
 qPCRBatch.qPCR <- read.qPCR(qPCR.example)
 @
 
@@ -124,7 +124,7 @@ So for a qPCR file with 2 technical replicates and 8 detectors per replicate,
 with one replicate per plate, the detector names would be amended as follows:
 
 <<read.qPCR.tech.reps>>=
-qPCR.example.techReps <- paste(path,"/qPCR.techReps.txt", sep = "")
+qPCR.example.techReps <- file.path(path, "qPCR.techReps.txt")
 qPCRBatch.qPCR.techReps <- read.qPCR(qPCR.example.techReps)
 rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
 @
@@ -151,7 +151,7 @@ the software, followed by summary data about the experiment.
 \code{read.affybatch} function of the \pkg{affy} package.
 
 <<read.taqman>>=
-taqman.example <- paste(path, "/example.txt", sep="")
+taqman.example <- file.path(path, "example.txt")
 qPCRBatch.taq <- read.taqman(taqman.example)
 @
 
@@ -161,8 +161,8 @@ single \code{qPCRBatch}, as long as they have matching detector identifiers.
 
 <<read.taqman.two>>=
 path <- system.file("exData", package = "ReadqPCR")
-taqman.example <- paste(path, "/example.txt", sep="")
-taqman.example.second.file <- paste(path, "/example2.txt", sep="")
+taqman.example <- file.path(path, "example.txt")
+taqman.example.second.file <- file.path(path, "example2.txt")
 qPCRBatch.taq.two.files <- read.taqman(taqman.example, 
                              taqman.example.second.file)
 @
@@ -184,7 +184,7 @@ So for a taqman file with 4 technical replicates of 96 detectors per sample,
 with one sample per plate, the detector names would be amended as follows:
 
 <<read.taqman.tech.reps>>=
-taqman.example.tech.reps <- paste(path,"/exampleTechReps.txt", sep = "")
+taqman.example.tech.reps <- file.path(path, "exampleTechReps.txt")
 qPCRBatch.taq.tech.reps <- read.taqman(taqman.example.tech.reps)
 rownames(exprs(qPCRBatch.taq.tech.reps))[1:8]
 @
@@ -262,7 +262,8 @@ head(exprs.well.order(qPCRBatch.taq))
 
 With plate names:
 <<taqman.exprs.well.order.plate.names>>=
-taqman.example.plateNames <-paste(path,"/exampleWithPlateNames.txt",sep="")
+taqman.example.plateNames <- file.path(path, "exampleWithPlateNames.txt")
+
 qPCRBatch.taq.plateNames <- read.taqman(taqman.example.plateNames)
 head(exprs.well.order(qPCRBatch.taq.plateNames))
 @
@@ -270,9 +271,8 @@ head(exprs.well.order(qPCRBatch.taq.plateNames))
 In addition, a mixture of files with and without plate identifiers is possible. 
 
 <<taqman.exprs.well.order.plate.and.not>>=
-taqman.example <- paste(path, "/example.txt", sep="")
-taqman.example.plateNames <-paste(path,"/exampleWithPlateNames.txt",
-                                                               sep="")
+taqman.example <- file.path(path, "example.txt")
+taqman.example.plateNames <- file.path(path, "exampleWithPlateNames.txt")
 qPCRBatch.taq.mixedPlateNames <- read.taqman(taqman.example, 
                                     taqman.example.plateNames)
 head(exprs.well.order(qPCRBatch.taq.mixedPlateNames))
@@ -296,7 +296,7 @@ head(exprs.well.order(qPCRBatch.qPCR))
 And when they are not:
 
 <<qPCR.exprs.well.order.noPlateId>>=
-qPCR.example.noPlateOrWell <- paste(path, "/qPCR.noPlateOrWell.txt", sep="")
+qPCR.example.noPlateOrWell <- file.path(path, "qPCR.noPlateOrWell.txt")
 qPCRBatch.qPCR.noPlateOrWell <- read.qPCR(qPCR.example.noPlateOrWell)
 exprs.well.order(qPCRBatch.qPCR.noPlateOrWell)
 @

@@ -42,10 +42,10 @@ package vignette
 \examples{
   path <- system.file("exData", package = "ReadqPCR")
   # read 1 file
-  taqman.example <- paste(path, "/example.txt", sep="")
+  taqman.example <- file.path(path, "example.txt")
   qPCRBatch.taq <- read.taqman(taqman.example)
   # read 2 files
-  taqman.example.second.file <- paste(path, "/example2.txt", sep="")
+  taqman.example.second.file <- file.path(path, "example2.txt")
   qPCRBatch.taq.two.files <- read.taqman(taqman.example, 
                              taqman.example.second.file)
 }

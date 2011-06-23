@@ -28,7 +28,7 @@ combineTechReps(qPCRBatch, \dots)
 %\seealso{}
 \examples{
   path <- system.file("exData", package = "NormqPCR")
-  qPCR.example.techReps <- paste(path,"/qPCR.techReps.txt", sep = "")
+  qPCR.example.techReps <- file.path(path, "qPCR.techReps.txt")
   qPCRBatch.qPCR.techReps <- read.qPCR(qPCR.example.techReps)
   rownames(exprs(qPCRBatch.qPCR.techReps))
   combinedTechReps <- combineTechReps(qPCRBatch.qPCR.techReps)

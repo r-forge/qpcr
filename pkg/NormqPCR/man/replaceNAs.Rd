@@ -26,7 +26,7 @@ replaceNAs(qPCRBatch, \dots)
 %\seealso{}
 \examples{
   path <- system.file("exData", package = "NormqPCR")
-  taqman.example <- paste(path, "/example.txt", sep="")
+  taqman.example <- file.path(path, "example.txt")
   qPCRBatch.taqman <- read.taqman(taqman.example)
   qPCRBatch.taqman.replaced <- replaceNAs(qPCRBatch.taqman, newNA = 40)
   exprs(qPCRBatch.taqman.replaced)["Ccl20.Rn00570287_m1",]

@@ -38,7 +38,7 @@ read.qPCR(filename = character(0),
 \seealso{ \code{\link[Biobase]{ExpressionSet-class}} }
 \examples{
   path <- system.file("exData", package = "ReadqPCR")
-  qPCR.example <- paste(path, "/qPCR.example.txt", sep="")
+  qPCR.example <- file.path(path, "qPCR.example.txt")
   qPCRBatch.qPCR <- read.qPCR(qPCR.example)
 }
 \keyword{classes}

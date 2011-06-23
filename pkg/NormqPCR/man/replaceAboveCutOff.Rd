@@ -27,7 +27,7 @@ replaceAboveCutOff(qPCRBatch, \dots)
 %\seealso{}
 \examples{
   path <- system.file("exData", package = "NormqPCR")
-  taqman.example <- paste(path, "/example.txt", sep="")
+  taqman.example <- file.path(path, "example.txt")
   qPCRBatch.taqman <- read.taqman(taqman.example)
   exprs(qPCRBatch.taqman)["Ccl20.Rn00570287_m1",]
   qPCRBatch.taqman.replaced <- replaceAboveCutOff(qPCRBatch.taqman, newVal = NA, cutOff = 35)

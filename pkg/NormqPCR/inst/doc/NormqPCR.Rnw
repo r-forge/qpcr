@@ -73,7 +73,7 @@ detector/feature names are thus suffixed:
 library(ReadqPCR) # load the ReadqPCR library
 library(NormqPCR)
 path <- system.file("exData", package = "NormqPCR")
-qPCR.example.techReps <- paste(path,"/qPCR.techReps.txt", sep = "")
+qPCR.example.techReps <- file.path(path, "qPCR.techReps.txt")
 qPCRBatch.qPCR.techReps <- read.qPCR(qPCR.example.techReps)
 rownames(exprs(qPCRBatch.qPCR.techReps))[1:8]
 @
@@ -108,7 +108,7 @@ Firstly read in the taqman example file which has 96
 detectors, with 4 replicates for mia (case) and 4 non-mia (control):
 <<taqman read>>=
 path <- system.file("exData", package = "NormqPCR")
-taqman.example <- paste(path, "/example.txt", sep="")
+taqman.example <- file.path(path, "/example.txt")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 @
 
@@ -203,7 +203,7 @@ which is called {\it geNorm}. We first load the package and the data
 <<NormqPCR>>=
 options(width = 68)
 path <- system.file("exData", package = "NormqPCR")
-geNorm.example <- paste(path, "/qPCR.geNorm.txt", sep="")
+geNorm.example <- file.path(path, "qPCR.geNorm.txt")
 geNorm.qPCRBatch <- read.qPCR(geNorm.example)
 str(exprs(geNorm.qPCRBatch))
 @
@@ -298,7 +298,7 @@ called
 {\it NormFinder}.\\
 The ranking contained in Table~3 of And04 can be obtained via
 <<NormFinder>>=
-Colon.example <- paste(path, "/qPCR.colon.txt", sep="")
+Colon.example <- file.path(path, "qPCR.colon.txt")
 Colon.qPCRBatch <- read.qPCR(Colon.example)
 str(exprs(Colon.qPCRBatch))
 Colon.qPCRBatch[["Group"]] <- c(rep("Normal",10),rep("Dukes A",10),rep("Dukes
@@ -308,7 +308,7 @@ res.Colon <- stabMeasureRho(Colon.qPCRBatch,
                             log = FALSE)
 sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
 
-Bladder.example <- paste(path, "/qPCR.bladder.txt", sep="")
+Bladder.example <- file.path(path, "qPCR.bladder.txt")
 Bladder.qPCRBatch <- read.qPCR(Bladder.example)
 str(exprs(Bladder.qPCRBatch))
 Bladder.qPCRBatch[["Group"]] <- c(rep("Ta",10),rep("T1",8),rep("T2-4",10))
@@ -355,6 +355,7 @@ data:
 <<taqman read dCt>>=
 path <- system.file("exData", package = "NormqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
+qPCR.example <- file.path(path, "qPCR.example.txt")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 @
 
@@ -407,6 +408,7 @@ data:
 <<taqman read>>=
 path <- system.file("exData", package = "NormqPCR")
 taqman.example <- paste(path, "/example.txt", sep="")
+qPCR.example <- file.path(path, "qPCR.example.txt")
 qPCRBatch.taqman <- read.taqman(taqman.example)
 @
 
@@ -504,7 +506,7 @@ Claus Lindbjerg Andersen, Jens Ledet Jensen and Torben Falck Orntoft (2004).
 Data: 
 A Model-Based Variance Estimation Approach to Identify Genes Suited for
 Normalization, Applied to Bladder and Colon Cancer Data Sets
-\newblock CANCER RESEARCH 64, 5245–5250, August 1, 2004
+\newblock CANCER RESEARCH 64, 52455250, August 1, 2004
 \newblock \url{http://cancerres.aacrjournals.org/cgi/content/full/64/15/5245}
 
 \bibitem{ddCt}

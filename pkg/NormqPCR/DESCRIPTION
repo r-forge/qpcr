@@ -1,11 +1,13 @@
 Package: NormqPCR
-Version: 1.0
-Date: 2011-02-22
+Version: 0.99.1
+Date: 2011-06-23
 Title: Functions for normalisation of RT-qPCR data
 Description: Functions for normalisation of real-time quantitative PCR data
 Author: Matthias Kohl, James Perkins
 Maintainer: James Perkins <jperkins@biochem.ucl.ac.uk>
 Depends: R(>= 2.10.0), stats, RColorBrewer, Biobase, methods, ReadqPCR, gplots
+Imports: Biobase
+biocView: DataImport, MicrotitrePlateAssay
 License: LGPL-3
 LazyLoad: yes
 LazyData: yes
