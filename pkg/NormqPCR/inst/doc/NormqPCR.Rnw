@@ -216,23 +216,21 @@ is calculated and so on. This procedure is repeated until two respectively,
 \code{minNrHK} genes remain.
 <<geNorm>>=
 
-geNorm <- t(exprs(geNorm.qPCRBatch))
-
 tissue <- as.factor(c(rep("BM", 9),  rep("FIB", 20), rep("LEU", 13),
                     rep("NB", 34), rep("POOL", 9)))
-res.BM <- selectHKs(geNorm[tissue == "BM",], method = "geNorm", 
-                    Symbols = colnames(geNorm), minNrHK = 2, log = FALSE)
-res.POOL <- selectHKs(geNorm[tissue == "POOL",], method = "geNorm", 
-                      Symbols = colnames(geNorm), minNrHK = 2, 
+res.BM <- selectHKs(geNorm.qPCRBatch[,tissue == "BM"], method = "geNorm", 
+                    Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, log = FALSE)
+res.POOL <- selectHKs(geNorm.qPCRBatch[,tissue == "POOL"], method = "geNorm", 
+                      Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, 
                       trace = FALSE, log = FALSE)
-res.FIB <- selectHKs(geNorm[tissue == "FIB",], method = "geNorm", 
-                     Symbols = colnames(geNorm), minNrHK = 2, 
+res.FIB <- selectHKs(geNorm.qPCRBatch[,tissue == "FIB"], method = "geNorm", 
+                     Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, 
                      trace = FALSE, log = FALSE)
-res.LEU <- selectHKs(geNorm[tissue == "LEU",], method = "geNorm", 
-                     Symbols = colnames(geNorm), minNrHK = 2, 
+res.LEU <- selectHKs(geNorm.qPCRBatch[,tissue == "LEU"], method = "geNorm", 
+                     Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, 
                      trace = FALSE, log = FALSE)
-res.NB <- selectHKs(geNorm[tissue == "NB",], method = "geNorm", 
-                    Symbols = colnames(geNorm), minNrHK = 2, 
+res.NB <- selectHKs(geNorm.qPCRBatch[,tissue == "NB"], method = "geNorm", 
+                    Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, 
                     trace = FALSE, log = FALSE)
 @
 We obtain the following ranking of genes (cf. Table~3 in Vand02)
@@ -266,7 +264,7 @@ abline(h = seq(0.2, 1.2, by = 0.2), lty = 2, lwd = 1, col = "grey")
 legend("topright", legend = c("BM", "POOL", "FIB", "LEU", "NB"), 
        fill = mypalette)
 @
-\myinfig{1}{NormqPCR-fig2.pdf}QCqPCR/inst/doc/QCqPCR.Rnw
+\myinfig{1}{NormqPCR-fig2.pdf}
 \par
 Second, we plot the pairwise variation for each cell type (cf. Figure~3~(a) in
 Vand02)
@@ -333,11 +331,13 @@ Section
 procedure
 is available via function \code{selectHKs}.
 <<NormFinder2>>=
+group <- pData(Colon.qPCRBatch)[,"Group"]
 selectHKs(Colon.qPCRBatch, 
-          log = FALSE, trace = TRUE, 
+          log = FALSE, trace = TRUE, group = group,
           Symbols = featureNames(Colon.qPCRBatch), minNrHKs = 12,
           method = "NormFinder")$ranking
-selectHKs(Bladder.qPCRBatch, 
+group <- pData(Bladder.qPCRBatch)[,"Group"]
+selectHKs(Bladder.qPCRBatch, group = group,
           log = FALSE, trace = FALSE, 
           Symbols = featureNames(Bladder.qPCRBatch), minNrHKs = 13,
           method = "NormFinder")$ranking

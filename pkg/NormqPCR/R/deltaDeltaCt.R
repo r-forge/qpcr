@@ -1,10 +1,8 @@
 setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
   function(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, case, control, paired=TRUE, hkgCalc="arith", statCalc="arith") {
     hkgs <- make.names(hkgs)
+    if(length(hkgs) < 1) stop("Not enough hkgs given")
 
-#    if(combineHkgs == TRUE) {
-	if(length(hkgs) < 1) stop("Not enough hkgs given")
-#    }
     if(FALSE %in% (hkgs %in% featureNames(qPCRBatch))) stop("invalid housekeeping gene given")
     for(hkg in hkgs){
         if(sum(is.na(hkg)) > 0) warning(hkg, " May be a bad housekeeping gene to normalise with since it did not produce a reading ", sum(is.na(hkg)), "times out of", length(hkg))
@@ -18,8 +16,6 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     if(length(hkgs) > 1) {
 	hkgMCase <- caseM[hkgs, ]
         hkgMControl <- controlM[hkgs, ]
-	#hkgVCase <- apply(hkgMCase, 2, geomMean, na.rm=TRUE)
-	#hkgVControl <- apply(hkgMControl, 2, geomMean, na.rm=TRUE)
 	if(hkgCalc == "arith") {
 		hkgVCase <- apply(hkgMCase, 2, mean, na.rm=TRUE)
 		hkgVControl <- apply(hkgMControl, 2, mean, na.rm=TRUE)
@@ -49,7 +45,6 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     for (detector in featureNames(qPCRBatch)) {
         VCase <- caseM[detector,]
         VControl <- controlM[detector,]
-#stop("length of case is:",VCase,"_",length(VCase))
         if(length(VCase) == 1) {
           warning("Only one Detector for Control")
           dCtCase <- VCase
@@ -57,7 +52,6 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
         } else if(! FALSE %in% is.na(VCase)) {
           warning("No Detector for Case")
           dCtCase <- rep(NA, length = VCase)
-#          dCtControl <- NA
           sdCase <- NA
         } else {
           if(statCalc == "geom") {
@@ -81,7 +75,6 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
         } else if(! FALSE %in% is.na(VControl)) {
           warning("No Detector for Control")
           dCtControl <- rep(NA, length = VControl)
-#          dCtCase <- NA
           sdControl <- NA
         } else {
           if(statCalc == "geom") {
@@ -137,7 +130,6 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
           }
         }
         if(statCalc == "geom") {
-#          ddCts[i] <- (dCtCase/dCtControl)
 	  dCtCases[i] <- dCtCase
 	  sdCtCases[i] <- sdCase
 	  dCtControls[i] <- dCtControl
@@ -156,6 +148,5 @@ setMethod("deltaDeltaCt", signature = "qPCRBatch", definition =
     ddCtTable <- as.data.frame(cbind(featureNames(qPCRBatch),format(dCtCases, digits=4),format(sdCtCases, digits=4),format(dCtControls, digits=4),format(sdCtControls, digits=4),format(ddCts,digits=4),format(minddCts, digits=4),format(maxddCts, digits=4)))
     names(ddCtTable) <- c("ID", paste("2^-dCt",case,sep="."), paste(case,"sd",sep="."), paste("2^-dCt",control,sep="."), paste(control,"sd",sep="."),"2^-ddCt","2^-ddCt.min", "2^-ddCt.max")
     return(ddCtTable)
-#    stop(ddCtTable)
   }
 )

@@ -1,16 +1,21 @@
 \name{selectHKs}
 \alias{selectHKs}
+\alias{selectHKs-methods}
+\alias{selectHKs,qPCRBatch-method}
 \title{ Selection of reference/housekeeping genes }
 \description{
   This function can be used to determine a set of reference/housekeeping (HK) 
   genes for gene expression experiments. 
 }
 \usage{
-selectHKs(x, group, method = "geNorm", minNrHKs = 2, log = TRUE, Symbols, 
+selectHKs(qPCRBatch, \dots)
+
+\S4method{selectHKs}{qPCRBatch}(qPCRBatch, group, method = "geNorm", minNrHKs = 2, log = TRUE, Symbols, 
 	      trace = TRUE, na.rm = TRUE)
 }
 \arguments{
-  \item{x}{ matrix or data.frame containing the data }
+  \item{qPCRBatch}{ qPCRBatch, containing the data }
+  \item{\dots}{ Extra arguments, detailed below }
   \item{group}{ optional factor not used by all methods, hence may be missing }
   \item{method}{ method to compute most stable genes }
   \item{minNrHKs}{ minimum number of HK genes that should be considered }
@@ -67,8 +72,12 @@ selectHKs(x, group, method = "geNorm", minNrHKs = 2, log = TRUE, Symbols,
 %}
 %\seealso{}
 \examples{
-data(geNorm)
-res.BM <- selectHKs(geNorm[1:9,], method = "geNorm", Symbols = names(geNorm), 
-                    minNrHK = 2, log = FALSE, trace = TRUE, na.rm = TRUE)
+path <- system.file("exData", package = "NormqPCR")
+geNorm.example <- file.path(path, "qPCR.geNorm.txt")
+geNorm.qPCRBatch <- read.qPCR(geNorm.example)
+tissue <- as.factor(c(rep("BM", 9), rep("FIB", 20), rep("LEU", 13),
+ rep("NB", 34), rep("POOL", 9)))
+res.BM <- selectHKs(geNorm.qPCRBatch[,tissue == "BM"], method = "geNorm", 
+                    Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, log = FALSE)
 }
 \keyword{data}

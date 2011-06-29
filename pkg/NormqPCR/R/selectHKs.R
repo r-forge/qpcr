@@ -8,21 +8,11 @@
 ## Symbols: character, symbols for variables/columns
 ## trace: locical, print information
 ## na.rm: remove NA values
-selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2, 
-                      log = TRUE, Symbols, trace = TRUE, na.rm = TRUE){
-    if(method == "geNorm") {
-        if(class(x) == "qPCRBatch") x <- t(exprs(x))
-    }
-    if(method == "NormFinder") {
-        if(class(x) == "qPCRBatch"){
-            if (missing(group)) group <- pData(x)[,"Group"]
-            x <- t(exprs(x))
-        }
-        else stop("'x' must be of class qPCRBatch")
-    }
-    if(!is.matrix(x) & !is.data.frame(x))
-        stop("'x' needs to be of class matrix or data.frame")
-    if(is.data.frame(x)) x <- data.matrix(x)
+setMethod("selectHKs", signature = "qPCRBatch", definition =
+  function(qPCRBatch, group, method = "geNorm", minNrHKs = 2, 
+ log = TRUE, Symbols, trace = TRUE, na.rm = TRUE){
+    x <- t(exprs(qPCRBatch))
+    x <- data.matrix(x)
     n <- ncol(x)
     if(n < 3)
         stop("you need data from at least 3 variables/columns")
@@ -67,14 +57,14 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
             }
 
             if(trace){
-                cat("###############################################################\n")
-                cat("Step ", n-i+1, ":\n")
-                cat("stability values M:\n")
+                message("###############################################################\n")
+                message("Step ", n-i+1, ":\n")
+                message("stability values M:\n")
                 print(sort(M))
-                cat("average stability M:\t", meanM[n-i+1], "\n")
+                message("average stability M:\t", meanM[n-i+1], "\n")
                 if(i > 2){
-                    cat("variable with lowest stability (largest M value):\t", Symbols[ind], "\n")
-                    cat("Pairwise variation, (", i-1, "/", i, "):\t", V[n-i+1], "\n")
+                    message("variable with lowest stability (largest M value):\t", Symbols[ind], "\n")
+                    message("Pairwise variation, (", i-1, "/", i, "):\t", V[n-i+1], "\n")
                 }
             }
             x <- x[,-ind]
@@ -95,11 +85,11 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
         rho.min[1] <- rho[b[1]]
 
         if(trace){
-            cat("###############################################################\n")
-            cat("Step ", 1, ":\n")
-            cat("stability values rho:\n")
+            message("###############################################################\n")
+            message("Step ", 1, ":\n")
+            message("stability values rho:\n")
             print(sort(rho))
-            cat("variable with highest stability (smallest rho value):\t", Symbols[b[1]], "\n")
+            message("variable with highest stability (smallest rho value):\t", Symbols[b[1]], "\n")
         }
         for(i in 2:minNrHKs){
             rho[b[i-1]] <- NA
@@ -116,11 +106,11 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
             R[i] <- Symbols[b[i]]
             rho.min[i] <- rho[b[i]]
             if(trace){
-                cat("###############################################################\n")
-                cat("Step ", i, ":\n")
-                cat("stability values rho:\n")
+                message("###############################################################\n")
+                message("Step ", i, ":\n")
+                message("stability values rho:\n")
                 print(sort(rho[!is.na(rho)]))
-                cat("variable with highest stability (smallest rho value):\t", Symbols[b[i]], "\n")
+                message("variable with highest stability (smallest rho value):\t", Symbols[b[i]], "\n")
             }
         }
         names(R) <- 1:minNrHKs
@@ -129,4 +119,5 @@ selectHKs <- function(x, group, method = "geNorm", minNrHKs = 2,
     }else{
         stop("specified method not yet implemented")
     }
-}
+  }
+)

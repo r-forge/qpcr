@@ -17,10 +17,5 @@ plotDCt <- function(..., ddCtTable, detectors="", statCalc="arith") {
     plotU <- plotCts  + plotSds
     plotL <- plotCts - plotSds
   }
-#  print(plotCts)
-  
-#  cat(plotU,"\t")
-#  cat(plotL,"\n")
-
   barplot2(..., height=t(plotCts), plot.ci=TRUE, ci.u=t(plotU), ci.l=t(plotL), beside=T)
 }
