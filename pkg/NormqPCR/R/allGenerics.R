@@ -32,3 +32,8 @@ setGeneric("selectHKs",
   function(qPCRBatch, ...)
   standardGeneric("selectHKs")
 )
+
+setGeneric("stabMeasureRho",
+  function(x, ...)
+  standardGeneric("stabMeasureRho")
+)

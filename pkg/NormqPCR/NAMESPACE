@@ -10,6 +10,4 @@ export(geomMean,
        combineTechReps,
        replaceAboveCutOff,
        makeAllNAs,
-       replaceNAs,
-       plotDCt,
-       plotDdCt)
+       replaceNAs)

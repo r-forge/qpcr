@@ -26,10 +26,11 @@ deltaCt(qPCRBatch, \dots)
 
 }
 \references{
-  Schmittgen TD, Livak KJ (2008)
-  Analyzing real-time PCR data by the comparative C(T) method.
-  NATURE PROTOCOLS. 3(6):1101-8
-  \url{http://www.nature.com/nprot/journal/v3/n6/full/nprot.2008.73.html}
+  Kenneth Livak, Thomase Schmittgen (2001).
+  Analysis of Relative Gene Expression Data Using Real-Time Quantitative
+  PCR and the 2^DDCt Method.
+  Methods 25, 402-408, 2001
+  \url{http://www.ncbi.nlm.nih.gov/pubmed/11846609}
 }
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
 %\note{}

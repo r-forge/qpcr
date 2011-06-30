@@ -1,5 +1,9 @@
 \name{stabMeasureRho}
 \alias{stabMeasureRho}
+\alias{stabMeasureRho-methods}
+\alias{stabMeasureRho,qPCRBatch-method}
+\alias{stabMeasureRho,matrix-method}
+\alias{stabMeasureRho,x-method}
 \title{ Gene expression stability value rho }
 \description{
   Computation of the gene expression stability value rho for real-time 
@@ -7,12 +11,15 @@
   Andersen et al. (2004). 
 }
 \usage{
-stabMeasureRho(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE)
+  stabMeasureRho(x,\dots)
+
+  \S4method{stabMeasureRho}{x}(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE)
 }
 \arguments{
-  \item{x}{ matrix or data.frame containing real-time quantitative 
-  		  RT-PCR data }
-\item{group}{ grouping factor, either a factor vector or a phenoData column called "Group" }  
+  \item{x}{ matrix containing real-time quantitative 
+  		  RT-PCR data, or qPCRBatch object }
+  \item{\dots}{ Extra arguments, detailed below }
+  \item{group}{ grouping factor, either a factor vector or a phenoData column called "Group" }  
   \item{log}{ logical: is data on log-scale }
   \item{na.rm}{ a logical value indicating whether \code{NA} values should be
           stripped before the computation proceeds. }
@@ -45,14 +52,10 @@ stabMeasureRho(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE)
 %}
 \seealso{\code{selectHKs}}
 \examples{
-  data(Colon.qPCRBatch)
-  Colon.qPCRBatch[["Group"]] <- c(rep("Normal",10),rep("Dukes A",10),rep("Dukes B",10),rep("Dukes C",10))
-  res.Colon <- stabMeasureRho(Colon.qPCRBatch, 
+  data(Colon)
+  group <- pData(Colon.qPCRBatch)[,"Group"]
+  res.Colon <- stabMeasureRho(Colon.qPCRBatch, group = group,
                             log = FALSE)
   sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
-  data(Bladder.qPCRBatch)
-  res.Bladder <- stabMeasureRho(Bladder.qPCRBatch,
-                            log = FALSE)
-  sort(res.Bladder) # cf. Table 3 in Andersen et al (2004)
 }
 \keyword{data}

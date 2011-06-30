@@ -19,7 +19,10 @@ stabMeasureM(x, log = TRUE, na.rm = TRUE)
 \details{
   The gene expression stability value M is defined as the average pairwise
   normalization factor; i.e., one needs to specify data from at least two
-  genes. For more details see Vandesompele et al. (2002).
+  genes. For more details see Vandesompele et al. (2002). Note this 
+  dispatches on a transposed expression matrix, not a qPCRBatch
+  object since it is only called from within the selectHKs method.
+
 }
 \value{
   numeric vector with gene expression stability values 

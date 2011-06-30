@@ -21,7 +21,7 @@ replaceAboveCutOff(qPCRBatch, \dots)
 \value{
   \code{qPCRBatch} object with a new exprs slot
 }
-%\references{ }
+%\references{}
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
 %\note{}
 %\seealso{}

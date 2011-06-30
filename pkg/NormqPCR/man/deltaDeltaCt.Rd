@@ -4,14 +4,16 @@
 \alias{deltaDeltaCt,qPCRBatch-method}
 \title{ Perform normalization and differential expression with given housekeeping gene }
 \description{
-Normalise qPCR eset using housekeeping genes as control, then perform differential expression analysis using the delta delta Ct method.
-Differs from the deltaDeltaAvgCt method in that the hkg values are subtracted and the sd is calculated on the differences (i.e. paired).
-Suitable when housekeeping genes are from same wells/sample as the other detectors
+  Normalise qPCR eset using housekeeping genes as control, then perform differential expression analysis 
+  using the   delta delta Ct method.
+  Differs from the deltaDeltaAvgCt method in that the hkg values are subtracted and the sd is 
+  calculated on the differences (i.e. paired).
+  Suitable when housekeeping genes are from same wells/sample as the other detectors
 }
 \usage{
-deltaDeltaCt(qPCRBatch,\dots)
+  deltaDeltaCt(qPCRBatch,\dots)
 
-\S4method{deltaDeltaCt}{qPCRBatch}(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, 
+  \S4method{deltaDeltaCt}{qPCRBatch}(qPCRBatch, maxNACase=0, maxNAControl=0, hkgs, contrastM, 
              case, control, paired=TRUE, hkgCalc="arith", statCalc="arith")
 }
 \arguments{
@@ -34,10 +36,11 @@ deltaDeltaCt(qPCRBatch,\dots)
   matrix with columns containing the detector ids, 2^delta Ct values for the sample of interest and the callibrator sample, alongside their respective standard deviations, the 2^delta delta Ct values and the minimum and maximum values (ie the values that are 1 sd away )
 }
 \references{
-  Schmittgen TD, Livak KJ (2008)
-  Analyzing real-time PCR data by the comparative C(T) method.
-  NATURE PROTOCOLS. 3(6):1101-8
-  \url{http://www.nature.com/nprot/journal/v3/n6/full/nprot.2008.73.html}
+  Kenneth Livak, Thomase Schmittgen (2001).
+  Analysis of Relative Gene Expression Data Using Real-Time Quantitative
+  PCR and the 2^DDCt Method.
+  Methods 25, 402-408, 2001
+  \url{http://www.ncbi.nlm.nih.gov/pubmed/11846609}
 }
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
 %\note{}

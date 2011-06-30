@@ -2,9 +2,10 @@
 ## group: factor
 ## log: data on log-scale
 ## na.rm: remove NA values
-stabMeasureRho <- function(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE){
+
+setMethod("stabMeasureRho", signature(x = "matrix"), definition =
+  function(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE){
     if(class(x) == "qPCRBatch") {
-        if(missing(group)) group <- pData(x)[,"Group"]
         x <- t(exprs(x))
     }
 
@@ -69,5 +70,12 @@ stabMeasureRho <- function(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE
         else
             return(qmaal)
     }
-}
+  }
+)
 
+setMethod("stabMeasureRho", signature(x = "qPCRBatch"), definition =
+  function(x, group, log = TRUE, na.rm = TRUE, returnAll = FALSE){
+    x <- t(exprs(x))
+    return(stabMeasureRho(x, group, log, na.rm, returnAll))
+  }
+)

@@ -20,7 +20,6 @@ setMethod("combineTechReps", signature = "qPCRBatch", definition =
     else if (calc == "median") {
       for (detector in newDetectors) {
         dValues <- apply(expM[gsub("_TechReps.\\d", "", origDetectors) %in% detector, ], 2, median, na.rm = TRUE)
-#        dValues <- colMedians(expM[gsub("_TechReps.\\d", "", origDetectors) %in% detector, ], na.rm = TRUE)
         NewExpM[detector, ] <- dValues
       }
     }

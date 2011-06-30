@@ -12,9 +12,9 @@ Functions for normalisation of real-time quantitative PCR data.
 \tabular{ll}{
 Package: \tab NormqPCR\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2011-02-22\cr
-Depends: \tab R(>= 2.10.0), stats, RColorBrewer, Biobase, methods, ReadqPCR, gplots\cr
+Version: \tab 0.99.1\cr
+Date: \tab 2011-06-30\cr
+Depends: \tab R(>= 2.10.0), stats, RColorBrewer, Biobase, methods, ReadqPCR \cr
 License: \tab LGPL-3\cr
 LazyLoad: \tab yes \cr
 LazyData: \tab yes \cr
@@ -38,6 +38,12 @@ Maintainer: Matthias Kohl  \email{Matthias.Kohl@stamats.de}}
   Normalization, Applied to Bladder and Colon Cancer Data Sets. 
   CANCER RESEARCH 64, 5245-5250, August 1, 2004.
   \url{http://cancerres.aacrjournals.org/cgi/content/full/64/15/5245}
+
+  Kenneth Livak, Thomase Schmittgen (2001).
+  Analysis of Relative Gene Expression 
+  Data Using Real-Time Quantitative PCR and the 2^ddCt Method.
+  Methods 25, 402-408, 2001
+  \url{http://www.ncbi.nlm.nih.gov/pubmed/11846609}
 }
 %\seealso{
 %~~ Optional links to other man pages, e.g. ~~

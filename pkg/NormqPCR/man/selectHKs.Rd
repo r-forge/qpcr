@@ -5,7 +5,7 @@
 \title{ Selection of reference/housekeeping genes }
 \description{
   This function can be used to determine a set of reference/housekeeping (HK) 
-  genes for gene expression experiments. 
+  genes for gene expression experiments
 }
 \usage{
 selectHKs(qPCRBatch, \dots)
@@ -75,6 +75,7 @@ selectHKs(qPCRBatch, \dots)
   data(geNorm)
   tissue <- as.factor(c(rep("BM", 9), rep("FIB", 20), rep("LEU", 13),
     rep("NB", 34), rep("POOL", 9)))
+
     res.BM <- selectHKs(geNorm.qPCRBatch[,tissue == "BM"], method = "geNorm", 
   Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, log = FALSE)
 }

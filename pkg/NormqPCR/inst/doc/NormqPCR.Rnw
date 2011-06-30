@@ -296,17 +296,18 @@ The ranking contained in Table~3 of And04 can be obtained via
 <<NormFinder>>=
 data(Colon)
 str(exprs(Colon.qPCRBatch))
-pData(Colon.qPCRBatch)
-res.Colon <- stabMeasureRho(Colon.qPCRBatch, 
+group <- pData(Colon.qPCRBatch)[,"Group"]
+res.Colon <- stabMeasureRho(Colon.qPCRBatch, group = group,
                             log = FALSE)
 sort(res.Colon) # cf. Table 3 in Andersen et al (2004)
 
 data(Bladder)
 str(exprs(Bladder.qPCRBatch))
-pData(Bladder.qPCRBatch)
-
-res.Bladder <- stabMeasureRho(Bladder.qPCRBatch, 
+group <- pData(Bladder.qPCRBatch)[,"Group"]
+cat("test1")
+res.Bladder <- stabMeasureRho(Bladder.qPCRBatch, group = group,
                               log = FALSE)
+cat("test test")
 sort(res.Bladder)
 @
 Of course, we can also reproduce the geNorm ranking also included in Table~3
