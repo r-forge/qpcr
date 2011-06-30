@@ -1,18 +1,16 @@
 \name{Colon}
 \alias{Colon}
+\alias{Colon.qPCRBatch}
 \docType{data}
 \title{ Data set of Andersen et al (2004) }
 \description{
   This data set was used in Andersen et al (2004) to demonstrate normalization 
   of real-time quantitative RT-PCR data by geometric averaging of housekeeping genes.
 }
-\usage{data(geNorm)}
+\usage{data(Colon)}
 \format{
-  A data frame with 40 observations on the following 15 variables which stand for 
-  expression data of 13 potential reference/housekeeping genes
+  A qPCRBatch object which contains an expression matrix with 40 observations on the following 13 variables 
   \describe{
-    \item{\code{Classification}}{Colon cancer classification. }
-    \item{\code{Sample.no.}}{sample number. }
     \item{\code{UBC}}{Ubiquitin C. }
     \item{\code{UBB}}{Ubiquitin B. }
     \item{\code{SUI1}}{Putative translation initiation factor. }
@@ -27,6 +25,8 @@
     \item{\code{TPT1}}{Tumor protein, translationally controlled 1. }
     \item{\code{TUBA6}}{Tubulin alpha 6. }
   }
+  It also contains a "group" column in the pData slot, which gives information on the different sample classes,
+  necessary for the NormFinder algorithm
 }
 \details{
   The genes included in this data set were selected by screening 161 colon 
@@ -45,7 +45,8 @@
   \url{http://cancerres.aacrjournals.org/cgi/content/full/64/15/5245}
 }
 \examples{
-data(Colon)
-str(Colon)
+  data(Colon)
+  head(exprs(Colon.qPCRBatch))
+  pData(Colon.qPCRBatch)
 }
 \keyword{datasets}

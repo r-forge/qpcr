@@ -1,15 +1,16 @@
 \name{Bladder}
 \alias{Bladder}
+\alias{Bladder.qPCRBatch}
 \docType{data}
 \title{ Data set of Andersen et al (2004) }
 \description{
   This data set was used in Andersen et al (2004) to demonstrate normalization 
   of real-time quantitative RT-PCR data by geometric averaging of housekeeping genes.
 }
-\usage{data(geNorm)}
+\usage{data(Bladder)}
 \format{
-  A data frame with 28 observations on the following 16 variables which stand for 
-  expression data of 14 potential reference/housekeeping genes
+  A qPCRBatch object which contains an expression matrix with 28 observations on the following 14 variables which stand for 
+  expression data potential reference/housekeeping genes
   \describe{
     \item{\code{Grade}}{Grade of bladder cancer. }
     \item{\code{Sample.no.}}{sample number. }
@@ -28,6 +29,8 @@
     \item{\code{UBC}}{Ubiquitin C. }
     \item{\code{FLJ20030}}{Hypothetical protein FLJ20030. }
   }
+  It also contains a "group" column in the pData slot, which gives information on the different sample classes,
+  necessary for the NormFinder algorithm
 }
 \details{
   The genes included in this data set were selected by screening 99 bladder 
@@ -46,7 +49,8 @@
   \url{http://cancerres.aacrjournals.org/cgi/content/full/64/15/5245}
 }
 \examples{
-data(Bladder)
-str(Bladder)
+  data(Bladder)
+  head(exprs(Bladder.qPCRBatch))
+  pData(Bladder.qPCRBatch)
 }
 \keyword{datasets}

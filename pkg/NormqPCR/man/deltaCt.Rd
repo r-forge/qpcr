@@ -12,7 +12,7 @@ deltaCt(qPCRBatch, \dots)
 \S4method{deltaCt}{qPCRBatch}(qPCRBatch, hkgs, combineHkgs=FALSE, calc="arith")
 }
 \arguments{
-  \item{qPCRBatch}{ Expression set containing qPCR data. }
+  \item{qPCRBatch}{ qPCR-specific expression set, containing qPCR data. }
   \item{\dots}{ Extra arguments, detailed below }
   \item{hkgs}{ String containing the name of the name of the housekeeping gene which will be used to normalise the rest of the genes.}
   \item{combineHkgs}{  Logical - if TRUE, then as long as more than one housekeeper given for argument hkgs, it will combine the housekeepers by finding the geometric mean. Housekeepers can be found using geNorm or NormFinder algorithms.}
@@ -25,10 +25,21 @@ deltaCt(qPCRBatch, \dots)
  qPCRBatch with exprs set of the same dimensions but with the given hkg value subtracted.
 
 }
-%\references{ }
+\references{
+  Schmittgen TD, Livak KJ (2008)
+  Analyzing real-time PCR data by the comparative C(T) method.
+  NATURE PROTOCOLS. 3(6):1101-8
+  \url{http://www.nature.com/nprot/journal/v3/n6/full/nprot.2008.73.html}
+}
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
 %\note{}
-%\seealso{}
-%\examples{
-%}
+\seealso{\code{selectHKs}, \code{deltaDeltaCt}}
+\examples{
+  path <- system.file("exData", package = "NormqPCR")
+  taqman.example <- file.path(path, "example.txt")
+  qPCRBatch.taqman <- read.taqman(taqman.example)
+  hkgs<-"Actb-Rn00667869_m1"
+  qPCRBatch.norm <- deltaCt(qPCRBatch =  qPCRBatch.taqman, hkgs = hkgs, calc="arith")
+  head(exprs(qPCRBatch.norm))
+}
 \keyword{data}

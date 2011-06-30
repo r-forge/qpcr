@@ -15,7 +15,7 @@ deltaDeltaCt(qPCRBatch,\dots)
              case, control, paired=TRUE, hkgCalc="arith", statCalc="arith")
 }
 \arguments{
-  \item{qPCRBatch}{ Expression set containing qPCR data. }
+  \item{qPCRBatch}{ qPCR-specific expression set, containing qPCR data. }
   \item{\dots}{ Extra arguments, detailed below }
   \item{maxNACase}{ Maximum number of NA values allowed before a detector's reading is discarded for samples designated as case. }
   \item{maxNAControl}{ Maximum number of NA values allowed before a detector's reading is discarded for samples designated as control. }
@@ -33,10 +33,26 @@ deltaDeltaCt(qPCRBatch,\dots)
 \value{
   matrix with columns containing the detector ids, 2^delta Ct values for the sample of interest and the callibrator sample, alongside their respective standard deviations, the 2^delta delta Ct values and the minimum and maximum values (ie the values that are 1 sd away )
 }
-%\references{ }
+\references{
+  Schmittgen TD, Livak KJ (2008)
+  Analyzing real-time PCR data by the comparative C(T) method.
+  NATURE PROTOCOLS. 3(6):1101-8
+  \url{http://www.nature.com/nprot/journal/v3/n6/full/nprot.2008.73.html}
+}
 \author{ James Perkins \email{jperkins@biochem.ucl.ac.uk}}
 %\note{}
-%\seealso{}
-%\examples{
-%}
+\seealso{\code{selectHKs}, \code{deltaCt}}
+\examples{
+  path <- system.file("exData", package = "NormqPCR")
+  taqman.example <- file.path(path, "example.txt")
+  qPCRBatch.taqman <- read.taqman(taqman.example)
+  hkg <- "Actb-Rn00667869_m1"
+
+  contM <- cbind(c(0,0,1,1,0,0,1,1),c(1,1,0,0,1,1,0,0))
+  colnames(contM) <- c("interestingPhenotype","wildTypePhenotype")
+  rownames(contM) <- sampleNames(qPCRBatch.taqman)
+
+  ddCt.taqman <- deltaDeltaCt(qPCRBatch = qPCRBatch.taqman, maxNACase=1, maxNAControl=1, hkg=hkg, contrastM=contM, case="interestingPhenotype", control="wildTypePhenotype", statCalc="geom", hkgCalc="arith")
+  head(ddCt.taqman)
+}
 \keyword{data}

@@ -38,7 +38,10 @@ stabMeasureM(x, log = TRUE, na.rm = TRUE)
 %}
 \seealso{\code{selectHKs}}
 \examples{
-data(geNorm)
-res.BM <- stabMeasureM(geNorm[1:9,], log = FALSE)
+  data(geNorm)
+  tissue <- as.factor(c(rep("BM", 9),  rep("FIB", 20), rep("LEU", 13),
+                    rep("NB", 34), rep("POOL", 9)))
+  res.BM <- selectHKs(geNorm.qPCRBatch[,tissue == "BM"], method = "geNorm", 
+                    Symbols = featureNames(geNorm.qPCRBatch), minNrHK = 2, log = FALSE)
 }
 \keyword{data}

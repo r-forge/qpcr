@@ -1,5 +1,6 @@
 \name{geNorm}
 \alias{geNorm}
+\alias{geNorm.qPCRBatch}
 \docType{data}
 \title{ Data set of Vandesompele et al (2002) }
 \description{
@@ -8,7 +9,7 @@
 }
 \usage{data(geNorm)}
 \format{
-  A data frame with 85 observations on the following 10 variables which stand for 
+  A qPCRBatch object which contains an expression matrix with 85 observations on the following 10 variables which stand for 
   expression data of ten potential reference/housekeeping genes
   \describe{
     \item{\code{ACTB}}{actin, beta}
@@ -47,8 +48,8 @@
   \url{http://genomebiology.com/2002/3/7/research/0034/}
 }
 \examples{
-data(geNorm)
-str(geNorm)
-rownames(geNorm)
+  data(geNorm)
+  str(exprs(geNorm.qPCRBatch))
+  sampleNames(geNorm.qPCRBatch)
 }
 \keyword{datasets}
