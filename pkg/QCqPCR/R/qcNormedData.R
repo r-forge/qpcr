@@ -37,12 +37,12 @@ setMethod("plotVsHkg", signature = "qPCRBatch", definition =
         if (writeToFile) jpeg(file = paste("mean.deltaCt.ordered.by.", hkg, ".jpg", sep = ""))
 
 
-        matplot(ord.plotFrame, type = "l", pch = seq(hkgs), lty = seq(hkgs), main = paste("Ordered By hkg ", hkg, sep = ""),xlab=paste("rank order of ",hkg))
-        legend(ceiling(1/2*length(featureNames(qPCRBatch))), min(ord.plotFrame,na.rm=TRUE)+5, hkgs, lty = seq(hkgs), col = seq(hkgs))
+        matplot(ord.plotFrame, type = "l", pch = seq(hkgs), lty = seq(hkgs), main = paste("Ordered By Reference Gene", gsub("\\.+.+","",hkg)),xlab=paste("rank order of",gsub("\\.+.+","",hkg)), ylab="delta Ct")
+        legend("bottomright", gsub("\\.+.+","",hkgs), lty = seq(hkgs), col = seq(hkgs))
         if (writeToFile) {
           dev.off()
         } else {
-          .wait()
+#          .wait()
         }
     }
     return(plotFrame)
